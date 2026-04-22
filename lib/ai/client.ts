@@ -1,7 +1,13 @@
-import { createGateway } from '@ai-sdk/gateway';
+import { createAnthropic } from '@ai-sdk/anthropic';
 
-export const gateway = createGateway({
-  apiKey: process.env.AI_GATEWAY_API_KEY!,
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!,
 });
+
+export const gateway = (model: string) => {
+  // Strip "anthropic/" prefix if present (was used for gateway routing)
+  const modelId = model.replace(/^anthropic\//, '');
+  return anthropic(modelId);
+};
 
 export const CLAUDE_MODEL = 'anthropic/claude-sonnet-4-6';

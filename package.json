@@ -12,6 +12,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.71",
     "@ai-sdk/gateway": "^3.0.104",
     "@base-ui/react": "^1.4.1",
     "@ffmpeg/ffmpeg": "^0.12.15",
