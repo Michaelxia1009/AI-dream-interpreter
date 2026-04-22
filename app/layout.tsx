@@ -3,6 +3,7 @@ import { Inter, Instrument_Serif } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
+import { ThemeProvider, themeInitScript } from '@/lib/theme';
 import { SettingsMenu } from '@/components/SettingsMenu';
 import './globals.css';
 
@@ -16,15 +17,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable} dark`}>
-      <body className="min-h-dvh bg-zinc-950 text-zinc-100 antialiased">
-        <DreamProvider>
-          <div className="fixed top-0 right-0 z-50 p-3">
-            <SettingsMenu />
-          </div>
-          {children}
-          <Toaster theme="dark" position="top-center" />
-        </DreamProvider>
+    <html lang="en" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-dvh bg-background text-foreground antialiased">
+        <ThemeProvider>
+          <DreamProvider>
+            <div className="fixed top-0 right-0 z-50 p-3">
+              <SettingsMenu />
+            </div>
+            {children}
+            <Toaster position="top-center" />
+          </DreamProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

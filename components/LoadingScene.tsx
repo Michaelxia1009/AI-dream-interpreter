@@ -24,12 +24,31 @@ export function LoadingScene() {
   }, []);
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-zinc-950">
-      <div className="absolute inset-0 animate-pulse bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.25)_0%,_transparent_60%)]" />
+    <div className="aurora-bg relative flex min-h-dvh items-center justify-center overflow-hidden">
+      {/* Slow breathing glow */}
+      <div
+        className="absolute inset-0 animate-pulse"
+        style={{
+          background:
+            'radial-gradient(ellipse at 30% 30%, var(--dw-glow-soft) 0%, transparent 60%),' +
+            'radial-gradient(ellipse at 70% 70%, var(--dw-glow) 0%, transparent 65%)',
+        }}
+      />
       <div className="relative z-10 max-w-xs text-center">
-        <div className="mx-auto mb-8 h-16 w-16 animate-spin rounded-full border-2 border-zinc-700 border-t-white" />
+        {/* Aurora ring spinner */}
+        <div className="relative mx-auto mb-8 h-20 w-20">
+          <div
+            className="absolute inset-0 rounded-full opacity-80 animate-spin"
+            style={{ background: 'var(--dw-halo)', animationDuration: '3s' }}
+          />
+          <div className="absolute inset-[3px] rounded-full bg-background" />
+          <div
+            className="absolute inset-0 rounded-full mix-blend-screen blur-md opacity-60"
+            style={{ background: 'var(--dw-halo)' }}
+          />
+        </div>
         <p className="font-serif text-2xl leading-snug">{MESSAGES[i]}</p>
-        <p className="mt-4 text-xs text-zinc-500">{elapsed}s</p>
+        <p className="mt-4 text-xs text-muted-foreground tabular-nums">{elapsed}s</p>
       </div>
     </div>
   );

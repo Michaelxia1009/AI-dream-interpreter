@@ -76,13 +76,13 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       onClick={recording ? stop : start}
       disabled={disabled}
       aria-label={recording ? 'Stop recording' : 'Start recording'}
-      className={`flex h-16 w-16 items-center justify-center rounded-full shadow-xl transition ${
-        recording ? 'bg-red-500 animate-pulse' : 'bg-white'
+      className={`flex h-12 w-12 items-center justify-center rounded-full shadow-xl transition ${
+        recording ? 'bg-destructive animate-pulse text-white' : 'aurora-cta'
       } disabled:opacity-40`}
     >
       {recording
-        ? <Square className="h-7 w-7 text-white fill-white" />
-        : <Mic className="h-7 w-7 text-black" />}
+        ? <Square className="h-5 w-5 fill-current" />
+        : <Mic className="h-5 w-5" />}
     </button>
   );
 }

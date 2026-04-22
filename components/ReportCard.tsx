@@ -10,25 +10,40 @@ const METRIC_LABELS: Record<keyof ScoreResult['metrics'], string> = {
 };
 
 export function ReportCard({ score }: { score: ScoreResult }) {
+  const entries = (Object.keys(METRIC_LABELS) as (keyof ScoreResult['metrics'])[]).map(k => ({
+    key: k,
+    label: METRIC_LABELS[k],
+    ...score.metrics[k],
+  }));
+
   return (
-    <div className="shrink-0 rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3">
-      <h2 className="font-serif text-base">Dream Report Card</h2>
-      <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2">
-        {(Object.keys(METRIC_LABELS) as (keyof ScoreResult['metrics'])[]).map(k => {
-          const m = score.metrics[k];
-          return (
-            <div key={k} className="flex items-center gap-2">
-              <span className="text-[11px] uppercase tracking-wide text-zinc-400 min-w-0 truncate flex-1">{METRIC_LABELS[k]}</span>
-              <div className="h-1 w-12 overflow-hidden rounded-full bg-zinc-800 shrink-0">
-                <div
-                  className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-400"
-                  style={{ width: `${m.score * 10}%` }}
-                />
-              </div>
-              <span className="font-serif text-sm shrink-0">{m.score}<span className="text-[10px] text-zinc-500">/10</span></span>
+    <div className="report-card-surface shrink-0 overflow-hidden rounded-3xl px-5 py-4">
+      <div className="flex items-baseline justify-between">
+        <h2 className="font-serif text-lg leading-none">Dream Report Card</h2>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">by ✦ Dreamweaver</span>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-x-5 gap-y-3">
+        {entries.map(m => (
+          <div key={m.key} className="min-w-0">
+            <div className="flex items-baseline gap-2">
+              <span className="aurora-text font-serif text-3xl leading-none tabular-nums">
+                {m.score}
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
+                /10
+              </span>
             </div>
-          );
-        })}
+            <div className="mt-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              {m.label}
+            </div>
+            {m.oneLiner && (
+              <p className="mt-1 font-serif text-[13px] italic leading-snug text-foreground/85 line-clamp-2">
+                “{m.oneLiner}”
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

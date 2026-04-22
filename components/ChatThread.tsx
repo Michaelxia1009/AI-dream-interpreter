@@ -14,16 +14,16 @@ export function ChatThread({ turns, pending }: { turns: InterviewTurn[]; pending
           key={i}
           className={`max-w-[80%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
             t.role === 'assistant'
-              ? 'self-start bg-zinc-800 text-zinc-100'
-              : 'self-end bg-white text-black'
+              ? 'self-start bg-card text-card-foreground border border-border'
+              : 'self-end aurora-cta'
           }`}
         >
           {t.content}
         </div>
       ))}
       {pending && (
-        <div className="self-start rounded-2xl bg-zinc-800 px-4 py-3">
-          <span className="inline-flex gap-1 [&>span]:h-2 [&>span]:w-2 [&>span]:animate-bounce [&>span]:rounded-full [&>span]:bg-zinc-400">
+        <div className="self-start rounded-2xl border border-border bg-card px-4 py-3">
+          <span className="inline-flex gap-1 [&>span]:h-2 [&>span]:w-2 [&>span]:animate-bounce [&>span]:rounded-full [&>span]:bg-muted-foreground">
             <span /><span style={{ animationDelay: '120ms' }} /><span style={{ animationDelay: '240ms' }} />
           </span>
         </div>

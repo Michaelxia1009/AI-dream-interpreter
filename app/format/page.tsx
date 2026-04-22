@@ -26,9 +26,9 @@ export default function FormatPage() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col px-6 py-10">
+    <main className="aurora-bg flex min-h-dvh flex-col px-6 py-10">
       <h1 className="font-serif text-3xl">Pick a format</h1>
-      <p className="mt-2 text-sm text-zinc-400">
+      <p className="mt-2 text-sm text-muted-foreground">
         {remaining !== null ? `${remaining} of 3 dreams left today` : 'Checking your quota...'}
       </p>
       <div className="mt-8 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">

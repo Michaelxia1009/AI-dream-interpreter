@@ -63,15 +63,15 @@ export default function StylePage() {
   const styles = ids.map(id => getStyleById(id)!).filter(Boolean);
 
   return (
-    <main className="flex min-h-dvh flex-col px-6 py-10">
+    <main className="aurora-bg flex min-h-dvh flex-col px-6 py-10">
       <h1 className="font-serif text-3xl">Pick a style</h1>
-      <p className="mt-2 text-sm text-zinc-400">
+      <p className="mt-2 text-sm text-muted-foreground">
         We picked 3 that fit your dream. Tap one.
       </p>
       <div className="mt-8 flex flex-col gap-3">
         {loading
           ? [1, 2, 3].map(i => (
-              <div key={i} className="h-24 animate-pulse rounded-2xl bg-zinc-900" />
+              <div key={i} className="h-24 animate-pulse rounded-2xl bg-card" />
             ))
           : styles.map(s => (
               <StyleCard key={s.id} style={s} showNarrator={session.format === 'video'} onSelect={() => pick(s.id)} />
@@ -80,7 +80,7 @@ export default function StylePage() {
       <button
         onClick={shuffle}
         disabled={loading}
-        className="mt-6 self-center text-sm text-zinc-400 underline-offset-4 hover:underline disabled:opacity-50"
+        className="mt-6 self-center text-sm text-muted-foreground underline-offset-4 hover:underline disabled:opacity-50"
       >
         Show different styles
       </button>

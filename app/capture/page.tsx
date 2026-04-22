@@ -77,8 +77,8 @@ export default function CapturePage() {
   }
 
   return (
-    <main className="relative flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-950/80 px-4 py-3 backdrop-blur">
+    <main className="aurora-bg relative flex min-h-dvh flex-col">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/80 px-4 py-3 backdrop-blur">
         <span className="font-serif text-lg">Tell us your dream</span>
       </header>
 
@@ -86,11 +86,11 @@ export default function CapturePage() {
         <ChatThread turns={turns} pending={pending} />
       </div>
 
-      <div className="sticky bottom-0 z-10 border-t border-zinc-800 bg-zinc-950/90 px-4 pb-6 pt-4 backdrop-blur">
+      <div className="sticky bottom-0 z-10 border-t border-border bg-background/90 px-4 pb-6 pt-4 backdrop-blur">
         {done ? (
           <button
             onClick={() => router.push('/format')}
-            className="w-full rounded-full bg-white px-6 py-4 font-medium text-black"
+            className="aurora-cta w-full rounded-full px-6 py-4 font-semibold tracking-wide"
           >
             Continue &rarr;
           </button>
@@ -101,7 +101,7 @@ export default function CapturePage() {
               value={text}
               onChange={e => setText(e.target.value)}
               placeholder="Type or tap the mic..."
-              className="flex-1 resize-none rounded-2xl bg-zinc-900 px-4 py-3 text-[15px] placeholder:text-zinc-500 focus:outline-none"
+              className="flex-1 resize-none rounded-2xl border border-border bg-card px-4 py-3 text-[15px] text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(text); }
               }}
@@ -110,7 +110,7 @@ export default function CapturePage() {
               <button
                 onClick={() => submit(text)}
                 disabled={pending}
-                className="h-12 rounded-full bg-white px-5 font-medium text-black disabled:opacity-50"
+                className="aurora-cta h-12 rounded-full px-5 font-semibold disabled:opacity-50"
               >
                 Send
               </button>
