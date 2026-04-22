@@ -66,8 +66,13 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       const error = e?.error ?? 'unknown';
       if (error === 'not-allowed' || error === 'permission-denied') {
         toast.error('Microphone access denied. Please allow it in your browser settings.');
+      } else if (error === 'service-not-allowed' || error === 'network') {
+        toast.error('Voice input unavailable — please type your dream instead.');
+        // Destroy the instance so next click creates a fresh one
+        recRef.current = null;
       } else if (error !== 'aborted' && error !== 'no-speech') {
-        toast.error(`Mic error: ${error}`);
+        toast.error('Voice input failed — please type your dream instead.');
+        recRef.current = null;
       }
       setRecording(false);
       onRecordingChangeRef.current?.(false);
