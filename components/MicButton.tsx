@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Mic, Square } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,26 +24,29 @@ interface SpeechRecognitionInstance extends EventTarget {
   onend: (() => void) | null;
 }
 
-export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) {
-  const [supported, setSupported] = useState(true);
-  const [recording, setRecording] = useState(false);
-  const [permGranted, setPermGranted] = useState(false);
+function getSpeechCtor(): SpeechRecognitionCtor | undefined {
+  if (typeof window === 'undefined') return undefined;
+  return (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+}
 
+export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) {
+  const [recording, setRecording] = useState(false);
   const recRef = useRef<SpeechRecognitionInstance | null>(null);
   const bufferRef = useRef<string>('');
-  // Use refs for callbacks so the SpeechRecognition instance doesn't need to be recreated
+  // Stable refs for callbacks so we don't need to recreate the recognition object
   const onTranscriptRef = useRef(onTranscript);
   const onRecordingChangeRef = useRef(onRecordingChange);
   onTranscriptRef.current = onTranscript;
   onRecordingChangeRef.current = onRecordingChange;
 
-  // Create SpeechRecognition instance once on mount
-  useEffect(() => {
-    const Ctor: SpeechRecognitionCtor | undefined =
-      (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+  // Lazily create SpeechRecognition only when user clicks the button
+  const getOrCreateRec = useCallback((): SpeechRecognitionInstance | null => {
+    if (recRef.current) return recRef.current;
+
+    const Ctor = getSpeechCtor();
     if (!Ctor) {
-      setSupported(false);
-      return;
+      toast.error('Speech recognition is not supported in this browser.');
+      return null;
     }
 
     const rec = new Ctor();
@@ -63,7 +66,6 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       const error = e?.error ?? 'unknown';
       if (error === 'not-allowed' || error === 'permission-denied') {
         toast.error('Microphone access denied. Please allow it in your browser settings.');
-        setPermGranted(false);
       } else if (error !== 'aborted' && error !== 'no-speech') {
         toast.error(`Mic error: ${error}`);
       }
@@ -81,42 +83,31 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
     };
 
     recRef.current = rec;
-    return () => { rec.abort(); };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Request microphone permission explicitly
-  const requestPermission = useCallback(async (): Promise<boolean> => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Stop the stream immediately — we only needed the permission grant
-      stream.getTracks().forEach(t => t.stop());
-      setPermGranted(true);
-      return true;
-    } catch {
-      toast.error('Microphone access is required for voice input. Please allow it and try again.');
-      setPermGranted(false);
-      return false;
-    }
+    return rec;
   }, []);
 
   async function start() {
-    if (!recRef.current || disabled) return;
+    if (disabled) return;
 
-    // Always request permission before first use (or if previously denied)
-    if (!permGranted) {
-      const ok = await requestPermission();
-      if (!ok) return;
+    // Explicitly request mic permission first
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());
+    } catch {
+      toast.error('Microphone access is required for voice input. Please allow it and try again.');
+      return;
     }
 
+    const rec = getOrCreateRec();
+    if (!rec) return;
+
     try {
-      // Update lang in case user changed it in settings
-      recRef.current.lang = localStorage.getItem('dream-lang') || 'en-US';
+      rec.lang = localStorage.getItem('dream-lang') || 'en-US';
       bufferRef.current = '';
-      recRef.current.start();
+      rec.start();
       setRecording(true);
       onRecordingChangeRef.current?.(true);
     } catch (err: any) {
-      // If the recognition is already started or permission revoked
       if (err?.message?.includes('already started')) return;
       toast.error('Could not start recording. Please try again.');
     }
@@ -126,7 +117,8 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
     recRef.current?.stop();
   }
 
-  if (!supported) return null;
+  // Hide button entirely if Speech API not available
+  if (!getSpeechCtor()) return null;
 
   return (
     <button

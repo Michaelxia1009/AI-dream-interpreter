@@ -115,7 +115,7 @@ export default function CapturePage() {
                 Send
               </button>
             ) : (
-              <MicButton onTranscript={submit} disabled={pending} />
+              <MicButton onTranscript={t => setText(prev => prev ? `${prev} ${t}` : t)} disabled={pending} />
             )}
           </div>
         )}
