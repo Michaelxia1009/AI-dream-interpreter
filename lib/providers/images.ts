@@ -19,7 +19,17 @@ export async function generateImage(prompt: string): Promise<Buffer> {
       },
     },
   );
-  const url = Array.isArray(output) ? output[0] : (output as unknown as string);
+  // Replicate SDK v1.4+ returns FileOutput objects with a .url() method
+  let url: string;
+  const val = Array.isArray(output) ? output[0] : output;
+  if (val && typeof val === 'object' && 'url' in val && typeof (val as { url: () => string }).url === 'function') {
+    url = (val as { url: () => string }).url();
+  } else if (typeof val === 'string') {
+    url = val;
+  } else {
+    throw new Error(`Unexpected Replicate output format: ${typeof val}`);
+  }
+
   const res = await fetch(url);
   if (!res.ok) throw new Error(`image fetch failed: ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
