@@ -2,7 +2,7 @@ import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import { createHash } from 'node:crypto';
 
-const DAILY_LIMIT = 3;
+const DAILY_LIMIT = 5;
 
 let _ratelimit: Ratelimit | null = null;
 
