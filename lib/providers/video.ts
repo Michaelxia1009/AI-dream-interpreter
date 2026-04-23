@@ -8,10 +8,12 @@ function getClient() {
 
 export async function generateVideo(prompt: string): Promise<Buffer> {
   const output = await getClient().run(
-    'minimax/video-01',
+    'minimax/hailuo-2.3',
     {
       input: {
         prompt,
+        duration: 10,
+        resolution: '768p',
         prompt_optimizer: true,
       },
     },
@@ -24,13 +26,6 @@ export async function generateVideo(prompt: string): Promise<Buffer> {
     url = (output as { url: () => string }).url();
   } else if (typeof output === 'string') {
     url = output;
-  } else if (Array.isArray(output) && output.length > 0) {
-    const first = output[0];
-    if (first && typeof first === 'object' && 'url' in first && typeof first.url === 'function') {
-      url = first.url();
-    } else {
-      url = String(first);
-    }
   } else {
     throw new Error(`Unexpected Replicate output format: ${typeof output}`);
   }
