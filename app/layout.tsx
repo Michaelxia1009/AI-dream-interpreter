@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
 import { ThemeProvider, themeInitScript } from '@/lib/theme';
 import { SettingsMenu } from '@/components/SettingsMenu';
+import { NavMenu } from '@/components/NavMenu';
 import './globals.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -24,7 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <ThemeProvider>
           <DreamProvider>
-            <div className="fixed top-0 right-0 z-50 p-3">
+            <div className="fixed top-0 right-0 z-50 flex items-center gap-1 p-3">
+              <NavMenu />
               <SettingsMenu />
             </div>
             {children}
