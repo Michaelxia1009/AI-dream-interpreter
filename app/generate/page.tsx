@@ -9,10 +9,11 @@ import { toast } from 'sonner';
 
 export default function GeneratePage() {
   const router = useRouter();
-  const { session, update } = useDream();
+  const { session, isHydrated, update } = useDream();
   const started = useRef(false);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (started.current) return;
     started.current = true;
 
@@ -65,7 +66,7 @@ export default function GeneratePage() {
         router.replace('/style');
       }
     })();
-  }, [session, router, update]);
+  }, [session, isHydrated, router, update]);
 
   return <LoadingScene />;
 }

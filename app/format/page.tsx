@@ -8,17 +8,18 @@ import { getFingerprint } from '@/lib/fingerprint';
 
 export default function FormatPage() {
   const router = useRouter();
-  const { session, update } = useDream();
+  const { session, isHydrated, update } = useDream();
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!session.enrichedDream) { router.replace('/capture'); return; }
     (async () => {
       const fp = await getFingerprint();
       const res = await fetch(`/api/quota?fp=${encodeURIComponent(fp)}`);
       if (res.ok) { const d = await res.json(); setRemaining(d.remaining); }
     })();
-  }, [session.enrichedDream, router]);
+  }, [session.enrichedDream, isHydrated, router]);
 
   function pick(format: 'video' | 'carousel') {
     update({ format });

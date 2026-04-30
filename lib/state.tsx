@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  createContext, useContext, useEffect, useState, ReactNode,
+  createContext, useCallback, useContext, useEffect, useState, ReactNode,
 } from 'react';
 
 export interface InterviewTurn { role: 'user' | 'assistant'; content: string }
@@ -48,8 +48,20 @@ const empty: DreamSession = {
   handle: null,
 };
 
+function loadInitialSession(): DreamSession {
+  if (typeof window === 'undefined') return empty;
+  const raw = sessionStorage.getItem(STORAGE_KEY);
+  if (!raw) return empty;
+  try {
+    return { ...empty, ...JSON.parse(raw) };
+  } catch {
+    return empty;
+  }
+}
+
 interface Ctx {
   session: DreamSession;
+  isHydrated: boolean;
   update(partial: Partial<DreamSession>): void;
   reset(): void;
 }
@@ -57,22 +69,27 @@ interface Ctx {
 const DreamCtx = createContext<Ctx | null>(null);
 
 export function DreamProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<DreamSession>(empty);
-
-  useEffect(() => {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw) try { setSession({ ...empty, ...JSON.parse(raw) }); } catch {}
+  const [session, setSession] = useState<DreamSession>(loadInitialSession);
+  const [isHydrated] = useState(() => typeof window !== 'undefined');
+  const update = useCallback((partial: Partial<DreamSession>) => {
+    setSession(s => ({ ...s, ...partial }));
+  }, []);
+  const reset = useCallback(() => {
+    sessionStorage.removeItem(STORAGE_KEY);
+    setSession(empty);
   }, []);
 
   useEffect(() => {
+    if (!isHydrated) return;
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  }, [session]);
+  }, [isHydrated, session]);
 
   return (
     <DreamCtx.Provider value={{
       session,
-      update: p => setSession(s => ({ ...s, ...p })),
-      reset: () => { sessionStorage.removeItem(STORAGE_KEY); setSession(empty); },
+      isHydrated,
+      update,
+      reset,
     }}>{children}</DreamCtx.Provider>
   );
 }

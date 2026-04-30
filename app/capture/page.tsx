@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MicButton } from '@/components/MicButton';
 import { ChatThread } from '@/components/ChatThread';
@@ -14,28 +14,37 @@ const OPENING: InterviewTurn = {
 
 export default function CapturePage() {
   const router = useRouter();
-  const { session, update } = useDream();
-  const [turns, setTurns] = useState<InterviewTurn[]>([OPENING]);
+  const { session, isHydrated, update, reset } = useDream();
+  const initialTurns = session.enrichedDream
+    ? [OPENING]
+    : session.history.length
+      ? session.history
+      : [OPENING];
+  const [turns, setTurns] = useState<InterviewTurn[]>(initialTurns);
   const [text, setText] = useState('');
   const [pending, setPending] = useState(false);
-  const [qCount, setQCount] = useState(1);
+  const [qCount, setQCount] = useState(
+    initialTurns.filter(t => t.role === 'assistant').length || 1,
+  );
   const [done, setDone] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+  const initialized = useRef(false);
 
-  // After hydration, check if interview already completed — redirect forward
+  // On first hydrate, decide between three states:
+  //   1. Completed interview parked in storage (enrichedDream set) → user is
+  //      starting a NEW dream (otherwise they wouldn't be on /capture). Reset
+  //      so they get a clean chat instead of being silently bounced to /format.
+  //   2. Interview in progress (history but no enrichedDream) → restore turns
+  //      so a refresh mid-conversation doesn't lose their work.
+  //   3. Empty session → just show the opener.
   useEffect(() => {
-    if (hydrated) return;
-    setHydrated(true);
+    if (!isHydrated) return;
+    if (initialized.current) return;
+    initialized.current = true;
     if (session.enrichedDream) {
-      // Interview already done — skip to next step
-      router.replace('/format');
+      reset();
       return;
     }
-    if (session.history.length) {
-      setTurns(session.history);
-      setQCount(session.history.filter(t => t.role === 'assistant').length || 1);
-    }
-  }, [session, hydrated, router]);
+  }, [session, isHydrated, reset]);
 
   async function submit(content: string) {
     const clean = content.trim();

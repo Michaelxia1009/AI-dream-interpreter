@@ -9,11 +9,12 @@ import { toast } from 'sonner';
 
 export default function StylePage() {
   const router = useRouter();
-  const { session, update } = useDream();
+  const { session, isHydrated, update } = useDream();
   const [ids, setIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!session.enrichedDream || !session.format) { router.replace('/capture'); return; }
     (async () => {
       setLoading(true);
@@ -39,7 +40,7 @@ export default function StylePage() {
         setLoading(false);
       }
     })();
-  }, [session.enrichedDream, session.format, session.score, router, update]);
+  }, [session.enrichedDream, session.format, session.score, isHydrated, router, update]);
 
   async function shuffle() {
     setLoading(true);
