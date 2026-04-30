@@ -1,6 +1,6 @@
-import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
 import { createHash } from 'node:crypto';
+import { getRedis } from './redis';
 
 const DAILY_LIMIT = 5;
 
@@ -8,9 +8,8 @@ let _ratelimit: Ratelimit | null = null;
 
 function getRatelimit(): Ratelimit {
   if (_ratelimit) return _ratelimit;
-  const redis = Redis.fromEnv();
   _ratelimit = new Ratelimit({
-    redis,
+    redis: getRedis(),
     limiter: Ratelimit.fixedWindow(DAILY_LIMIT, '24 h'),
     prefix: 'dream-rl',
     analytics: false,
@@ -43,7 +42,7 @@ export async function checkAndConsume(
 }
 
 export async function peek(key: string): Promise<RateLimitResult> {
-  const redis = Redis.fromEnv();
+  const redis = getRedis();
   const count = (await redis.get<number>(`dream-rl:${key}`)) ?? 0;
   const ttl = await redis.pttl(`dream-rl:${key}`);
   return {

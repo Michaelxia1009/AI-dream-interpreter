@@ -1,22 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Download, Share2, Sparkles } from 'lucide-react';
+import { Download, Sparkles } from 'lucide-react';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { Carousel } from '@/components/Carousel';
 import { ReportCard } from '@/components/ReportCard';
+import { ShareButton } from '@/components/ShareButton';
+import { PrivacyToggle } from '@/components/PrivacyToggle';
+import { HandleEditor } from '@/components/HandleEditor';
 import { useDream } from '@/lib/state';
 import { muxVideoWithAudio } from '@/lib/mux/clientMux';
 import { toast } from 'sonner';
 
 export default function ResultPage() {
   const router = useRouter();
-  const { session, reset } = useDream();
+  const { session, update, reset } = useDream();
   const [muxedUrl, setMuxedUrl] = useState<string | null>(null);
   const [muxing, setMuxing] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // Mark as hydrated after first client render so we don't redirect during
+    // the brief window where sessionStorage hasn't been read yet.
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
     const gen = session.generation;
     if (!gen || !session.score) { router.replace('/'); return; }
     if (gen.kind === 'video') {
@@ -32,7 +43,14 @@ export default function ResultPage() {
         } finally { setMuxing(false); }
       })();
     }
-  }, [session.generation, session.score, router]);
+  }, [hydrated, session.generation, session.score, router]);
+
+  const dreamId = session.generation?.id ?? '';
+  const moderated = session.score?.moderation && !session.score.moderation.ok;
+  const shareUrl = useMemo(() => {
+    if (!dreamId || typeof window === 'undefined') return '';
+    return `${window.location.origin}/d/${dreamId}`;
+  }, [dreamId]);
 
   if (!session.generation || !session.score) return null;
 
@@ -51,42 +69,26 @@ export default function ResultPage() {
     toast.success('Saved! Ready to share ✨');
   }
 
-  async function share() {
-    const gen = session.generation;
-    if (!gen) return;
-    const url = gen.kind === 'video' ? (muxedUrl ?? gen.videoUrl) : gen.zipUrl;
-    try {
-      if (navigator.share && navigator.canShare?.({ url })) {
-        await navigator.share({
-          title: 'My Dream, visualized ✦',
-          text: 'I turned my dream into a cinematic short. Made with Dreamweaver.',
-          url,
-        });
-      } else {
-        await navigator.clipboard.writeText(url);
-        toast.success('Link copied to clipboard');
-      }
-    } catch {
-      // user cancelled share — no-op
-    }
-  }
-
   function newDream() { reset(); router.push('/'); }
 
+  const canShare = session.isPublic && !moderated;
+
   return (
-    <main className="aurora-bg flex h-dvh flex-col gap-4 px-4 py-6 overflow-hidden">
+    <main className="aurora-bg flex min-h-dvh flex-col gap-3 px-4 py-6">
       {/* Media frame — gradient halo */}
-      <div className="flex-1 min-h-0 relative">
-        <div className="media-halo h-full w-full rounded-3xl overflow-hidden">
-          {session.generation.kind === 'video' ? (
-            muxing ? (
-              <div className="h-full w-full animate-pulse bg-card" />
+      <div className="relative">
+        <div className="media-halo overflow-hidden rounded-3xl">
+          <div className="aspect-[9/16] w-full sm:aspect-video">
+            {session.generation.kind === 'video' ? (
+              muxing ? (
+                <div className="h-full w-full animate-pulse bg-card" />
+              ) : (
+                <VideoPlayer src={muxedUrl ?? session.generation.videoUrl} />
+              )
             ) : (
-              <VideoPlayer src={muxedUrl ?? session.generation.videoUrl} />
-            )
-          ) : (
-            <Carousel urls={session.generation.imageUrls} />
-          )}
+              <Carousel urls={session.generation.imageUrls} />
+            )}
+          </div>
         </div>
         {/* Watermark */}
         <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-background/60 px-2.5 py-1 text-[10px] font-medium tracking-[0.15em] text-foreground/80 backdrop-blur">
@@ -95,11 +97,44 @@ export default function ResultPage() {
         </div>
       </div>
 
-      {/* Report card — promoted to hero */}
+      {/* Privacy + handle row */}
+      <div className="flex flex-wrap items-center gap-2">
+        <PrivacyToggle
+          dreamId={dreamId}
+          isPublic={session.isPublic}
+          moderated={moderated}
+          onChange={next => update({ isPublic: next })}
+        />
+        {session.handle && (
+          <HandleEditor
+            dreamId={dreamId}
+            handle={session.handle}
+            onChange={next => update({ handle: next })}
+            disabled={!session.isPublic}
+          />
+        )}
+      </div>
+
+      {/* Share-link preview */}
+      {canShare && shareUrl && (
+        <div className="flex items-center gap-2 truncate rounded-2xl border border-border/40 bg-card/30 px-3 py-2 text-[12px] text-muted-foreground">
+          <span className="shrink-0">Public link:</span>
+          <a
+            href={shareUrl}
+            target="_blank"
+            rel="noopener"
+            className="truncate text-foreground/85 underline-offset-4 hover:underline"
+          >
+            {shareUrl.replace(/^https?:\/\//, '')}
+          </a>
+        </div>
+      )}
+
+      {/* Report card */}
       <ReportCard score={session.score} />
 
       {/* Actions */}
-      <div className="flex gap-3 shrink-0">
+      <div className="flex gap-3">
         <button
           onClick={download}
           disabled={muxing}
@@ -110,13 +145,14 @@ export default function ResultPage() {
             Save & Share
           </span>
         </button>
-        <button
-          onClick={share}
-          aria-label="Copy share link"
-          className="rounded-full border border-border bg-card p-4 text-muted-foreground transition hover:text-foreground hover:border-ring/60"
-        >
-          <Share2 className="h-5 w-5" />
-        </button>
+        <ShareButton
+          url={canShare ? shareUrl : ''}
+          title="My dream, visualised ✦"
+          text="I turned my dream into a cinematic short. Made with Dreamweaver."
+          iconOnly
+          disabled={!canShare || muxing || !shareUrl}
+          label="Share dream link"
+        />
         <button
           onClick={newDream}
           className="rounded-full border border-border px-5 py-4 text-sm font-medium text-muted-foreground transition hover:text-foreground hover:border-ring/60"

@@ -86,6 +86,11 @@ export default function CapturePage() {
         <ChatThread turns={turns} pending={pending} />
       </div>
 
+      {/* Public-by-default disclosure */}
+      <div className="px-4 pb-1 pt-3 text-center text-[11px] text-muted-foreground/80">
+        🌐 Public on the leaderboard by default — easy to toggle off after.
+      </div>
+
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/90 px-4 pb-6 pt-4 backdrop-blur">
         {done ? (
           <button

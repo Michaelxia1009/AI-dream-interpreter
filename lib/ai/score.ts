@@ -15,6 +15,11 @@ const MetricSchema = z.object({
   oneLiner: z.string().min(1).max(80),
 });
 
+const ModerationSchema = z.object({
+  ok: z.boolean(),
+  flags: z.array(z.string()),
+});
+
 export const ScoreResultSchema = z.object({
   metrics: z.object({
     weirdness: MetricSchema,
@@ -23,6 +28,8 @@ export const ScoreResultSchema = z.object({
     vividness: MetricSchema,
   }),
   matchedStyleIds: z.array(z.string()).length(3),
+  blurb: z.string().min(1).max(80),
+  moderation: ModerationSchema,
 });
 
 // Relaxed schema for generateObject — Anthropic API doesn't support
@@ -40,9 +47,34 @@ const ScoreResultSchemaLLM = z.object({
     vividness: MetricSchemaLLM,
   }),
   matchedStyleIds: z.array(z.string()),
+  blurb: z.string(),
+  moderation: z.object({
+    ok: z.boolean(),
+    flags: z.array(z.string()),
+  }),
 });
 
 export type ScoreResult = z.infer<typeof ScoreResultSchema>;
+
+const EXTRA_INSTRUCTIONS = [
+  '',
+  'ADDITIONAL OUTPUTS:',
+  '- "blurb": a poster-card excerpt of the dream, ≤ 80 characters, evocative not literal.',
+  '  • Never repeat the user\'s words verbatim. Distil the vibe.',
+  '  • Good: "A whale of stained glass surfaces in the church floor."',
+  '  • Bad: "I dreamed about a whale in a church."',
+  '- "moderation": { ok: boolean, flags: string[] }',
+  '  • ok=false if the dream contains: explicit sexual content, graphic violence, real-named slurs, real-person targeted harassment, or self-harm encouragement.',
+  '  • Mere unsettling, surreal, or dark dream content is fine — those are normal dreams.',
+  '  • flags: short tags like ["explicit_sexual", "graphic_violence", "slur"] when ok=false; [] when ok=true.',
+].join('\n');
+
+function clampMetric(m: { score: number; oneLiner: string }): { score: number; oneLiner: string } {
+  return {
+    score: Math.max(1, Math.min(10, Math.round(m.score))),
+    oneLiner: typeof m.oneLiner === 'string' ? m.oneLiner.slice(0, 80) : '',
+  };
+}
 
 export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
   const stylesContext = STYLES.map(s => ({
@@ -54,7 +86,7 @@ export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
 
   const { object } = await generateObject({
     model: gateway(CLAUDE_MODEL),
-    system: SYSTEM_PROMPT,
+    system: SYSTEM_PROMPT + EXTRA_INSTRUCTIONS,
     schema: ScoreResultSchemaLLM,
     prompt: [
       'DREAM:',
@@ -66,21 +98,40 @@ export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
     temperature: 0.4,
   });
 
-  // Clamp scores to 1-10
-  for (const key of Object.keys(object.metrics) as (keyof typeof object.metrics)[]) {
-    object.metrics[key].score = Math.max(1, Math.min(10, object.metrics[key].score));
-  }
+  // Clamp scores to 1-10 and oneLiners to ≤80
+  const metrics = {
+    weirdness: clampMetric(object.metrics.weirdness),
+    imagination: clampMetric(object.metrics.imagination),
+    emotionalIntensity: clampMetric(object.metrics.emotionalIntensity),
+    vividness: clampMetric(object.metrics.vividness),
+  };
 
   // Ensure exactly 3 valid style ids
   const filtered = object.matchedStyleIds.filter(id => validIds.includes(id));
+  let matchedStyleIds: string[];
   if (filtered.length < 3) {
     const fillers = validIds.filter(id => !filtered.includes(id)).slice(0, 3 - filtered.length);
-    object.matchedStyleIds = [...filtered, ...fillers];
+    matchedStyleIds = [...filtered, ...fillers];
   } else {
-    object.matchedStyleIds = filtered.slice(0, 3);
+    matchedStyleIds = filtered.slice(0, 3);
   }
 
-  return object as ScoreResult;
+  // Truncate blurb defensively
+  const blurb = (typeof object.blurb === 'string' ? object.blurb : '').trim().slice(0, 80) ||
+    'A dream worth remembering.';
+
+  // Moderation default-safe: if the model omitted it (shouldn't happen with the relaxed schema),
+  // fall back to ok=true so we don't accidentally hide every dream.
+  const moderation = object.moderation && typeof object.moderation.ok === 'boolean'
+    ? { ok: object.moderation.ok, flags: object.moderation.flags ?? [] }
+    : { ok: true, flags: [] };
+
+  return {
+    metrics,
+    matchedStyleIds,
+    blurb,
+    moderation,
+  };
 }
 
 export async function rerollStyles(

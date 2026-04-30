@@ -25,8 +25,14 @@ export default function LandingPage() {
         >
           Tell us your dream &rarr;
         </Link>
+        <Link
+          href="/leaderboard"
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-4 py-2 text-sm text-muted-foreground backdrop-blur transition hover:text-foreground hover:border-ring/60"
+        >
+          🏆 See this week&apos;s top dreams &rarr;
+        </Link>
         <p className="mt-8 text-xs text-muted-foreground/80">
-          No account needed. 3 dreams a day on the house.
+          No account needed. 5 dreams a day on the house.
         </p>
       </div>
     </main>

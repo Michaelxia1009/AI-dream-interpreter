@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Settings, X, Moon, Sun } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Settings, X, Moon, Sun, Trophy } from 'lucide-react';
 import { useDream } from '@/lib/state';
 import { useTheme, type Theme } from '@/lib/theme';
 
@@ -21,9 +23,13 @@ const THEMES: { id: Theme; label: string; sub: string; icon: typeof Moon }[] = [
 
 export function SettingsMenu() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const { reset } = useDream();
   const { theme, setTheme } = useTheme();
   const [lang, setLang] = useState('en-US');
+
+  // Hide on the public dream-share page so first-time recipients see a clean artifact.
+  if (pathname?.startsWith('/d/')) return null;
 
   function handleLangChange(code: string) {
     setLang(code);
@@ -60,6 +66,23 @@ export function SettingsMenu() {
             </div>
 
             <div className="mt-6 space-y-5">
+              {/* Leaderboard quick-link */}
+              <div>
+                <label className="text-xs uppercase tracking-wide text-muted-foreground">Discover</label>
+                <Link
+                  href="/leaderboard"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 flex items-center gap-3 rounded-xl border border-border px-4 py-3 transition hover:border-ring/60 hover:bg-secondary/50"
+                >
+                  <Trophy className="h-4 w-4 text-foreground" />
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-sm font-medium">Leaderboard</span>
+                    <span className="text-[11px] text-muted-foreground">This week\u2019s top dreams</span>
+                  </div>
+                  <span className="text-muted-foreground">→</span>
+                </Link>
+              </div>
+
               {/* Theme */}
               <div>
                 <label className="text-xs uppercase tracking-wide text-muted-foreground">Theme</label>

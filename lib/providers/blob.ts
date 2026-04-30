@@ -12,16 +12,20 @@ export function toProxyUrl(privateBlobUrl: string): string {
   return `/api/blob?path=${encodeURIComponent(path)}`;
 }
 
+/** Default TTL for generated media — 8 days, matches dream record lifetime. */
+const DEFAULT_CACHE_MAX_AGE_SECONDS = 8 * 24 * 60 * 60;
+
 export async function uploadArtifact(
   pathname: string,
   data: Buffer,
   contentType: string,
+  cacheControlMaxAge: number = DEFAULT_CACHE_MAX_AGE_SECONDS,
 ): Promise<string> {
   const { url } = await put(pathname, data, {
     access: 'private',
     contentType,
     addRandomSuffix: false,
-    cacheControlMaxAge: 24 * 60 * 60,
+    cacheControlMaxAge,
   });
   // Return a proxy URL that the browser can access
   return toProxyUrl(url);

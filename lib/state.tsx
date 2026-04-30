@@ -6,6 +6,7 @@ import {
 
 export interface InterviewTurn { role: 'user' | 'assistant'; content: string }
 export interface Metric { score: number; oneLiner: string }
+export interface Moderation { ok: boolean; flags: string[] }
 export interface ScoreResult {
   metrics: {
     weirdness: Metric;
@@ -14,6 +15,8 @@ export interface ScoreResult {
     vividness: Metric;
   };
   matchedStyleIds: string[];
+  blurb: string;
+  moderation: Moderation;
 }
 
 export interface DreamSession {
@@ -23,6 +26,10 @@ export interface DreamSession {
   format: 'video' | 'carousel' | null;
   styleId: string | null;
   generation: GenerationResult | null;
+  /** Whether the dream is currently published to leaderboard / share URL. */
+  isPublic: boolean;
+  /** The handle the result page should display ("Dreamer #A4F2" or custom). */
+  handle: string | null;
 }
 
 export type GenerationResult =
@@ -37,6 +44,8 @@ const empty: DreamSession = {
   format: null,
   styleId: null,
   generation: null,
+  isPublic: true,
+  handle: null,
 };
 
 interface Ctx {
@@ -52,7 +61,7 @@ export function DreamProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (raw) try { setSession(JSON.parse(raw)); } catch {}
+    if (raw) try { setSession({ ...empty, ...JSON.parse(raw) }); } catch {}
   }, []);
 
   useEffect(() => {
