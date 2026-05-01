@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Cormorant_Garamond, Inter, Newsreader, Urbanist } from 'next/font/google';
+import {
+  Cormorant_Garamond,
+  Fraunces,
+  Inter,
+  Libre_Baskerville,
+  Newsreader,
+  Playfair_Display,
+  Urbanist,
+} from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
@@ -35,6 +43,25 @@ const wordmark = Cormorant_Garamond({
   variable: '--font-cormorant',
   weight: ['400', '500', '600'],
 });
+const titleFraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-title-fraunces',
+  weight: 'variable',
+  style: ['normal', 'italic'],
+  axes: ['SOFT', 'WONK', 'opsz'],
+});
+const titlePlayfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-title-playfair',
+  weight: 'variable',
+  style: ['normal', 'italic'],
+});
+const titleLibre = Libre_Baskerville({
+  subsets: ['latin'],
+  variable: '--font-title-libre',
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata: Metadata = {
   title: 'Dream Interpreter',
@@ -43,7 +70,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable} ${serif.variable} ${serifItalic.variable} ${wordmark.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${sans.variable} ${display.variable} ${serif.variable} ${serifItalic.variable} ${wordmark.variable} ${titleFraunces.variable} ${titlePlayfair.variable} ${titleLibre.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <Script id="dream-theme-init" strategy="beforeInteractive">
           {themeInitScript}

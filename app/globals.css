@@ -326,6 +326,18 @@
     font-family: var(--font-cormorant), serif;
   }
 
+  .font-title-fraunces {
+    font-family: var(--font-title-fraunces), serif;
+  }
+
+  .font-title-playfair {
+    font-family: var(--font-title-playfair), serif;
+  }
+
+  .font-title-libre {
+    font-family: var(--font-title-libre), serif;
+  }
+
   .font-serif-italic {
     font-family: var(--font-serif-italic), serif;
     font-style: italic;
