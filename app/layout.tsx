@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Cormorant_Garamond, Fraunces, Inter, Instrument_Serif } from 'next/font/google';
+import { Cormorant_Garamond, Inter, Newsreader } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
@@ -10,15 +10,19 @@ import { FloatingThemeToggle } from '@/components/ThemeToggle';
 import './globals.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const display = Fraunces({
+const serif = Newsreader({
   subsets: ['latin'],
   variable: '--font-display',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: 'variable',
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
 });
-const serifItalic = Instrument_Serif({
-  weight: '400',
+const serifItalic = Newsreader({
   subsets: ['latin'],
   variable: '--font-serif-italic',
+  weight: 'variable',
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
 });
 const wordmark = Cormorant_Garamond({
   subsets: ['latin'],
@@ -33,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable} ${serifItalic.variable} ${wordmark.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${serif.variable} ${serifItalic.variable} ${wordmark.variable}`} suppressHydrationWarning>
       <head>
         <Script id="dream-theme-init" strategy="beforeInteractive">
           {themeInitScript}

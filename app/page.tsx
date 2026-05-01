@@ -35,9 +35,9 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 pb-12 pt-24 text-center md:pb-14">
-          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-card/35 px-5 py-2.5 backdrop-blur-md">
+          <div className="hero-badge mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-card/35 px-5 py-2.5 backdrop-blur-md transition-all">
             <Sparkles className="h-4 w-4 text-[var(--primary-glow)]" />
-            <span className="font-serif-italic text-sm text-white/90 italic md:text-base">
+            <span className="font-serif text-sm text-white/90 md:text-base">
               Your subconscious, illustrated
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function LandingPage() {
                 <Moon className="h-5 w-5 -rotate-12 text-[var(--primary-glow)]" />
                 <span className="wordmark-font text-2xl font-medium">Dreamweaver</span>
               </Link>
-              <p className="font-serif-italic max-w-sm text-base italic leading-relaxed text-muted-foreground">
+              <p className="font-serif max-w-sm text-base leading-relaxed text-muted-foreground">
                 A dreamy AI journal that captures, illustrates, and decodes your
                 dreams.
               </p>

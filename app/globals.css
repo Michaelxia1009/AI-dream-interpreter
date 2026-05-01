@@ -196,7 +196,7 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-serif;
   }
 }
 
@@ -259,8 +259,25 @@
   }
 
   .theme-daylight .dreamtok-landing .dreamtok-hero-image {
-    opacity: 0.22;
-    filter: saturate(0.7) brightness(1.25);
+    opacity: 0 !important;
+  }
+
+  /* Daylight landing: badge becomes plain text — no grey pill */
+  .theme-daylight .dreamtok-landing .hero-badge {
+    border-color: transparent;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .theme-daylight .dreamtok-landing .hero-badge svg {
+    display: none;
+  }
+
+  .theme-daylight .dreamtok-landing .hero-badge span {
+    color: var(--foreground) !important;
   }
 
   /* Multi-stop hero fade — smoother than 3-stop Tailwind gradient */
@@ -393,6 +410,12 @@
       radial-gradient(45% 35% at 10% 85%, rgba(253, 230, 138, 0.12) 0%, transparent 60%);
   }
 
+  /* Daylight: plain cream background, no aurora radials */
+  .theme-daylight .aurora-bg {
+    background-color: var(--background);
+    background-image: none;
+  }
+
   /* Report card gradient background */
   .report-card-surface {
     background-image:
@@ -401,6 +424,30 @@
     background-blend-mode: normal, overlay;
     border: 1px solid var(--border);
   }
+}
+
+/* Tailwind utilities are emitted after component rules; keep these daylight
+   overrides unlayered so the plain daylight treatment wins reliably. */
+.theme-daylight .dreamtok-landing .hero-badge {
+  border-color: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.theme-daylight .dreamtok-landing .hero-badge svg {
+  display: none !important;
+}
+
+.theme-daylight .dreamtok-landing .hero-badge span {
+  color: var(--foreground) !important;
+}
+
+.theme-daylight .aurora-bg {
+  background-color: var(--background) !important;
+  background-image: none !important;
 }
 
 @keyframes breathe {
