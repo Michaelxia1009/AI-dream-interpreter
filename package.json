@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "bench:video": "node scripts/bench-video.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

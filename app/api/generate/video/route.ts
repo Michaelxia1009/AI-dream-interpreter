@@ -6,7 +6,12 @@ import { buildRateLimitKey, checkAndConsume } from '@/lib/ratelimit';
 import { getStyleById } from '@/lib/styles';
 import { buildVideoScenePrompt } from '@/lib/ai/scenePrompt';
 import { buildNarrationScript } from '@/lib/ai/narration';
-import { generateVideo } from '@/lib/providers/video';
+import {
+  DEFAULT_ASPECT_RATIO,
+  DEFAULT_DURATION_SECONDS,
+  DEFAULT_RESOLUTION,
+  selectVideoProvider,
+} from '@/lib/providers/video';
 import { synthesizeNarration } from '@/lib/providers/tts';
 import { uploadArtifact } from '@/lib/providers/blob';
 import { persistDream } from '@/lib/dreams/repo';
@@ -48,9 +53,39 @@ function fpHashOf(fingerprint: string): string {
   return createHash('sha256').update(fingerprint).digest('hex').slice(0, 16);
 }
 
+type TimingKey =
+  | 'scenePromptMs'
+  | 'narrationMs'
+  | 'videoMs'
+  | 'ttsMs'
+  | 'muxMs'
+  | 'uploadMs'
+  | 'totalMs';
+
+type Timings = Partial<Record<TimingKey, number>>;
+
+async function timeStage<T>(
+  timings: Timings,
+  key: TimingKey,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const start = performance.now();
+  const label = `video:${key}:${Math.random().toString(36).slice(2)}`;
+  console.time(label);
+  try {
+    return await fn();
+  } finally {
+    timings[key] = Math.round(performance.now() - start);
+    console.timeEnd(label);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: 'bad body' }, { status: 400 });
+  const debug = req.nextUrl.searchParams.get('debug') === '1';
+  const timings: Timings = {};
+  const totalStart = performance.now();
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? req.headers.get('x-real-ip') ?? '0.0.0.0';
@@ -67,21 +102,32 @@ export async function POST(req: NextRequest) {
   const style = getStyleById(parsed.data.styleId);
   if (!style) return NextResponse.json({ error: 'unknown style' }, { status: 400 });
 
+  const provider = selectVideoProvider({
+    requestedId: req.nextUrl.searchParams.get('provider'),
+    allowRequestOverride: debug,
+    durationSeconds: DEFAULT_DURATION_SECONDS,
+  });
+
   try {
     const [scenePrompt, narration] = await Promise.all([
-      buildVideoScenePrompt(parsed.data.enrichedDream, style),
-      buildNarrationScript(parsed.data.enrichedDream, style),
+      timeStage(timings, 'scenePromptMs', () => buildVideoScenePrompt(parsed.data.enrichedDream, style)),
+      timeStage(timings, 'narrationMs', () => buildNarrationScript(parsed.data.enrichedDream, style)),
     ]);
     const [videoBuf, audioBuf] = await Promise.all([
-      generateVideo(scenePrompt),
-      synthesizeNarration(narration, style.narratorVoiceId),
+      timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, {
+        durationSeconds: DEFAULT_DURATION_SECONDS,
+        resolution: DEFAULT_RESOLUTION,
+        aspectRatio: DEFAULT_ASPECT_RATIO,
+      })),
+      timeStage(timings, 'ttsMs', () => synthesizeNarration(narration, style.narratorVoiceId)),
     ]);
+    timings.muxMs = 0;
 
     const id = uuid();
-    const [videoUrl, audioUrl] = await Promise.all([
+    const [videoUrl, audioUrl] = await timeStage(timings, 'uploadMs', () => Promise.all([
       uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4'),
       uploadArtifact(`videos/${id}/audio.mp3`, audioBuf, 'audio/mpeg'),
-    ]);
+    ]));
 
     // Persist the dream (best-effort — don't block the response on persistence errors)
     let isPublic = parsed.data.isPublic ?? true;
@@ -132,6 +178,7 @@ export async function POST(req: NextRequest) {
         console.error('persistDream failed (non-fatal)', persistErr);
       }
     }
+    timings.totalMs = Math.round(performance.now() - totalStart);
 
     return NextResponse.json({
       id,
@@ -142,10 +189,27 @@ export async function POST(req: NextRequest) {
       remaining: rl.remaining,
       isPublic,
       handle,
+      ...(debug ? {
+        _provider: {
+          id: provider.id,
+          modelLabel: provider.modelLabel,
+        },
+        _timings: timings,
+      } : {}),
     });
   } catch (err) {
+    timings.totalMs = Math.round(performance.now() - totalStart);
     console.error('video gen failed', err);
-    return NextResponse.json({ error: 'generation_failed' }, { status: 500 });
+    return NextResponse.json({
+      error: 'generation_failed',
+      ...(debug ? {
+        _provider: {
+          id: provider.id,
+          modelLabel: provider.modelLabel,
+        },
+        _timings: timings,
+      } : {}),
+    }, { status: 500 });
   }
 }
 
