@@ -169,6 +169,7 @@
   --dw-aurora-from: #D4572A;
   --dw-aurora-mid: #E8A05C;
   --dw-aurora-to: #9CAF88;
+  --primary-glow: #D4572A;
   --dw-ember: #D4572A;
   --dw-glow: rgba(212, 87, 42, 0.25);
   --dw-glow-soft: rgba(212, 87, 42, 0.12);
@@ -248,13 +249,13 @@
     --ring: #D4572A;
     --primary-glow: #D4572A;
     --dw-aurora-from: #D4572A;
-    --dw-aurora-mid: #E8A05C;
-    --dw-aurora-to: #9CAF88;
+    --dw-aurora-mid: #8FD8F5;
+    --dw-aurora-to: #D9A9D2;
     --dw-glow: rgba(212, 87, 42, 0.25);
     --dw-glow-soft: rgba(212, 87, 42, 0.12);
     --dw-surface-glass: rgba(255, 251, 243, 0.75);
-    --dw-gradient: linear-gradient(135deg, #D4572A 0%, #E8A05C 50%, #9CAF88 100%);
-    --dw-gradient-warm: linear-gradient(135deg, #D4572A 0%, #E8A05C 100%);
+    --dw-gradient: linear-gradient(120deg, #D4572A 0%, #8FD8F5 52%, #D9A9D2 100%);
+    --dw-gradient-warm: linear-gradient(120deg, #D4572A 0%, #8FD8F5 52%, #D9A9D2 100%);
   }
 
   .theme-daylight .dreamtok-landing .dreamtok-hero-image {
@@ -277,6 +278,10 @@
   .font-display {
     font-family: var(--font-display), serif;
     font-optical-sizing: auto;
+  }
+
+  .wordmark-font {
+    font-family: var(--font-cormorant), serif;
   }
 
   .font-serif-italic {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Fraunces, Inter, Instrument_Serif } from 'next/font/google';
+import { Cormorant_Garamond, Fraunces, Inter, Instrument_Serif } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
@@ -20,6 +20,11 @@ const serifItalic = Instrument_Serif({
   subsets: ['latin'],
   variable: '--font-serif-italic',
 });
+const wordmark = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-cormorant',
+  weight: ['400', '500', '600'],
+});
 
 export const metadata: Metadata = {
   title: 'Dream Interpreter',
@@ -28,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${display.variable} ${serifItalic.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${display.variable} ${serifItalic.variable} ${wordmark.variable}`} suppressHydrationWarning>
       <head>
         <Script id="dream-theme-init" strategy="beforeInteractive">
           {themeInitScript}

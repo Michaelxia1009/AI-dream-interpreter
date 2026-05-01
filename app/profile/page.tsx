@@ -167,7 +167,7 @@ export default function ProfilePage() {
     return (
       <main className="aurora-bg grid min-h-dvh place-items-center px-6 text-center">
         <div>
-          <h1 className="font-serif text-4xl">Profile unavailable</h1>
+          <h1 className="font-sans text-4xl font-semibold">Profile unavailable</h1>
           <Link href="/capture" className="aurora-cta mt-5 inline-flex rounded-full px-5 py-3 text-sm font-semibold">
             Start journaling
           </Link>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
     <main className="aurora-bg min-h-dvh px-4 py-12 sm:px-6">
       <div className="mx-auto max-w-5xl space-y-14">
         <section>
-          <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-6xl">My profile</h1>
+          <h1 className="font-sans text-5xl font-semibold leading-tight sm:text-6xl">My profile</h1>
           <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -362,7 +362,7 @@ export default function ProfilePage() {
           <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
             {profile.account.claimed ? (
               <>
-                <h3 className="font-serif text-2xl tracking-tight">Profile claimed</h3>
+                <h3 className="font-sans text-2xl font-semibold">Profile claimed</h3>
                 <p className="mt-3 text-sm text-muted-foreground">
                   This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
                 </p>

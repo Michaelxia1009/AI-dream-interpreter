@@ -222,7 +222,7 @@ export default function JournalPage() {
       <div className="mx-auto max-w-6xl">
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">Your journal</h1>
+            <h1 className="font-sans text-4xl font-semibold sm:text-5xl">Your journal</h1>
             <p className="mt-2 text-lg italic text-muted-foreground">
               {dreams.length} dream{dreams.length === 1 ? '' : 's'} remembered
             </p>

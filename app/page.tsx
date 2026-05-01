@@ -85,7 +85,7 @@ export default function LandingPage() {
             <div className="md:col-span-2">
               <Link href="/" className="mb-4 flex items-center gap-2">
                 <Moon className="h-5 w-5 -rotate-12 text-[var(--primary-glow)]" />
-                <span className="font-display text-lg font-light">Dreamweaver</span>
+                <span className="wordmark-font text-2xl font-medium">Dreamweaver</span>
               </Link>
               <p className="font-serif-italic max-w-sm text-base italic leading-relaxed text-muted-foreground">
                 A dreamy AI journal that captures, illustrates, and decodes your
@@ -97,7 +97,7 @@ export default function LandingPage() {
               <h2 className="mb-4 font-display text-xs font-medium uppercase text-foreground/80">
                 Product
               </h2>
-              <ul className="space-y-2.5 font-display text-sm font-light text-muted-foreground">
+              <ul className="space-y-2.5 font-sans text-sm text-muted-foreground">
                 {productLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -112,7 +112,7 @@ export default function LandingPage() {
               <h2 className="mb-4 font-display text-xs font-medium uppercase text-foreground/80">
                 Company
               </h2>
-              <ul className="space-y-2.5 font-display text-sm font-light text-muted-foreground">
+              <ul className="space-y-2.5 font-sans text-sm text-muted-foreground">
                 {companyLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -125,7 +125,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex flex-col items-start justify-between gap-4 border-t border-border/30 pt-8 text-sm text-muted-foreground sm:flex-row">
-            <p className="font-display font-light">© 2026 Dreamweaver. All dreams reserved.</p>
+            <p className="font-sans">© 2026 Dreamweaver. All dreams reserved.</p>
             <p className="font-serif-italic italic text-muted-foreground/60">Catch them before they fade.</p>
           </div>
         </div>

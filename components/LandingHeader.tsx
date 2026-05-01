@@ -42,7 +42,7 @@ export function LandingHeader() {
           aria-label="Dreamweaver home"
         >
           <Moon className="h-6 w-6 -rotate-12 text-[var(--primary-glow)]" />
-          <span className="hidden font-display text-2xl font-light text-foreground sm:inline sm:text-[1.7rem] xl:text-3xl">
+          <span className="wordmark-font hidden text-3xl font-medium text-foreground sm:inline sm:text-[2.1rem] xl:text-[2.35rem]">
             Dreamweaver
           </span>
         </Link>
