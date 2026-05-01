@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu, Moon, X } from 'lucide-react';
+import { BookOpenText, Menu, Moon, Plus, Trophy, UserRound, UsersRound, X } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const LINKS = [
-  { href: '/journal', label: 'Journal' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/circles', label: 'Circles' },
-  { href: '/profile', label: 'Profile' },
+  { href: '/journal', label: 'Journal', icon: BookOpenText },
+  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+  { href: '/circles', label: 'Circles', icon: UsersRound },
+  { href: '/profile', label: 'Profile', icon: UserRound },
 ];
 
 export function LandingHeader() {
@@ -47,22 +48,30 @@ export function LandingHeader() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {LINKS.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-base font-semibold text-foreground/80 transition hover:text-foreground lg:text-lg"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map(link => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="inline-flex items-center gap-2 text-base font-semibold text-foreground/80 transition hover:text-foreground lg:text-lg"
+              >
+                <Icon className="h-4 w-4 text-foreground/60" />
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <ThemeToggle compact />
+          </div>
           <Link
             href="/capture"
             className="aurora-cta inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-6 sm:py-3 sm:text-base"
           >
+            <Plus className="mr-1 h-4 w-4" />
             Start journaling
           </Link>
 
@@ -82,17 +91,21 @@ export function LandingHeader() {
         <div className="md:hidden">
           <div className="absolute inset-x-0 top-full mx-3 mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/90 backdrop-blur-xl">
             <ul className="divide-y divide-border/40">
-              {LINKS.map(link => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="block px-5 py-4 text-base font-medium text-foreground/90 transition hover:bg-secondary/40"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {LINKS.map(link => {
+                const Icon = link.icon;
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 px-5 py-4 text-base font-medium text-foreground/90 transition hover:bg-secondary/40"
+                    >
+                      <Icon className="h-4 w-4 text-foreground/60" />
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

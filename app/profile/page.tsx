@@ -2,10 +2,10 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, Loader2, Lock, Sparkles, SunMoon, Trophy, UserRound } from 'lucide-react';
+import { CalendarDays, Loader2, Lock, Mail, Palette, Sparkles, Trophy, UserRound } from 'lucide-react';
 import { getFingerprint } from '@/lib/fingerprint';
-import { useTheme } from '@/lib/theme';
 import { StreakBadge } from '@/components/StreakBadge';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { MoodSpectrum, type MoodSummary } from '@/components/patterns/MoodSpectrum';
 import { SymbolCloud, type SymbolHit } from '@/components/patterns/SymbolCloud';
 import type { StreakInfo } from '@/lib/dreams/streak';
@@ -92,7 +92,6 @@ function UsageCard({ label, used, cap }: { label: string; used: number; cap: num
 }
 
 export default function ProfilePage() {
-  const { theme, setTheme } = useTheme();
   const [fingerprint, setFingerprint] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -180,53 +179,69 @@ export default function ProfilePage() {
   const used = Math.max(0, profile.usage.limit - profile.usage.remaining);
 
   return (
-    <main className="aurora-bg min-h-dvh px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-5xl space-y-10">
-        <header className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="surface-glass rounded-2xl p-6">
-            <div className="flex items-start justify-between gap-4">
+    <main className="aurora-bg min-h-dvh px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-5xl space-y-14">
+        <section>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Your profile</p>
+          <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Your profile</p>
-                <h1 className="mt-2 font-serif text-5xl leading-tight tracking-tight">
-                  {profile.account.displayName || profile.handle}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <div className="grid h-12 w-12 place-items-center rounded-full bg-secondary/80">
+                    <UserRound className="h-6 w-6 text-foreground/80" />
+                  </div>
+                  <div>
+                    <h1 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+                      {profile.account.displayName || profile.handle}
+                    </h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Dreamer #{profile.dreamerCode}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl bg-secondary/50 p-4">
+                    <p className="text-2xl font-semibold">{profile.totalDreams}</p>
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Dreams</p>
+                  </div>
+                  <div className="rounded-xl bg-secondary/50 p-4">
+                    <p className="text-2xl font-semibold">{profile.patternsUnlocked ? 'On' : 'Soon'}</p>
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Patterns</p>
+                  </div>
+                  <div className="rounded-xl bg-secondary/50 p-4">
+                    <p className="text-2xl font-semibold">{profile.publicDreams}</p>
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Public</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-2 text-sm text-muted-foreground">
+                  <p className="inline-flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" />
+                    First recorded: {formatDate(profile.firstDreamAt)}
+                  </p>
+                  <p className="block sm:inline-flex sm:items-center sm:gap-2">
+                    <Sparkles className="mr-2 inline h-4 w-4" />
+                    Latest dream: {formatDate(profile.lastDreamAt)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="min-w-0 lg:w-[380px]">
+                <h2 className="mb-3 font-serif text-2xl tracking-tight">Your streak</h2>
+                <StreakBadge streak={profile.streak} variant="full" />
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Platform badge: Dreamer #{profile.dreamerCode}
+                  {profile.streak.totalDreams} dream{profile.streak.totalDreams === 1 ? '' : 's'} captured in total.
                 </p>
               </div>
-              <div className="grid h-12 w-12 place-items-center rounded-full bg-secondary/80">
-                <UserRound className="h-6 w-6 text-foreground/80" />
-              </div>
             </div>
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-secondary/50 p-3">
-                <p className="text-2xl font-semibold">{profile.totalDreams}</p>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Dreams</p>
-              </div>
-              <div className="rounded-xl bg-secondary/50 p-3">
-                <p className="text-2xl font-semibold">{profile.patternsUnlocked ? 'On' : 'Soon'}</p>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Patterns</p>
-              </div>
-              <div className="rounded-xl bg-secondary/50 p-3">
-                <p className="text-2xl font-semibold">{profile.publicDreams}</p>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Public</p>
-              </div>
-            </div>
-            <div className="mt-5 space-y-2 text-sm text-muted-foreground">
-              <p className="inline-flex items-center gap-2">
-                <CalendarDays className="h-4 w-4" />
-                First recorded: {formatDate(profile.firstDreamAt)}
-              </p>
-              <p className="inline-flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                Latest dream: {formatDate(profile.lastDreamAt)}
-              </p>
-            </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="rounded-2xl border border-ring/40 bg-card/50 p-6 shadow-[0_0_50px_rgba(125,92,255,0.14)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Pattern summary</p>
-            <h2 className="mt-2 font-serif text-3xl tracking-tight">
+        <section>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Pattern summary</p>
+          <div className="mt-4 rounded-2xl border border-ring/40 bg-card/50 p-6 shadow-[0_0_50px_rgba(125,92,255,0.14)] backdrop-blur sm:p-8">
+            <h2 className="font-serif text-3xl tracking-tight">
               {profile.patternsUnlocked ? 'Your dream pattern is active' : 'Patterns unlock after 3 dreams'}
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-foreground/90">{profile.patternSummary}</p>
@@ -240,103 +255,49 @@ export default function ProfilePage() {
             >
               Open journal patterns
             </Link>
-          </section>
-        </header>
 
-        <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="space-y-5">
-            <div>
-              <h2 className="mb-3 font-serif text-2xl tracking-tight">Your streak</h2>
-              <StreakBadge streak={profile.streak} variant="full" />
-              <p className="mt-3 text-xs text-muted-foreground">
-                {profile.streak.totalDreams} dream{profile.streak.totalDreams === 1 ? '' : 's'} captured in total.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h2 className="font-serif text-2xl tracking-tight">Appearance</h2>
-              <div className="surface-glass flex items-center justify-between gap-4 rounded-2xl p-4">
-                <div>
-                  <div className="text-sm font-medium">Sleep / Awake</div>
-                  <p className="text-xs italic text-muted-foreground">
-                    Dark for dream-time. Light for daylight reflection.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTheme(theme === 'nightshade' ? 'daylight' : 'nightshade')}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/40 px-3 py-2 text-xs text-muted-foreground transition hover:text-foreground"
-                >
-                  <SunMoon className="h-4 w-4" />
-                  {theme === 'nightshade' ? 'Sleep' : 'Awake'}
-                </button>
+            {profile.patternsUnlocked && (
+              <div className="mt-6 grid gap-5 lg:grid-cols-2">
+                <MoodSpectrum mood={profile.patterns.mood} />
+                <SymbolCloud symbols={profile.patterns.symbols} />
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-5">
-            <section className="space-y-3">
-              <h2 className="font-serif text-2xl tracking-tight">Usage</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <UsageCard label="Dream generations" used={used} cap={profile.usage.limit} />
-                <div className="surface-glass rounded-2xl p-4">
-                  <div className="text-sm">Remaining today</div>
-                  <div className="mt-2 font-serif text-3xl">{profile.usage.remaining}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Resets around {formatReset(profile.usage.resetAt)}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            <section className="surface-glass rounded-2xl p-5">
-              {profile.account.claimed ? (
-                <>
-                  <h2 className="font-serif text-2xl tracking-tight">Profile claimed</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2 className="font-serif text-2xl tracking-tight">Save your dreams forever</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    You are journaling anonymously. Add an email to mark this device profile as claimed.
-                  </p>
-                  <form onSubmit={claimAccount} className="mt-4 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                    <input
-                      value={displayName}
-                      onChange={e => setDisplayName(e.target.value)}
-                      placeholder="Display name"
-                      className="h-11 rounded-xl border border-border/50 bg-card/50 px-3 text-sm outline-none focus:border-ring/70"
-                    />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="h-11 rounded-xl border border-border/50 bg-card/50 px-3 text-sm outline-none focus:border-ring/70"
-                    />
-                    <button
-                      type="submit"
-                      disabled={claiming}
-                      className="aurora-cta inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold disabled:opacity-50"
-                    >
-                      {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Claim'}
-                    </button>
-                  </form>
-                </>
-              )}
-            </section>
+            )}
           </div>
         </section>
 
-        {profile.patternsUnlocked && (
-          <section className="grid gap-5 lg:grid-cols-2">
-            <MoodSpectrum mood={profile.patterns.mood} />
-            <SymbolCloud symbols={profile.patterns.symbols} />
-          </section>
-        )}
+        <section>
+          <h2 className="font-serif text-3xl tracking-tight">Usage</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <UsageCard label="Dream generations" used={used} cap={profile.usage.limit} />
+            <div className="surface-glass rounded-2xl p-4">
+              <div className="text-sm">Remaining today</div>
+              <div className="mt-2 font-serif text-3xl">{profile.usage.remaining}</div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Resets around {formatReset(profile.usage.resetAt)}
+              </p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            During preview, free-plan art and video caps are waived on the server.
+            After preview ends, daily generation limits reset automatically.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-serif text-3xl tracking-tight">Appearance</h2>
+          <div className="mt-4 surface-glass flex items-center justify-between gap-4 rounded-2xl p-5 sm:p-6">
+            <div className="flex items-start gap-3">
+              <Palette className="mt-1 h-5 w-5 text-[var(--primary-glow)]" />
+              <div>
+                <div className="text-lg font-medium">Sleep / Awake</div>
+                <p className="text-sm italic text-muted-foreground">
+                  Dark for dream-time. Light for daylight reflection.
+                </p>
+              </div>
+            </div>
+            <ThemeToggle />
+          </div>
+        </section>
 
         <section>
           <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -396,6 +357,51 @@ export default function ProfilePage() {
                 </article>
               ))}
             </div>
+          )}
+        </section>
+
+        <section className="surface-glass rounded-2xl p-6 sm:p-8">
+          {profile.account.claimed ? (
+            <>
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Save your dreams forever</p>
+              <h2 className="mt-2 font-serif text-3xl tracking-tight">Profile claimed</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Save your dreams forever</p>
+              <h2 className="mt-2 font-serif text-3xl tracking-tight">Claim this dream archive</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                You are journaling anonymously. Add an email to mark this device profile as claimed.
+              </p>
+              <form onSubmit={claimAccount} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+                <input
+                  value={displayName}
+                  onChange={e => setDisplayName(e.target.value)}
+                  placeholder="Display name"
+                  className="h-12 rounded-xl border border-border/50 bg-card/50 px-3 text-sm outline-none focus:border-ring/70"
+                />
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-9 pr-3 text-sm outline-none focus:border-ring/70"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={claiming}
+                  className="aurora-cta inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold disabled:opacity-50"
+                >
+                  {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Claim'}
+                </button>
+              </form>
+            </>
           )}
         </section>
       </div>

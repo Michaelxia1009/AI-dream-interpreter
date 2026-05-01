@@ -5,8 +5,8 @@ import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
 import { ThemeProvider, themeInitScript } from '@/lib/theme';
-import { SettingsMenu } from '@/components/SettingsMenu';
 import { NavMenu } from '@/components/NavMenu';
+import { FloatingThemeToggle } from '@/components/ThemeToggle';
 import './globals.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <DreamProvider>
             <div className="fixed top-0 right-0 z-50 flex items-center gap-1 p-3">
               <NavMenu />
-              <SettingsMenu />
+              <FloatingThemeToggle />
             </div>
             {children}
             <Toaster position="top-center" />
