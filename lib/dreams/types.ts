@@ -53,7 +53,7 @@ export interface DreamRecord {
   metrics: PersistedMetrics;
   generation: PersistedGeneration;
   fpHash: string;                // 16-char sha256 of the raw fingerprint
-  handle: string;                // either user-set or "Dreamer #A4F2"
+  handle: string;                // either user-set or "Dreamer #0063"
   isPublic: boolean;
   moderation: ModerationResult;
   blurb: string;                 // ≤ 80 chars — LLM-generated card excerpt, never the raw transcript

@@ -11,11 +11,11 @@ const HANDLE_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 /**
  * Deterministic auto-handle from a fingerprint hash.
- * 16-char hex → "Dreamer #" + first 4 uppercase hex chars, e.g. "Dreamer #A4F2".
+ * 16-char hex → stable numeric badge, e.g. "Dreamer #0063".
  */
 export function autoHandleFromFpHash(fpHash: string): string {
-  const tail = fpHash.slice(0, 4).toUpperCase();
-  return `Dreamer #${tail}`;
+  const n = parseInt(fpHash.slice(0, 8), 16) % 10_000;
+  return `Dreamer #${String(n).padStart(4, '0')}`;
 }
 
 /**

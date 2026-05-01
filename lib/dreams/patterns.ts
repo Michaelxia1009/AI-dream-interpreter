@@ -80,7 +80,7 @@ export function aggregatePatterns(
   dreams: DreamRecord[],
   opts: { windowDays?: number; nowMs?: number } = {},
 ): PatternsAggregation {
-  const windowDays = Math.max(1, Math.min(60, opts.windowDays ?? 30));
+  const windowDays = Math.max(1, Math.min(90, opts.windowDays ?? 30));
   const nowMs = opts.nowMs ?? Date.now();
   const windowEndMs = nowMs;
   const windowStartMs = nowMs - windowDays * UTC_DAY_MS;

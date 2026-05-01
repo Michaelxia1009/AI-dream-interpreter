@@ -1,4 +1,5 @@
 import { getRedis } from '@/lib/redis';
+import { getDream } from './repo';
 
 /**
  * Per-user dream index — a Redis sorted set of dream ids scored by
@@ -67,8 +68,8 @@ export async function getUserDreamIds(
   const redis = getRedis();
   const key = userIndexKey(fpHash);
 
-  const min = opts.sinceMs ?? Number.NEGATIVE_INFINITY;
-  const max = opts.untilMs ?? Number.POSITIVE_INFINITY;
+  const min = opts.sinceMs ?? '-inf';
+  const max = opts.untilMs ?? '+inf';
   const limit = opts.limit ?? 200;
 
   // ZRANGE BYSCORE (REV) — Upstash exposes this as zrange with options.
@@ -81,4 +82,39 @@ export async function getUserDreamIds(
     count: limit,
   }) as string[];
   return ids ?? [];
+}
+
+/**
+ * Light migration helper for users who generated dreams before the user index
+ * existed. Scans recent `dream:*` records, finds records owned by `fpHash`, and
+ * backfills the sorted set. Bounded so profile loads stay predictable.
+ */
+export async function backfillUserDreamIndex(
+  fpHash: string,
+  opts: { scanLimit?: number } = {},
+): Promise<string[]> {
+  const redis = getRedis();
+  const found = new Set<string>();
+  let cursor = '0';
+  let scanned = 0;
+  const scanLimit = opts.scanLimit ?? 500;
+
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: 'dream:*',
+      count: 100,
+    });
+    cursor = String(nextCursor);
+    scanned += keys.length;
+
+    await Promise.all(keys.map(async key => {
+      const id = key.replace(/^dream:/, '');
+      const dream = await getDream(id);
+      if (!dream || dream.fpHash !== fpHash) return;
+      found.add(id);
+      await addDreamToUserIndex(fpHash, id, dream.createdAt);
+    }));
+  } while (cursor !== '0' && scanned < scanLimit);
+
+  return [...found];
 }

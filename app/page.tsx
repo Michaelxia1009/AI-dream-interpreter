@@ -12,32 +12,34 @@ export default function LandingPage() {
         <HeroLoop />
         {/* Aurora vignette — deepens the edges, lets hero video glow through the middle */}
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/90" />
-        <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pt-20 text-center sm:pt-24">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+        <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pt-24 text-center sm:pt-28">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-5 py-2 text-[12px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
             ✦ Your subconscious, illustrated
           </div>
-          <h1 className="font-serif text-6xl leading-tight tracking-tight sm:text-7xl">
-            Catch your dreams
+          <h1 className="font-serif text-[clamp(3rem,11vw,10.5rem)] leading-[0.86] tracking-tight text-foreground/95">
+            <span className="block">Catch your dreams</span>
             <br />
-            <span className="aurora-text">before they fade.</span>
+            <span className="aurora-text block -translate-y-3 italic sm:-translate-y-5">
+              before they fade.
+            </span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+          <p className="mt-5 max-w-3xl text-balance text-xl leading-relaxed text-muted-foreground sm:text-2xl">
             A nightly companion that captures, illustrates, and decodes your
             dreams — so the patterns of your subconscious become visible over
             time.
           </p>
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+          <div className="mt-16 flex flex-col items-center gap-4 sm:flex-row">
             <Link
               href="/capture"
-              className="aurora-cta inline-flex items-center gap-2 rounded-full px-8 py-4 text-lg font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98]"
+              className="aurora-cta inline-flex min-w-72 items-center justify-center gap-2 rounded-full px-9 py-5 text-lg font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98]"
             >
               Start journaling — it&apos;s free
             </Link>
             <Link
               href="/leaderboard"
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-6 py-3 text-sm text-muted-foreground backdrop-blur transition hover:text-foreground hover:border-ring/60"
+              className="inline-flex min-w-72 items-center justify-center gap-2 rounded-full border border-border/60 bg-background/30 px-9 py-5 text-lg font-semibold text-foreground/85 backdrop-blur transition hover:text-foreground hover:border-ring/60"
             >
-              Explore the gallery →
+              Explore dream leaderboard
             </Link>
           </div>
           <p className="mt-8 text-xs text-muted-foreground/80">

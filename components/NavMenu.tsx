@@ -14,6 +14,7 @@ import {
   Home,
   ChartBar,
   UsersRound,
+  UserRound,
 } from 'lucide-react';
 
 type Item = {
@@ -36,6 +37,7 @@ type Item = {
 const ITEMS: Item[] = [
   { href: '/',            label: 'Home',         blurb: 'Landing & overview',           icon: Home },
   { href: '/capture',     label: 'Capture',      blurb: 'Start a new dream',            icon: Wand2 },
+  { href: '/profile',     label: 'Profile',      blurb: 'Your dream archive',           icon: UserRound },
   { href: '/interpret',   label: 'Interpret',    blurb: 'Read your dream closely',      icon: Sparkles },
   { href: '/patterns',    label: 'Patterns',     blurb: 'Mood and symbol analytics',    icon: ChartBar },
   { href: '/circles',     label: 'Circles',      blurb: 'Private dream groups',         icon: UsersRound },

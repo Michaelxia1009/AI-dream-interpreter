@@ -30,7 +30,7 @@ export interface DreamSession {
   generation: GenerationResult | null;
   /** Whether the dream is currently published to leaderboard / share URL. */
   isPublic: boolean;
-  /** The handle the result page should display ("Dreamer #A4F2" or custom). */
+  /** The handle the result page should display ("Dreamer #0063" or custom). */
   handle: string | null;
 }
 

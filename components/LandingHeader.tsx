@@ -21,7 +21,8 @@ import { Menu, Moon, X } from 'lucide-react';
  */
 
 const LINKS = [
-  { href: '/leaderboard', label: 'Gallery' },
+  { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/profile',     label: 'Profile' },
   { href: '/patterns',    label: 'Patterns' },
   { href: '/circles',     label: 'Circles' },
   { href: '/pricing',     label: 'Pricing' },
@@ -31,10 +32,10 @@ const LINKS = [
 export function LandingHeader() {
   const [open, setOpen] = useState(false);
 
-  // Close mobile drawer when the viewport widens past sm.
+  // Close mobile drawer when the viewport widens past lg.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mql = window.matchMedia('(min-width: 640px)');
+    const mql = window.matchMedia('(min-width: 1024px)');
     const onChange = () => {
       if (mql.matches) setOpen(false);
     };
@@ -53,7 +54,7 @@ export function LandingHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-40">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
         {/* Logo */}
         <Link
           href="/"
@@ -67,7 +68,7 @@ export function LandingHeader() {
         </Link>
 
         {/* Center nav (desktop) */}
-        <nav className="hidden items-center gap-5 sm:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
           {LINKS.map(l => (
             <Link
               key={l.href}
@@ -92,7 +93,7 @@ export function LandingHeader() {
           <button
             type="button"
             onClick={() => setOpen(o => !o)}
-            className="rounded-full border border-border/50 bg-background/30 p-2 text-muted-foreground backdrop-blur transition hover:text-foreground sm:hidden"
+            className="rounded-full border border-border/50 bg-background/30 p-2 text-muted-foreground backdrop-blur transition hover:text-foreground lg:hidden"
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
           >
@@ -103,7 +104,7 @@ export function LandingHeader() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="sm:hidden">
+        <div className="lg:hidden">
           <div
             className="absolute inset-x-0 top-full mx-3 mt-1 overflow-hidden rounded-2xl border border-border/40 bg-background/85 backdrop-blur-xl"
           >
