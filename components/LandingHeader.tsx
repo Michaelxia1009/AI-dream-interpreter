@@ -54,7 +54,7 @@ export function LandingHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="group inline-flex min-w-0 items-center gap-2.5 whitespace-nowrap font-display text-sm font-light text-foreground/70 transition hover:text-foreground lg:text-base xl:text-lg"
+                className="group inline-flex min-w-0 items-center gap-2.5 whitespace-nowrap font-sans text-sm font-medium text-foreground/70 transition hover:text-foreground lg:text-base xl:text-lg"
               >
                 <Icon className="h-4 w-4 shrink-0 text-[var(--primary-glow)] opacity-75 transition group-hover:opacity-100 xl:h-[18px] xl:w-[18px]" />
                 <span className="hidden lg:inline relative after:absolute after:bottom-[-3px] after:left-0 after:h-px after:w-0 after:bg-[var(--primary-glow)] after:opacity-60 after:transition-all after:duration-300 group-hover:after:w-full">{link.label}</span>
@@ -98,7 +98,7 @@ export function LandingHeader() {
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 font-display text-base font-light text-foreground/90 transition hover:bg-secondary/40"
+                      className="flex items-center gap-3 px-5 py-4 font-sans text-base font-medium text-foreground/90 transition hover:bg-secondary/40"
                     >
                       <Icon className="h-4 w-4 text-[var(--primary-glow)]" />
                       {link.label}

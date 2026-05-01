@@ -182,7 +182,7 @@ export default function ProfilePage() {
     <main className="aurora-bg min-h-dvh px-4 py-12 sm:px-6">
       <div className="mx-auto max-w-5xl space-y-14">
         <section>
-          <h1 className="font-serif text-3xl tracking-tight">Your profile</h1>
+          <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-6xl">My profile</h1>
           <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -191,10 +191,10 @@ export default function ProfilePage() {
                     <UserRound className="h-6 w-6 text-foreground/80" />
                   </div>
                   <div>
-                    <h2 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+                    <h2 className="font-serif text-2xl leading-tight tracking-tight text-foreground/90 sm:text-3xl">
                       {profile.account.displayName || profile.handle}
                     </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                       Dreamer #{profile.dreamerCode}
                     </p>
                   </div>
