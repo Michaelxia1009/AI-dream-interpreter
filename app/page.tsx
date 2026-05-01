@@ -37,7 +37,7 @@ export default function LandingPage() {
         <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/40 px-4 py-1.5 backdrop-blur-md">
             <Sparkles className="h-3.5 w-3.5 text-[var(--primary-glow)]" />
-            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="font-sans text-xs font-semibold uppercase text-muted-foreground">
               Your subconscious, illustrated
             </span>
           </div>
@@ -50,7 +50,7 @@ export default function LandingPage() {
             </span>
           </h1>
 
-          <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+          <p className="font-serif-italic mx-auto mb-12 max-w-2xl text-xl italic leading-[1.5] text-muted-foreground md:text-2xl">
             A nightly companion that captures, illustrates, and decodes your
             dreams — so the patterns of your subconscious become visible over
             time.
@@ -59,19 +59,19 @@ export default function LandingPage() {
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/capture"
-              className="bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 text-lg font-semibold text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
+              className="bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-sans text-lg font-semibold text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
             >
               Start journaling — it&apos;s free
             </Link>
             <Link
               href="/leaderboard"
-              className="inline-flex h-14 min-w-72 items-center justify-center rounded-full border border-border/60 bg-card/30 px-8 text-lg font-semibold text-foreground/85 backdrop-blur transition hover:border-ring/60 hover:bg-card/45 hover:text-foreground"
+              className="inline-flex h-14 min-w-72 items-center justify-center rounded-full border border-border/60 bg-card/30 px-8 font-sans text-lg font-semibold text-foreground/85 backdrop-blur transition hover:border-ring/60 hover:bg-card/45 hover:text-foreground"
             >
               Explore the gallery
             </Link>
           </div>
 
-          <p className="mt-6 text-xs text-muted-foreground/70">
+          <p className="mx-auto mb-20 mt-9 max-w-xl font-sans text-sm font-medium leading-relaxed text-muted-foreground/85 md:text-base">
             No sign-up. No credit card. Just open and dream.
           </p>
         </div>
@@ -87,17 +87,17 @@ export default function LandingPage() {
                 <Moon className="h-5 w-5 -rotate-12 text-[var(--primary-glow)]" />
                 <span className="font-display text-lg font-light">Dreamweaver</span>
               </Link>
-              <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+              <p className="font-serif-italic max-w-sm text-base italic leading-relaxed text-muted-foreground">
                 A dreamy AI journal that captures, illustrates, and decodes your
                 dreams.
               </p>
             </div>
 
             <div>
-              <h2 className="mb-4 text-xs font-medium uppercase tracking-widest text-foreground">
+              <h2 className="mb-4 font-sans text-xs font-semibold uppercase text-foreground">
                 Product
               </h2>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <ul className="space-y-2 font-sans text-sm text-muted-foreground">
                 {productLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -109,10 +109,10 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h2 className="mb-4 text-xs font-medium uppercase tracking-widest text-foreground">
+              <h2 className="mb-4 font-sans text-xs font-semibold uppercase text-foreground">
                 Company
               </h2>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <ul className="space-y-2 font-sans text-sm text-muted-foreground">
                 {companyLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -124,7 +124,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="flex flex-col items-start justify-between gap-4 border-t border-border/30 pt-8 text-sm text-muted-foreground sm:flex-row">
+          <div className="flex flex-col items-start justify-between gap-4 border-t border-border/30 pt-8 font-sans text-sm text-muted-foreground sm:flex-row">
             <p>© 2026 Dreamweaver. All dreams reserved.</p>
             <p className="text-muted-foreground/70">Catch them before they fade.</p>
           </div>
