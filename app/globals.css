@@ -453,7 +453,33 @@
   background-image: none !important;
 }
 
-.aurora-bg h1 {
+.theme-daylight .aurora-cta {
+  background-color: #D4572A !important;
+  background-image: none !important;
+  color: #FAF6EF !important;
+  box-shadow: none !important;
+}
+
+.theme-daylight .aurora-cta:hover {
+  background-color: #B94722 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.theme-daylight .dreamtok-landing .hero-primary-cta {
+  background-color: #D4572A !important;
+  background-image: none !important;
+  color: #FAF6EF !important;
+  box-shadow: none !important;
+}
+
+.theme-daylight .dreamtok-landing .hero-primary-cta:hover {
+  background-color: #B94722 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.aurora-bg :is(h1, h2, h3) {
   font-family: "Times New Roman", Times, serif !important;
 }
 

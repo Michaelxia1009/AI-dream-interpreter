@@ -42,10 +42,10 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <h1 className="mb-8 pb-3 font-sans text-5xl font-medium leading-[1.08] tracking-tight md:text-7xl lg:text-8xl">
+          <h1 className="mb-8 pb-3 font-display text-5xl font-normal leading-[1.08] md:text-7xl lg:text-8xl">
             Catch your dreams
             <br />
-            <span className="text-gradient-aurora">
+            <span className="font-serif-italic italic text-gradient-aurora">
               before they fade
             </span>
           </h1>
@@ -59,7 +59,7 @@ export default function LandingPage() {
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/capture"
-              className="bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-display text-lg font-normal text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
+              className="hero-primary-cta bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-display text-lg font-normal text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
             >
               Start journaling — it&apos;s free
             </Link>
