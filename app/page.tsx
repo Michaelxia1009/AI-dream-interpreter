@@ -20,7 +20,7 @@ export default function LandingPage() {
     <main className="dreamtok-landing min-h-dvh overflow-x-hidden bg-background text-foreground">
       <LandingHeader />
 
-      <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -31,13 +31,13 @@ export default function LandingPage() {
             height={1280}
             fetchPriority="high"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
+          <div className="dreamtok-hero-fade absolute inset-0" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/40 px-4 py-1.5 backdrop-blur-md">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pb-12 pt-24 text-center md:pb-14">
+          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border/40 bg-card/30 px-5 py-2 backdrop-blur-md">
             <Sparkles className="h-3.5 w-3.5 text-[var(--primary-glow)]" />
-            <span className="font-sans text-xs font-semibold uppercase text-muted-foreground">
+            <span className="font-serif-italic text-xs text-muted-foreground/90 italic">
               Your subconscious, illustrated
             </span>
           </div>
@@ -59,19 +59,19 @@ export default function LandingPage() {
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/capture"
-              className="bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-sans text-lg font-semibold text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
+              className="bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-display text-lg font-normal text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
             >
               Start journaling — it&apos;s free
             </Link>
             <Link
               href="/leaderboard"
-              className="inline-flex h-14 min-w-72 items-center justify-center rounded-full border border-border/60 bg-card/30 px-8 font-sans text-lg font-semibold text-foreground/85 backdrop-blur transition hover:border-ring/60 hover:bg-card/45 hover:text-foreground"
+              className="inline-flex h-14 min-w-72 items-center justify-center rounded-full border border-border/50 bg-card/20 px-8 font-display text-lg font-light text-foreground/80 backdrop-blur-sm transition hover:border-border/80 hover:bg-card/35 hover:text-foreground"
             >
               Explore the gallery
             </Link>
           </div>
 
-          <p className="mx-auto mb-20 mt-9 max-w-xl font-sans text-sm font-medium leading-relaxed text-muted-foreground/85 md:text-base">
+          <p className="mx-auto mt-6 max-w-xl font-serif-italic text-sm italic leading-relaxed text-muted-foreground/70 md:text-base">
             No sign-up. No credit card. Just open and dream.
           </p>
         </div>
@@ -94,10 +94,10 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h2 className="mb-4 font-sans text-xs font-semibold uppercase text-foreground">
+              <h2 className="mb-4 font-display text-xs font-medium uppercase text-foreground/80">
                 Product
               </h2>
-              <ul className="space-y-2 font-sans text-sm text-muted-foreground">
+              <ul className="space-y-2.5 font-display text-sm font-light text-muted-foreground">
                 {productLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -109,10 +109,10 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h2 className="mb-4 font-sans text-xs font-semibold uppercase text-foreground">
+              <h2 className="mb-4 font-display text-xs font-medium uppercase text-foreground/80">
                 Company
               </h2>
-              <ul className="space-y-2 font-sans text-sm text-muted-foreground">
+              <ul className="space-y-2.5 font-display text-sm font-light text-muted-foreground">
                 {companyLinks.map(link => (
                   <li key={link.href}>
                     <Link href={link.href} className="transition hover:text-foreground">
@@ -124,9 +124,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="flex flex-col items-start justify-between gap-4 border-t border-border/30 pt-8 font-sans text-sm text-muted-foreground sm:flex-row">
-            <p>© 2026 Dreamweaver. All dreams reserved.</p>
-            <p className="text-muted-foreground/70">Catch them before they fade.</p>
+          <div className="flex flex-col items-start justify-between gap-4 border-t border-border/30 pt-8 text-sm text-muted-foreground sm:flex-row">
+            <p className="font-display font-light">© 2026 Dreamweaver. All dreams reserved.</p>
+            <p className="font-serif-italic italic text-muted-foreground/60">Catch them before they fade.</p>
           </div>
         </div>
       </footer>

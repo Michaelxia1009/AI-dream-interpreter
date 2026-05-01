@@ -47,17 +47,17 @@ export function LandingHeader() {
           </span>
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-3 md:flex lg:gap-5 xl:gap-8" aria-label="Primary">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-5 md:flex lg:gap-7 xl:gap-10" aria-label="Primary">
           {LINKS.map(link => {
             const Icon = link.icon;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className="inline-flex min-w-0 items-center gap-2 whitespace-nowrap font-sans text-sm font-semibold text-foreground/80 transition hover:text-foreground lg:text-base xl:text-lg"
+                className="group inline-flex min-w-0 items-center gap-2.5 whitespace-nowrap font-display text-sm font-light text-foreground/70 transition hover:text-foreground lg:text-base xl:text-lg"
               >
-                <Icon className="h-4 w-4 shrink-0 text-foreground/60 xl:h-5 xl:w-5" />
-                <span className="hidden lg:inline">{link.label}</span>
+                <Icon className="h-4 w-4 shrink-0 text-[var(--primary-glow)] opacity-75 transition group-hover:opacity-100 xl:h-[18px] xl:w-[18px]" />
+                <span className="hidden lg:inline relative after:absolute after:bottom-[-3px] after:left-0 after:h-px after:w-0 after:bg-[var(--primary-glow)] after:opacity-60 after:transition-all after:duration-300 group-hover:after:w-full">{link.label}</span>
               </Link>
             );
           })}
@@ -69,11 +69,10 @@ export function LandingHeader() {
           </div>
           <Link
             href="/capture"
-            className="aurora-cta inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2 font-sans text-sm font-semibold shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-5 sm:py-3 lg:px-6 lg:text-base"
+            className="aurora-cta inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2 font-display text-sm font-normal shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-5 sm:py-3 lg:px-6 lg:text-base"
           >
             <Plus className="mr-1 h-4 w-4 shrink-0" />
-            <span className="hidden xl:inline">Start journaling</span>
-            <span className="xl:hidden">New dream</span>
+            <span>New dream</span>
           </Link>
 
           <button
@@ -99,9 +98,9 @@ export function LandingHeader() {
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 text-base font-medium text-foreground/90 transition hover:bg-secondary/40"
+                      className="flex items-center gap-3 px-5 py-4 font-display text-base font-light text-foreground/90 transition hover:bg-secondary/40"
                     >
-                      <Icon className="h-4 w-4 text-foreground/60" />
+                      <Icon className="h-4 w-4 text-[var(--primary-glow)]" />
                       {link.label}
                     </Link>
                   </li>
