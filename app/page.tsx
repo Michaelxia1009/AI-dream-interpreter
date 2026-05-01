@@ -42,11 +42,11 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <h1 className="mb-8 pb-3 font-display text-5xl font-light leading-[1.08] md:text-7xl lg:text-8xl">
+          <h1 className="mb-8 pb-3 font-sans text-5xl font-medium leading-[1.08] tracking-tight md:text-7xl lg:text-8xl">
             Catch your dreams
             <br />
-            <span className="font-serif-italic text-gradient-aurora italic">
-              before they fade.
+            <span className="text-gradient-aurora">
+              before they fade
             </span>
           </h1>
 

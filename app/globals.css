@@ -427,18 +427,21 @@
 }
 
 /* Tailwind utilities are emitted after component rules; keep these daylight
-   overrides unlayered so the plain daylight treatment wins reliably. */
+   overrides unlayered so the daylight badge treatment wins reliably. */
 .theme-daylight .dreamtok-landing .hero-badge {
-  border-color: transparent !important;
-  background-color: transparent !important;
+  border-color: rgba(184, 135, 45, 0.55) !important;
+  background-color: rgba(255, 248, 232, 0.78) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  border-radius: 0.625rem !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  box-shadow: 0 1px 0 rgba(184, 135, 45, 0.16) inset !important;
 }
 
 .theme-daylight .dreamtok-landing .hero-badge svg {
-  display: none !important;
+  display: block !important;
+  color: #B8872D !important;
 }
 
 .theme-daylight .dreamtok-landing .hero-badge span {
@@ -448,6 +451,10 @@
 .theme-daylight .aurora-bg {
   background-color: var(--background) !important;
   background-image: none !important;
+}
+
+.aurora-bg h1 {
+  font-family: "Times New Roman", Times, serif !important;
 }
 
 @keyframes breathe {
