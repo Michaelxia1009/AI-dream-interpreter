@@ -153,7 +153,8 @@ export default function CapturePage() {
                   value={dreamText}
                   onChange={e => setDreamText(e.target.value)}
                   placeholder="I was walking through a forest of mirrors..."
-                  className="min-h-52 w-full resize-y rounded-2xl border border-border/50 bg-card/40 px-4 py-4 font-serif text-lg italic leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
+                  className="min-h-52 w-full resize-y appearance-none rounded-2xl border border-border/50 px-4 py-4 font-serif text-lg italic leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
+                  style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
                   autoFocus
                 />
               </div>
@@ -223,7 +224,8 @@ export default function CapturePage() {
                   value={replyText}
                   onChange={e => setReplyText(e.target.value)}
                   placeholder="Answer the follow-up..."
-                  className="min-h-12 flex-1 resize-none rounded-2xl border border-border/50 bg-card/60 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
+                  className="min-h-12 flex-1 resize-none appearance-none rounded-2xl border border-border/50 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
+                  style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
                   onKeyDown={e => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();

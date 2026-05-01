@@ -25,6 +25,17 @@ function dreamerCode(fpHash: string): string {
   return String(n).padStart(4, '0');
 }
 
+function dreamerCodeFromHandle(handle: string, fpHash: string): string {
+  return handle.match(/^Dreamer #(\d{4})$/)?.[1] ?? dreamerCode(fpHash);
+}
+
+const PROTOTYPE_ARCHIVE_ALIASES_BY_CODE: Record<string, string[]> = {
+  // Local prototype migration: the in-app browser profile currently resolves
+  // to Dreamer #4966, while the user's generated leaderboard archive lives
+  // under Dreamer #0063.
+  '4966': ['00636e4cb910e492'],
+};
+
 function thumbnailFor(dream: DreamRecord): string | null {
   if (dream.generation.kind === 'carousel') return dream.generation.imageUrls[0] ?? null;
   return null;
@@ -73,22 +84,32 @@ export async function GET(req: NextRequest) {
   }
 
   const fpHash = fpHashOf(parsed.data.fingerprint);
+  const aliasFpHashes = PROTOTYPE_ARCHIVE_ALIASES_BY_CODE[dreamerCode(fpHash)] ?? [];
+  const archiveFpHashes = [fpHash, ...aliasFpHashes];
+  const archiveFpHashSet = new Set(archiveFpHashes);
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     req.headers.get('x-real-ip') ??
     '0.0.0.0';
   const ua = req.headers.get('user-agent') ?? '';
-  await backfillUserDreamIndex(fpHash);
-  const ids = await getUserDreamIds(fpHash, { limit: 100 });
+  await Promise.all(archiveFpHashes.map(hash => backfillUserDreamIndex(hash)));
+  const ids = [...new Set((await Promise.all(
+    archiveFpHashes.map(hash => getUserDreamIds(hash, { limit: 100 })),
+  )).flat())];
   const records = (await Promise.all(ids.map(id => getDream(id))))
-    .filter((d): d is DreamRecord => d != null && d.fpHash === fpHash)
+    .filter((d): d is DreamRecord => d != null && archiveFpHashSet.has(d.fpHash))
     .sort((a, b) => b.createdAt - a.createdAt);
+  const profileFpHash = records.some(d => d.fpHash === fpHash)
+    ? fpHash
+    : aliasFpHashes[0] ?? fpHash;
   const patterns = aggregatePatterns(records, { windowDays: 90 });
-  const [handle, account, usage] = await Promise.all([
-    getHandleForFpHash(fpHash),
+  const [storedHandle, account, usage] = await Promise.all([
+    getHandleForFpHash(profileFpHash),
     getPrototypeAccount(fpHash),
     peek(buildRateLimitKey(ip, ua, parsed.data.fingerprint)),
   ]);
+  const archiveHandle = records.find(d => d.fpHash === profileFpHash)?.handle;
+  const handle = archiveHandle ?? storedHandle;
   const firstDreamAt = records.length ? records[records.length - 1].createdAt : null;
   const lastDreamAt = records.length ? records[0].createdAt : null;
   const publicDreams = records.filter(d => d.isPublic).length;
@@ -96,9 +117,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     profile: {
-      fpHash,
+      fpHash: profileFpHash,
       handle,
-      dreamerCode: dreamerCode(fpHash),
+      dreamerCode: dreamerCodeFromHandle(handle, profileFpHash),
       totalDreams: records.length,
       publicDreams,
       firstDreamAt,

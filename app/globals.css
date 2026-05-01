@@ -106,6 +106,7 @@
   --dw-glow: rgba(210, 128, 250, 0.35);
   --dw-glow-soft: rgba(162, 116, 240, 0.22);
   --dw-surface-glass: rgba(15, 14, 32, 0.72);
+  --dw-textbox-bg: rgba(15, 14, 32, 0.42);
   --dw-media-frame: #080817;
   --dw-halo: conic-gradient(
     from 180deg at 50% 50%,
@@ -138,7 +139,7 @@
   --secondary: #EFE6D6;
   --secondary-foreground: #1F1B16;
 
-  --muted: #EFE6D6;
+  --muted: #F5E9DA;
   --muted-foreground: #6B6456;
 
   --accent: #9CAF88;
@@ -147,7 +148,7 @@
   --destructive: #D4572A;
 
   --border: rgba(31, 27, 22, 0.10);
-  --input: rgba(31, 27, 22, 0.08);
+  --input: rgba(232, 160, 92, 0.14);
   --ring: #D4572A;
 
   --chart-1: #D4572A;
@@ -174,6 +175,7 @@
   --dw-glow: rgba(212, 87, 42, 0.25);
   --dw-glow-soft: rgba(212, 87, 42, 0.12);
   --dw-surface-glass: rgba(255, 251, 243, 0.75);
+  --dw-textbox-bg: #FFF0DD;
   /* Media frames stay dark in both themes — photograph-on-page metaphor */
   --dw-media-frame: #1F1B16;
   --dw-halo: conic-gradient(
@@ -227,6 +229,7 @@
     --dw-glow: rgba(210, 128, 250, 0.35);
     --dw-glow-soft: rgba(162, 116, 240, 0.22);
     --dw-surface-glass: rgba(15, 14, 32, 0.72);
+    --dw-textbox-bg: rgba(15, 14, 32, 0.42);
     --dw-gradient: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
     --dw-gradient-warm: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
   }
@@ -240,12 +243,12 @@
     --primary-foreground: #FAF6EF;
     --secondary: #EFE6D6;
     --secondary-foreground: #1F1B16;
-    --muted: #EFE6D6;
+    --muted: #F5E9DA;
     --muted-foreground: #6B6456;
     --accent: #9CAF88;
     --accent-foreground: #1F1B16;
     --border: rgba(31, 27, 22, 0.10);
-    --input: rgba(31, 27, 22, 0.08);
+    --input: rgba(232, 160, 92, 0.14);
     --ring: #D4572A;
     --primary-glow: #D4572A;
     --dw-aurora-from: #D4572A;
@@ -254,6 +257,7 @@
     --dw-glow: rgba(212, 87, 42, 0.25);
     --dw-glow-soft: rgba(212, 87, 42, 0.12);
     --dw-surface-glass: rgba(255, 251, 243, 0.75);
+    --dw-textbox-bg: #FFF0DD;
     --dw-gradient: linear-gradient(135deg, #D4572A 0%, #E8A05C 50%, #9CAF88 100%);
     --dw-gradient-warm: linear-gradient(135deg, #D4572A 0%, #E8A05C 100%);
   }
@@ -479,8 +483,8 @@
   filter: none !important;
 }
 
-.aurora-bg :is(h1, h2, h3) {
-  font-family: "Times New Roman", Times, serif !important;
+.theme-daylight :is(input, textarea) {
+  background-color: #FFF0DD !important;
 }
 
 @keyframes breathe {
