@@ -12,13 +12,13 @@ const options = [
     name: 'Fraunces Soft',
     className: 'font-title-fraunces',
     mood: 'Dreamy, editorial, a little enchanted',
-    note: 'My favorite for Dreamweaver: elegant without becoming too formal.',
+    note: 'The previous title direction: elegant without becoming too formal.',
   },
   {
     name: 'Playfair Display',
     className: 'font-title-playfair',
     mood: 'Luxe, romantic, magazine-like',
-    note: 'Best if you want the landing page to feel more premium and cinematic.',
+    note: 'Current app title font. Premium, cinematic, and more dramatic.',
   },
   {
     name: 'Cormorant Garamond',

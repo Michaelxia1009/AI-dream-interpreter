@@ -10,7 +10,7 @@
    Semantic utility classes — prefer these over raw `text-3xl`
    etc. so every page reads from one shared scale. Application
    rules:
-     - All headings use `var(--font-display)` (Fraunces Soft).
+     - All headings use `var(--font-display)` (Playfair Display).
      - `.text-display-xl` → landing hero only (one per page).
      - `.text-h1`         → top of every other page (one per page).
      - `.text-h2`         → major section headings inside a page.
@@ -327,11 +327,11 @@
   }
 
   .font-title-fraunces {
-    font-family: var(--font-display), serif;
+    font-family: var(--font-title-fraunces), serif;
   }
 
   .font-title-playfair {
-    font-family: var(--font-title-playfair), serif;
+    font-family: var(--font-display), serif;
   }
 
   .font-title-libre {

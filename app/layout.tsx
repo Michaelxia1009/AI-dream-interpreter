@@ -18,12 +18,11 @@ import { FloatingThemeToggle } from '@/components/ThemeToggle';
 import './globals.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const display = Fraunces({
+const display = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-display',
   weight: 'variable',
   style: ['normal', 'italic'],
-  axes: ['SOFT', 'WONK', 'opsz'],
 });
 const titleUrbanist = Urbanist({
   subsets: ['latin'],
@@ -50,11 +49,12 @@ const wordmark = Cormorant_Garamond({
   variable: '--font-cormorant',
   weight: ['400', '500', '600'],
 });
-const titlePlayfair = Playfair_Display({
+const titleFraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-title-playfair',
+  variable: '--font-title-fraunces',
   weight: 'variable',
   style: ['normal', 'italic'],
+  axes: ['SOFT', 'WONK', 'opsz'],
 });
 const titleLibre = Libre_Baskerville({
   subsets: ['latin'],
@@ -72,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${display.variable} ${titleUrbanist.variable} ${serif.variable} ${serifItalic.variable} ${wordmark.variable} ${titlePlayfair.variable} ${titleLibre.variable}`}
+      className={`${sans.variable} ${display.variable} ${titleUrbanist.variable} ${serif.variable} ${serifItalic.variable} ${wordmark.variable} ${titleFraunces.variable} ${titleLibre.variable}`}
       suppressHydrationWarning
     >
       <head>
