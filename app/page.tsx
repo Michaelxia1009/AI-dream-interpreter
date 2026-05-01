@@ -35,9 +35,9 @@ export default function LandingPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 pb-12 pt-24 text-center md:pb-14">
-          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-border/40 bg-card/30 px-5 py-2 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--primary-glow)]" />
-            <span className="font-serif-italic text-xs text-muted-foreground/90 italic">
+          <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-card/35 px-5 py-2.5 backdrop-blur-md">
+            <Sparkles className="h-4 w-4 text-[var(--primary-glow)]" />
+            <span className="font-serif-italic text-sm text-white/90 italic md:text-base">
               Your subconscious, illustrated
             </span>
           </div>
@@ -71,7 +71,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <p className="mx-auto mt-6 max-w-xl font-serif-italic text-sm italic leading-relaxed text-muted-foreground/70 md:text-base">
+          <p className="mx-auto mt-6 max-w-xl font-serif-italic text-sm italic leading-relaxed text-white/90 md:text-base">
             No sign-up. No credit card. Just open and dream.
           </p>
         </div>
