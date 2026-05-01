@@ -33,10 +33,10 @@ const options = [
     note: 'Best if you want the product to feel like a serious journal.',
   },
   {
-    name: 'Urbanist Current',
-    className: 'font-display',
+    name: 'Urbanist Previous',
+    className: 'font-title-urbanist',
     mood: 'Clean, modern, app-like',
-    note: 'The current direction. Good UI font, less magical for hero titles.',
+    note: 'The previous direction. Good UI font, less magical for hero titles.',
   },
 ];
 

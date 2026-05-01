@@ -10,7 +10,7 @@
    Semantic utility classes — prefer these over raw `text-3xl`
    etc. so every page reads from one shared scale. Application
    rules:
-     - All headings use `var(--font-display)` (Urbanist).
+     - All headings use `var(--font-display)` (Fraunces Soft).
      - `.text-display-xl` → landing hero only (one per page).
      - `.text-h1`         → top of every other page (one per page).
      - `.text-h2`         → major section headings inside a page.
@@ -319,7 +319,7 @@
   }
 
   .font-display {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
   }
 
   .wordmark-font {
@@ -327,7 +327,7 @@
   }
 
   .font-title-fraunces {
-    font-family: var(--font-title-fraunces), serif;
+    font-family: var(--font-display), serif;
   }
 
   .font-title-playfair {
@@ -336,6 +336,10 @@
 
   .font-title-libre {
     font-family: var(--font-title-libre), serif;
+  }
+
+  .font-title-urbanist {
+    font-family: var(--font-title-urbanist), sans-serif;
   }
 
   .font-serif-italic {
@@ -493,23 +497,23 @@
 @layer utilities {
   /* Type scale — semantic over numeric */
   .text-display-xl {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
     @apply tracking-tight leading-[1.05] text-5xl sm:text-7xl lg:text-8xl font-light;
   }
   .text-display-lg {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
     @apply tracking-tight leading-[1.08] text-5xl sm:text-6xl font-light;
   }
   .text-h1 {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
     @apply tracking-tight leading-[1.1] text-4xl sm:text-5xl font-light;
   }
   .text-h2 {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
     @apply tracking-tight leading-[1.15] text-3xl sm:text-4xl font-light;
   }
   .text-h3 {
-    font-family: var(--font-display), sans-serif;
+    font-family: var(--font-display), serif;
     @apply tracking-tight leading-[1.2] text-2xl font-normal;
   }
   .text-body-lg {
