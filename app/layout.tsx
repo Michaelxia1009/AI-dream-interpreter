@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Inter, Instrument_Serif } from 'next/font/google';
+import { Fraunces, Inter, Instrument_Serif } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { Analytics } from '@vercel/analytics/react';
 import { DreamProvider } from '@/lib/state';
@@ -10,7 +10,16 @@ import { NavMenu } from '@/components/NavMenu';
 import './globals.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const serif = Instrument_Serif({ weight: '400', subsets: ['latin'], variable: '--font-serif' });
+const display = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['300', '400', '500', '600', '700'],
+});
+const serifItalic = Instrument_Serif({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-serif-italic',
+});
 
 export const metadata: Metadata = {
   title: 'Dream Interpreter',
@@ -19,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${display.variable} ${serifItalic.variable}`} suppressHydrationWarning>
       <head>
         <Script id="dream-theme-init" strategy="beforeInteractive">
           {themeInitScript}

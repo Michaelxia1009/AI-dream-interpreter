@@ -28,8 +28,12 @@ export function SettingsMenu() {
   const { theme, setTheme } = useTheme();
   const [lang, setLang] = useState('en-US');
 
-  // Hide on the public dream-share page so first-time recipients see a clean artifact.
-  if (pathname?.startsWith('/d/')) return null;
+  const marketingRoutes = ['/', '/about', '/pricing', '/how-it-works', '/features', '/questions'];
+
+  // Marketing pages already have their own DreamTok-style header.
+  if (pathname?.startsWith('/d/') || (pathname !== undefined && marketingRoutes.includes(pathname))) {
+    return null;
+  }
 
   function handleLangChange(code: string) {
     setLang(code);

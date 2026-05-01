@@ -8,9 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
+  --font-serif: var(--font-display);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-serif);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -53,69 +53,70 @@
    NIGHTSHADE AURORA — default theme
    ============================================================ */
 :root {
-  --background: #0A0718;
-  --foreground: #F4F0FF;
+  --background: #080817;
+  --foreground: #EAE6F0;
 
-  --card: #1A1233;
-  --card-foreground: #F4F0FF;
+  --card: #0F0E20;
+  --card-foreground: #EAE6F0;
 
-  --popover: #1A1233;
-  --popover-foreground: #F4F0FF;
+  --popover: #0F0E20;
+  --popover-foreground: #EAE6F0;
 
-  --primary: #F4F0FF;
-  --primary-foreground: #0A0718;
+  --primary: #A274F0;
+  --primary-foreground: #080817;
 
-  --secondary: #231845;
-  --secondary-foreground: #F4F0FF;
+  --secondary: #211F33;
+  --secondary-foreground: #EAE6F0;
 
-  --muted: #1A1233;
-  --muted-foreground: #A094C7;
+  --muted: #211F33;
+  --muted-foreground: #9B94B8;
 
-  --accent: #5EEAD4;
-  --accent-foreground: #0A0718;
+  --accent: #73D5F4;
+  --accent-foreground: #080817;
 
-  --destructive: #F472B6;
+  --destructive: #E899CB;
 
-  --border: rgba(244, 240, 255, 0.08);
-  --input: rgba(244, 240, 255, 0.10);
-  --ring: #A78BFA;
+  --border: rgba(234, 230, 240, 0.12);
+  --input: rgba(234, 230, 240, 0.12);
+  --ring: #A274F0;
 
-  --chart-1: #A78BFA;
-  --chart-2: #F472B6;
-  --chart-3: #5EEAD4;
+  --chart-1: #A274F0;
+  --chart-2: #E899CB;
+  --chart-3: #73D5F4;
   --chart-4: #FDE68A;
   --chart-5: #8B5CF6;
 
   --radius: 0.875rem;
 
-  --sidebar: #0A0718;
-  --sidebar-foreground: #F4F0FF;
-  --sidebar-primary: #A78BFA;
-  --sidebar-primary-foreground: #0A0718;
-  --sidebar-accent: #231845;
-  --sidebar-accent-foreground: #F4F0FF;
-  --sidebar-border: rgba(244, 240, 255, 0.08);
-  --sidebar-ring: #A78BFA;
+  --sidebar: #080817;
+  --sidebar-foreground: #EAE6F0;
+  --sidebar-primary: #A274F0;
+  --sidebar-primary-foreground: #080817;
+  --sidebar-accent: #211F33;
+  --sidebar-accent-foreground: #EAE6F0;
+  --sidebar-border: rgba(234, 230, 240, 0.12);
+  --sidebar-ring: #A274F0;
 
   /* Brand / Dreamweaver extensions */
-  --dw-aurora-from: #A78BFA;
-  --dw-aurora-mid: #F472B6;
-  --dw-aurora-to: #5EEAD4;
+  --primary-glow: #D280FA;
+  --dw-aurora-from: #A274F0;
+  --dw-aurora-mid: #73D5F4;
+  --dw-aurora-to: #E899CB;
   --dw-ember: #FDE68A;
-  --dw-glow: rgba(244, 114, 182, 0.45);
-  --dw-glow-soft: rgba(167, 139, 250, 0.25);
-  --dw-surface-glass: rgba(26, 18, 51, 0.72);
-  --dw-media-frame: #0A0718;
+  --dw-glow: rgba(210, 128, 250, 0.35);
+  --dw-glow-soft: rgba(162, 116, 240, 0.22);
+  --dw-surface-glass: rgba(15, 14, 32, 0.72);
+  --dw-media-frame: #080817;
   --dw-halo: conic-gradient(
     from 180deg at 50% 50%,
-    #A78BFA 0deg,
-    #F472B6 120deg,
-    #5EEAD4 240deg,
-    #A78BFA 360deg
+    #A274F0 0deg,
+    #73D5F4 120deg,
+    #E899CB 240deg,
+    #A274F0 360deg
   );
-  --dw-gradient: linear-gradient(135deg, #A78BFA 0%, #F472B6 50%, #5EEAD4 100%);
-  --dw-gradient-warm: linear-gradient(135deg, #A78BFA 0%, #F472B6 100%);
-  --dw-gradient-cool: linear-gradient(135deg, #8B5CF6 0%, #5EEAD4 100%);
+  --dw-gradient: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
+  --dw-gradient-warm: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
+  --dw-gradient-cool: linear-gradient(120deg, #A274F0 0%, #73D5F4 100%);
 }
 
 /* ============================================================
@@ -202,6 +203,63 @@
    Signature brand utilities — theme-aware via --dw-* tokens
    ============================================================ */
 @layer components {
+  .dreamtok-landing {
+    --background: #080817;
+    --foreground: #EAE6F0;
+    --card: #0F0E20;
+    --card-foreground: #EAE6F0;
+    --primary: #A274F0;
+    --primary-foreground: #080817;
+    --secondary: #211F33;
+    --secondary-foreground: #EAE6F0;
+    --muted: #211F33;
+    --muted-foreground: #9B94B8;
+    --accent: #73D5F4;
+    --accent-foreground: #080817;
+    --border: rgba(234, 230, 240, 0.12);
+    --input: rgba(234, 230, 240, 0.12);
+    --ring: #A274F0;
+    --primary-glow: #D280FA;
+    --dw-aurora-from: #A274F0;
+    --dw-aurora-mid: #73D5F4;
+    --dw-aurora-to: #E899CB;
+    --dw-glow: rgba(210, 128, 250, 0.35);
+    --dw-glow-soft: rgba(162, 116, 240, 0.22);
+    --dw-surface-glass: rgba(15, 14, 32, 0.72);
+    --dw-gradient: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
+    --dw-gradient-warm: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
+  }
+
+  .font-display {
+    font-family: var(--font-display), serif;
+    font-optical-sizing: auto;
+  }
+
+  .font-serif-italic {
+    font-family: var(--font-serif-italic), serif;
+    font-style: italic;
+  }
+
+  .text-gradient-aurora {
+    background-image: var(--dw-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .bg-gradient-aurora {
+    background-image: var(--dw-gradient);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 32px rgba(162, 116, 240, 0.25);
+  }
+
+  .shadow-glow-lg {
+    box-shadow: 0 0 56px rgba(210, 128, 250, 0.35);
+  }
+
   /* Aurora text — fills glyphs with the brand gradient */
   .aurora-text {
     background-image: var(--dw-gradient);
@@ -212,7 +270,7 @@
   }
 
   .hero-title-aurora {
-    background-image: linear-gradient(120deg, #A78BFA 0%, #F4F0FF 42%, #7DD3FC 68%, #F0ABFC 100%);
+    background-image: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -221,10 +279,10 @@
 
   /* Primary CTA with aurora fill + glow */
   .aurora-cta {
-    background-image: var(--dw-gradient-warm);
-    color: #FFFFFF;
+    background-image: var(--dw-gradient);
+    color: var(--primary-foreground);
     box-shadow:
-      0 10px 30px -10px var(--dw-glow),
+      0 12px 32px -12px var(--dw-glow),
       0 0 0 1px rgba(255, 255, 255, 0.10) inset;
     transition: transform 150ms ease, box-shadow 200ms ease, filter 200ms ease;
   }
