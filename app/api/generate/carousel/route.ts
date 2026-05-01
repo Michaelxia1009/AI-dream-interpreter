@@ -11,6 +11,7 @@ import { uploadArtifact } from '@/lib/providers/blob';
 import { persistDream } from '@/lib/dreams/repo';
 import { addDreamToBoards } from '@/lib/dreams/leaderboard';
 import { getHandleForFpHash } from '@/lib/dreams/handle';
+import { addDreamToUserIndex } from '@/lib/dreams/user-index';
 import { isoWeekKey } from '@/lib/dreams/iso-week';
 import type { DreamRecord } from '@/lib/dreams/types';
 
@@ -30,6 +31,7 @@ const ScoreBody = z.object({
   }),
   blurb: z.string(),
   moderation: z.object({ ok: z.boolean(), flags: z.array(z.string()) }),
+  symbols: z.array(z.string()).optional(),
 });
 
 const Body = z.object({
@@ -49,6 +51,26 @@ function clampScore(m: { score: number; oneLiner: string }) {
     score: Math.max(1, Math.min(10, Math.round(m.score))),
     oneLiner: m.oneLiner.slice(0, 80),
   };
+}
+
+/**
+ * Defensive normalisation in case the scoring caller forwarded raw model output.
+ * The score pipeline already sanitises, but symbol tags are persisted forever
+ * (well, 60 days) so we belt-and-braces clean them here too.
+ */
+function sanitizeSymbolsForPersist(raw: string[] | undefined): string[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== 'string') continue;
+    const cleaned = item.toLowerCase().trim().replace(/[^a-z\-]/g, '').replace(/^-+|-+$/g, '').slice(0, 24);
+    if (cleaned.length < 2 || seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    out.push(cleaned);
+    if (out.length >= 8) break;
+  }
+  return out.length ? out : undefined;
 }
 
 export async function POST(req: NextRequest) {
@@ -102,9 +124,10 @@ export async function POST(req: NextRequest) {
       try {
         const fpHash = fpHashOf(parsed.data.fingerprint);
         handle = await getHandleForFpHash(fpHash);
+        const createdAt = Date.now();
         const record: DreamRecord = {
           id,
-          createdAt: Date.now(),
+          createdAt,
           isoWeek: isoWeekKey(),
           format: 'carousel',
           styleId: style.id,
@@ -125,8 +148,11 @@ export async function POST(req: NextRequest) {
           isPublic,
           moderation: parsed.data.score.moderation,
           blurb: parsed.data.score.blurb.slice(0, 80),
+          symbols: sanitizeSymbolsForPersist(parsed.data.score.symbols),
         };
         await persistDream(record);
+        // Index for /patterns regardless of public/private — Patterns is private to the dreamer.
+        await addDreamToUserIndex(fpHash, id, createdAt);
         if (isPublic) {
           await addDreamToBoards(record);
         }
@@ -144,8 +170,10 @@ export async function POST(req: NextRequest) {
       isPublic,
       handle,
     });
-  } catch (err: any) {
-    console.error('carousel gen failed', err?.message, err?.responseBody || err?.cause?.message || '');
-    return NextResponse.json({ error: 'generation_failed', detail: err?.message }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown';
+    const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : '';
+    console.error('carousel gen failed', message, cause);
+    return NextResponse.json({ error: 'generation_failed', detail: message }, { status: 500 });
   }
 }

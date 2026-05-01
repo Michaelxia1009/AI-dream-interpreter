@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Download, Sparkles } from 'lucide-react';
+import { Download, Sparkles, UsersRound } from 'lucide-react';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { Carousel } from '@/components/Carousel';
 import { ReportCard } from '@/components/ReportCard';
@@ -16,24 +16,17 @@ import { toast } from 'sonner';
 
 export default function ResultPage() {
   const router = useRouter();
-  const { session, update, reset } = useDream();
+  const { session, isHydrated, update, reset } = useDream();
   const [muxedUrl, setMuxedUrl] = useState<string | null>(null);
   const [muxing, setMuxing] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    // Mark as hydrated after first client render so we don't redirect during
-    // the brief window where sessionStorage hasn't been read yet.
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
+    if (!isHydrated) return;
     const gen = session.generation;
     if (!gen || !session.score) { router.replace('/'); return; }
     if (gen.kind === 'video') {
-      setMuxing(true);
       (async () => {
+        setMuxing(true);
         try {
           const blob = await muxVideoWithAudio(gen.videoUrl, gen.audioUrl);
           setMuxedUrl(URL.createObjectURL(blob));
@@ -44,7 +37,7 @@ export default function ResultPage() {
         } finally { setMuxing(false); }
       })();
     }
-  }, [hydrated, session.generation, session.score, router]);
+  }, [isHydrated, session.generation, session.score, router]);
 
   const dreamId = session.generation?.id ?? '';
   const moderated = session.score?.moderation && !session.score.moderation.ok;
@@ -164,17 +157,28 @@ export default function ResultPage() {
 
       {/* Soft secondary CTA — chat with the dream you just made. */}
       {session.enrichedDream && (
-        <Link
-          href="/interpret"
-          className="surface-glass mt-1 flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm transition hover:border-ring/60"
-        >
-          <span className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-accent" aria-hidden />
-            <span className="font-medium">Interpret this dream</span>
-            <span className="text-muted-foreground">— three lenses, three voices</span>
-          </span>
-          <span className="text-muted-foreground">→</span>
-        </Link>
+        <div className="mt-1 grid gap-2 sm:grid-cols-2">
+          <Link
+            href="/interpret"
+            className="surface-glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm transition hover:border-ring/60"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" aria-hidden />
+              <span className="font-medium">Interpret this dream</span>
+            </span>
+            <span className="text-muted-foreground">→</span>
+          </Link>
+          <Link
+            href="/circles"
+            className="surface-glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm transition hover:border-ring/60"
+          >
+            <span className="flex items-center gap-2">
+              <UsersRound className="h-4 w-4 text-accent" aria-hidden />
+              <span className="font-medium">Share to a circle</span>
+            </span>
+            <span className="text-muted-foreground">→</span>
+          </Link>
+        </div>
       )}
     </main>
   );

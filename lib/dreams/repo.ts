@@ -7,11 +7,11 @@ import type { DreamRecord, LeaderboardMetric } from './types';
  * record (we use a string, not a hash, so we can atomically GET/SET the
  * full record without N round-trips).
  *
- * TTL: 8 days, reset on every successful read (so popular dreams stay alive
- * through the leaderboard cycle, but cold dreams age out).
+ * TTL: 90 days, reset on every successful read (long enough for private
+ * pattern analytics while still letting inactive prototype data age out).
  */
 
-const DREAM_TTL_SECONDS = 8 * 24 * 60 * 60;
+const DREAM_TTL_SECONDS = 90 * 24 * 60 * 60;
 
 export function dreamKey(id: string): string {
   return `dream:${id}`;

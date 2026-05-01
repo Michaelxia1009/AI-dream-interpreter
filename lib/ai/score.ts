@@ -28,8 +28,9 @@ export const ScoreResultSchema = z.object({
     vividness: MetricSchema,
   }),
   matchedStyleIds: z.array(z.string()).length(3),
-  blurb: z.string().min(1).max(80),
-  moderation: ModerationSchema,
+  blurb: z.string().min(1).max(80).optional().default('A dream worth remembering.'),
+  moderation: ModerationSchema.optional().default({ ok: true, flags: [] }),
+  symbols: z.array(z.string()).min(0).max(8).optional().default([]),
 });
 
 // Relaxed schema for generateObject — Anthropic API doesn't support
@@ -52,6 +53,7 @@ const ScoreResultSchemaLLM = z.object({
     ok: z.boolean(),
     flags: z.array(z.string()),
   }),
+  symbols: z.array(z.string()),
 });
 
 export type ScoreResult = z.infer<typeof ScoreResultSchema>;
@@ -67,6 +69,11 @@ const EXTRA_INSTRUCTIONS = [
   '  • ok=false if the dream contains: explicit sexual content, graphic violence, real-named slurs, real-person targeted harassment, or self-harm encouragement.',
   '  • Mere unsettling, surreal, or dark dream content is fine — those are normal dreams.',
   '  • flags: short tags like ["explicit_sexual", "graphic_violence", "slur"] when ok=false; [] when ok=true.',
+  '- "symbols": 3 to 8 short, lower-case, single-word (or hyphenated) motifs that appear in the dream.',
+  '  • Concrete imagery, not abstract feelings: prefer "ocean", "grandmother", "stairs" over "fear", "peace".',
+  '  • One word each — split phrases ("flying" not "the act of flying"). Use a hyphen only for unsplittable compounds ("dream-stairs" → "stairs").',
+  '  • All lower-case ASCII. No punctuation, no emoji. De-duplicate.',
+  '  • If the dream is too sparse for 3 symbols, return as many as you can — never invent.',
 ].join('\n');
 
 function clampMetric(m: { score: number; oneLiner: string }): { score: number; oneLiner: string } {
@@ -126,12 +133,41 @@ export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
     ? { ok: object.moderation.ok, flags: object.moderation.flags ?? [] }
     : { ok: true, flags: [] };
 
+  // Normalise symbols: lower-case, alpha + hyphen only, dedupe, cap at 8.
+  const symbols = sanitizeSymbols(object.symbols);
+
   return {
     metrics,
     matchedStyleIds,
     blurb,
     moderation,
+    symbols,
   };
+}
+
+/**
+ * Lower-case, strip non-letters (keep hyphens), drop blanks, dedupe, cap at 8.
+ * Defensive — the model occasionally returns trailing punctuation or duplicates.
+ */
+function sanitizeSymbols(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== 'string') continue;
+    const cleaned = item
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z\-]/g, '')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 24);
+    if (!cleaned || cleaned.length < 2) continue;
+    if (seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    out.push(cleaned);
+    if (out.length >= 8) break;
+  }
+  return out;
 }
 
 export async function rerollStyles(

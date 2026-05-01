@@ -22,6 +22,8 @@ import { Menu, Moon, X } from 'lucide-react';
 
 const LINKS = [
   { href: '/leaderboard', label: 'Gallery' },
+  { href: '/patterns',    label: 'Patterns' },
+  { href: '/circles',     label: 'Circles' },
   { href: '/pricing',     label: 'Pricing' },
   { href: '/about',       label: 'About' },
 ];
@@ -65,7 +67,7 @@ export function LandingHeader() {
         </Link>
 
         {/* Center nav (desktop) */}
-        <nav className="hidden items-center gap-8 sm:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-5 sm:flex" aria-label="Primary">
           {LINKS.map(l => (
             <Link
               key={l.href}

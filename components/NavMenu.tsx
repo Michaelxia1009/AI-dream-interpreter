@@ -12,6 +12,8 @@ import {
   BookOpen,
   Wand2,
   Home,
+  ChartBar,
+  UsersRound,
 } from 'lucide-react';
 
 type Item = {
@@ -35,6 +37,8 @@ const ITEMS: Item[] = [
   { href: '/',            label: 'Home',         blurb: 'Landing & overview',           icon: Home },
   { href: '/capture',     label: 'Capture',      blurb: 'Start a new dream',            icon: Wand2 },
   { href: '/interpret',   label: 'Interpret',    blurb: 'Read your dream closely',      icon: Sparkles },
+  { href: '/patterns',    label: 'Patterns',     blurb: 'Mood and symbol analytics',    icon: ChartBar },
+  { href: '/circles',     label: 'Circles',      blurb: 'Private dream groups',         icon: UsersRound },
   { href: '/leaderboard', label: 'Gallery',      blurb: 'This week\u2019s top dreams', icon: Trophy },
   { href: '/pricing',     label: 'Pricing',      blurb: 'Free forever or Plus',         icon: Tag },
   { href: '/about',       label: 'About',        blurb: 'What Dreamweaver is',          icon: BookOpen },

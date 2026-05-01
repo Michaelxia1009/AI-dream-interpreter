@@ -17,6 +17,8 @@ export interface ScoreResult {
   matchedStyleIds: string[];
   blurb: string;
   moderation: Moderation;
+  /** 3–8 short lower-case motifs the LLM extracted (powers /patterns). Optional for back-compat. */
+  symbols?: string[];
 }
 
 export interface DreamSession {

@@ -57,6 +57,13 @@ export interface DreamRecord {
   isPublic: boolean;
   moderation: ModerationResult;
   blurb: string;                 // ≤ 80 chars — LLM-generated card excerpt, never the raw transcript
+  /**
+   * 3–8 short, lower-case symbols/motifs the LLM extracted from the dream
+   * (e.g. ["forest","flying","grandmother"]). Used by /patterns to surface
+   * recurring imagery across a user's history. Optional for back-compat
+   * with records persisted before this field shipped.
+   */
+  symbols?: string[];
 }
 
 export type LeaderboardMetric = 'weirdness' | 'vivid' | 'emotional';

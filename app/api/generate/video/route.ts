@@ -12,6 +12,7 @@ import { uploadArtifact } from '@/lib/providers/blob';
 import { persistDream } from '@/lib/dreams/repo';
 import { addDreamToBoards } from '@/lib/dreams/leaderboard';
 import { getHandleForFpHash } from '@/lib/dreams/handle';
+import { addDreamToUserIndex } from '@/lib/dreams/user-index';
 import { isoWeekKey } from '@/lib/dreams/iso-week';
 import type { DreamRecord } from '@/lib/dreams/types';
 
@@ -31,6 +32,7 @@ const ScoreBody = z.object({
   }),
   blurb: z.string(),
   moderation: z.object({ ok: z.boolean(), flags: z.array(z.string()) }),
+  symbols: z.array(z.string()).optional(),
 });
 
 const Body = z.object({
@@ -92,9 +94,10 @@ export async function POST(req: NextRequest) {
       try {
         const fpHash = fpHashOf(parsed.data.fingerprint);
         handle = await getHandleForFpHash(fpHash);
+        const createdAt = Date.now();
         const record: DreamRecord = {
           id,
-          createdAt: Date.now(),
+          createdAt,
           isoWeek: isoWeekKey(),
           format: 'video',
           styleId: style.id,
@@ -116,8 +119,11 @@ export async function POST(req: NextRequest) {
           isPublic,
           moderation: parsed.data.score.moderation,
           blurb: parsed.data.score.blurb.slice(0, 80),
+          symbols: sanitizeSymbolsForPersist(parsed.data.score.symbols),
         };
         await persistDream(record);
+        // Index for /patterns regardless of public/private — Patterns is private to the dreamer.
+        await addDreamToUserIndex(fpHash, id, createdAt);
         if (isPublic) {
           await addDreamToBoards(record);
         }
@@ -147,4 +153,23 @@ function clampScore(m: { score: number; oneLiner: string }) {
     score: Math.max(1, Math.min(10, Math.round(m.score))),
     oneLiner: m.oneLiner.slice(0, 80),
   };
+}
+
+/**
+ * Same defensive normaliser as the carousel route — keep the behaviour identical
+ * so a dream's `symbols` field is shape-stable across formats.
+ */
+function sanitizeSymbolsForPersist(raw: string[] | undefined): string[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of raw) {
+    if (typeof item !== 'string') continue;
+    const cleaned = item.toLowerCase().trim().replace(/[^a-z\-]/g, '').replace(/^-+|-+$/g, '').slice(0, 24);
+    if (cleaned.length < 2 || seen.has(cleaned)) continue;
+    seen.add(cleaned);
+    out.push(cleaned);
+    if (out.length >= 8) break;
+  }
+  return out.length ? out : undefined;
 }

@@ -29,10 +29,12 @@ export default function GeneratePage() {
           ? '/api/generate/video'
           : '/api/generate/carousel';
         // Send the score so the server can persist the dream record + index into leaderboards.
+        // `symbols` is optional — when present it powers /patterns symbol-cloud aggregation.
         const score = session.score && {
           metrics: session.score.metrics,
           blurb: session.score.blurb,
           moderation: session.score.moderation,
+          symbols: session.score.symbols,
         };
         const res = await fetch(endpoint, {
           method: 'POST',
