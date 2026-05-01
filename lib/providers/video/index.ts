@@ -28,11 +28,11 @@ const PROVIDERS_BY_ID = new Map<VideoProviderId, VideoProvider>(
 export function getDefaultVideoProviderId(): VideoProviderId {
   return isVideoProviderId(process.env.VIDEO_PROVIDER)
     ? process.env.VIDEO_PROVIDER
-    : 'hailuo';
+    : 'seedance-lite';
 }
 
 export function getVideoProvider(id: VideoProviderId): VideoProvider {
-  return PROVIDERS_BY_ID.get(id) ?? hailuoProvider;
+  return PROVIDERS_BY_ID.get(id) ?? seedanceLiteProvider;
 }
 
 export function selectVideoProvider({
@@ -52,7 +52,7 @@ export function selectVideoProvider({
 
   if (provider.supportsDuration(durationSeconds)) return provider;
   if (envProvider.supportsDuration(durationSeconds)) return envProvider;
-  return hailuoProvider;
+  return seedanceLiteProvider;
 }
 
 export async function generateVideo(prompt: string, opts: VideoGenOpts = {}): Promise<Buffer> {

@@ -24,7 +24,7 @@ export type VideoResolution = '720p' | '1080p';
 export type VideoAspectRatio = '16:9' | '9:16' | '1:1';
 
 export interface VideoGenOpts {
-  /** Target clip length. Default 8 to keep benchmark clips fast and narration tight. */
+  /** Target clip length. Default 10 for the main dream-video experience. */
   durationSeconds?: number;
   resolution?: VideoResolution;
   /** Negative prompt (where supported). Adapters silently ignore if unsupported. */
@@ -43,7 +43,7 @@ export interface VideoProvider {
   generate(scenePrompt: string, opts?: VideoGenOpts): Promise<Buffer>;
 }
 
-export const DEFAULT_DURATION_SECONDS = 8;
+export const DEFAULT_DURATION_SECONDS = 10;
 export const DEFAULT_RESOLUTION: VideoResolution = '720p';
 export const DEFAULT_ASPECT_RATIO: VideoAspectRatio = '9:16';
 
