@@ -6,6 +6,7 @@ import { Loader2, Mic, Sparkles } from 'lucide-react';
 import { BreathingOrb } from '@/components/BreathingOrb';
 import { ChatThread } from '@/components/ChatThread';
 import { MicButton } from '@/components/MicButton';
+import { PageShell, GlassPanel, Button } from '@/components/ui';
 import { useDream, type InterviewTurn } from '@/lib/state';
 import { toast } from 'sonner';
 
@@ -102,164 +103,165 @@ export default function CapturePage() {
   const setActiveText = hasStartedInterview ? setReplyText : setDreamText;
 
   return (
-    <main
-      className={`aurora-bg min-h-dvh px-4 py-8 transition-all sm:px-6 ${
-        sleepy ? 'brightness-90 saturate-[0.85]' : ''
-      }`}
+    <PageShell
+      width="narrow"
+      className={sleepy ? 'brightness-90 saturate-[0.85]' : ''}
     >
-      <div className="mx-auto max-w-3xl">
-        <header className="mb-8 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">Tell the night</h1>
-            <p className="mt-2 text-lg italic text-muted-foreground">
-              Capture it before it fades.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setSleepy(s => !s)}
-            className="rounded-full border border-border/50 bg-card/30 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:text-foreground"
-          >
-            {sleepy ? 'Sleepy mode' : 'Awake mode'}
-          </button>
-        </header>
+      <header className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-h1">Tell the night</h1>
+          <p className="mt-2 text-lg italic text-muted-foreground">
+            Capture it before it fades.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSleepy(s => !s)}
+          className="rounded-full border border-border/50 bg-card/30 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:text-foreground"
+        >
+          {sleepy ? 'Sleepy mode' : 'Awake mode'}
+        </button>
+      </header>
 
-        <section className="surface-glass rounded-2xl p-5 sm:p-7">
-          <div className="flex flex-col items-center py-4">
-            <div className="relative grid place-items-center">
-              <BreathingOrb size={150} className={pending ? 'opacity-60' : ''}>
-                <Mic className="h-9 w-9 text-foreground/90" />
-              </BreathingOrb>
-            </div>
-            <div className="mt-3">
-              <MicButton
-                onTranscript={t => setActiveText(prev => prev ? `${prev} ${t}` : t)}
-                disabled={pending || done}
+      <GlassPanel size="md" className="sm:p-7">
+        <div className="flex flex-col items-center py-4">
+          <div className="relative grid place-items-center">
+            <BreathingOrb size={150} className={pending ? 'opacity-60' : ''}>
+              <Mic className="h-9 w-9 text-foreground/90" />
+            </BreathingOrb>
+          </div>
+          <div className="mt-3">
+            <MicButton
+              onTranscript={t => setActiveText(prev => prev ? `${prev} ${t}` : t)}
+              disabled={pending || done}
+            />
+          </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Tap to dictate, or type below.
+          </p>
+        </div>
+
+        {!hasStartedInterview && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="dream" className="text-sm text-muted-foreground">
+                The dream
+              </label>
+              <textarea
+                id="dream"
+                value={dreamText}
+                onChange={e => setDreamText(e.target.value)}
+                placeholder="I was walking through a forest of mirrors..."
+                className="min-h-52 w-full resize-y appearance-none rounded-2xl border border-border/50 px-4 py-4 font-serif text-lg italic leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
+                style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
+                autoFocus
               />
             </div>
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Tap to dictate, or type below.
-            </p>
-          </div>
 
-          {!hasStartedInterview && (
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label htmlFor="dream" className="text-sm text-muted-foreground">
-                  The dream
-                </label>
-                <textarea
-                  id="dream"
-                  value={dreamText}
-                  onChange={e => setDreamText(e.target.value)}
-                  placeholder="I was walking through a forest of mirrors..."
-                  className="min-h-52 w-full resize-y appearance-none rounded-2xl border border-border/50 px-4 py-4 font-serif text-lg italic leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
-                  style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
-                  autoFocus
-                />
-              </div>
-
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">How did it feel?</p>
-                <div className="flex flex-wrap gap-2">
-                  {MOODS.map(item => (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => setMood(item.value)}
-                      className={`rounded-full border px-4 py-2 text-sm transition ${
-                        mood === item.value
-                          ? 'border-ring/60 bg-ring/20 text-foreground shadow-[0_0_24px_rgba(167,139,250,0.22)]'
-                          : 'border-border/40 bg-card/30 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      <span className="mr-1.5 text-[11px] uppercase tracking-[0.12em]">{item.glyph}</span>
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Dream type</p>
-                <div className="flex flex-wrap gap-2">
-                  {DREAM_TYPES.map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setDreamType(type)}
-                      className={`rounded-full border px-4 py-2 text-sm capitalize transition ${
-                        dreamType === type
-                          ? 'border-fuchsia-300/50 bg-fuchsia-300/15 text-foreground'
-                          : 'border-border/40 bg-card/30 text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {hasStartedInterview && (
-            <div className="mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/25">
-              <ChatThread turns={turns} pending={pending} />
-            </div>
-          )}
-
-          <div className="mt-6">
-            {done ? (
-              <button
-                type="button"
-                onClick={() => router.push('/format')}
-                className="aurora-cta inline-flex w-full items-center justify-center rounded-full px-6 py-4 font-semibold tracking-wide"
-              >
-                Continue
-              </button>
-            ) : hasStartedInterview ? (
-              <div className="flex items-end gap-3">
-                <textarea
-                  rows={1}
-                  value={replyText}
-                  onChange={e => setReplyText(e.target.value)}
-                  placeholder="Answer the follow-up..."
-                  className="min-h-12 flex-1 resize-none appearance-none rounded-2xl border border-border/50 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
-                  style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      submit(replyText);
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">How did it feel?</p>
+              <div className="flex flex-wrap gap-2">
+                {MOODS.map(item => (
+                  <Button
+                    key={item.value}
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setMood(item.value)}
+                    className={
+                      mood === item.value
+                        ? 'border-ring/60 bg-ring/20 text-foreground shadow-[0_0_24px_rgba(167,139,250,0.22)]'
+                        : ''
                     }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => submit(replyText)}
-                  disabled={pending || !replyText.trim()}
-                  className="aurora-cta inline-flex h-12 items-center justify-center rounded-full px-5 font-semibold disabled:opacity-50"
-                >
-                  {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
-                </button>
+                  >
+                    <span className="mr-1.5 text-[11px] uppercase tracking-[0.12em]">{item.glyph}</span>
+                    {item.label}
+                  </Button>
+                ))}
               </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => submit(dreamText)}
-                disabled={pending || !dreamText.trim()}
-                className="aurora-cta mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold disabled:opacity-50"
-              >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                Continue
-              </button>
-            )}
-          </div>
-        </section>
+            </div>
 
-        <p className="mx-auto mt-5 max-w-xl text-center text-[11px] text-muted-foreground/80">
-          Public on the leaderboard by default — easy to toggle off after generation.
-        </p>
-      </div>
-    </main>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">Dream type</p>
+              <div className="flex flex-wrap gap-2">
+                {DREAM_TYPES.map(type => (
+                  <Button
+                    key={type}
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setDreamType(type)}
+                    className={`capitalize ${
+                      dreamType === type
+                        ? 'border-fuchsia-300/50 bg-fuchsia-300/15 text-foreground'
+                        : ''
+                    }`}
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {hasStartedInterview && (
+          <div className="mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/25">
+            <ChatThread turns={turns} pending={pending} />
+          </div>
+        )}
+
+        <div className="mt-6">
+          {done ? (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => router.push('/format')}
+              className="w-full"
+            >
+              Continue
+            </Button>
+          ) : hasStartedInterview ? (
+            <div className="flex items-end gap-3">
+              <textarea
+                rows={1}
+                value={replyText}
+                onChange={e => setReplyText(e.target.value)}
+                placeholder="Answer the follow-up..."
+                className="min-h-12 flex-1 resize-none appearance-none rounded-2xl border border-border/50 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
+                style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submit(replyText);
+                  }
+                }}
+              />
+              <Button
+                variant="primary"
+                onClick={() => submit(replyText)}
+                disabled={pending || !replyText.trim()}
+                className="h-12"
+              >
+                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => submit(dreamText)}
+              disabled={pending || !dreamText.trim()}
+              className="mx-auto w-full max-w-md"
+            >
+              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              Continue
+            </Button>
+          )}
+        </div>
+      </GlassPanel>
+
+      <p className="mx-auto mt-5 max-w-xl text-center text-[11px] text-muted-foreground/80">
+        Public on the leaderboard by default — easy to toggle off after generation.
+      </p>
+    </PageShell>
   );
 }

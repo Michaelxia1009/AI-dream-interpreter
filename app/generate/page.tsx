@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoadingScene } from '@/components/LoadingScene';
+import { PageShell } from '@/components/ui';
 import { useDream, type GenerationResult } from '@/lib/state';
 import { getFingerprint } from '@/lib/fingerprint';
 import { toast } from 'sonner';
@@ -70,5 +71,9 @@ export default function GeneratePage() {
     })();
   }, [session, isHydrated, router, update]);
 
-  return <LoadingScene />;
+  return (
+    <PageShell>
+      <LoadingScene />
+    </PageShell>
+  );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { Hash } from 'lucide-react';
+import { GlassPanel } from '@/components/ui';
 
 export interface SymbolHit {
   symbol: string;
@@ -11,11 +12,11 @@ export function SymbolCloud({ symbols }: { symbols: SymbolHit[] }) {
   const max = symbols.reduce((n, s) => Math.max(n, s.count), 1);
 
   return (
-    <section className="surface-glass rounded-2xl p-5">
+    <GlassPanel size="sm" as="section">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Recurring symbols</p>
-          <h2 className="mt-1 font-serif text-2xl tracking-tight">Images that keep returning</h2>
+          <h2 className="mt-1 font-display text-2xl tracking-tight">Images that keep returning</h2>
         </div>
         <Hash className="h-5 w-5 text-muted-foreground" />
       </div>
@@ -42,6 +43,6 @@ export function SymbolCloud({ symbols }: { symbols: SymbolHit[] }) {
           })}
         </div>
       )}
-    </section>
+    </GlassPanel>
   );
 }

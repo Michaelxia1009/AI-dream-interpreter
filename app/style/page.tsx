@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { StyleCard } from '@/components/StyleCard';
 import { STYLES, getStyleById } from '@/lib/styles';
+import { PageShell, PageHeader } from '@/components/ui';
 import { useDream } from '@/lib/state';
 import { toast } from 'sonner';
 
@@ -64,11 +65,12 @@ export default function StylePage() {
   const styles = ids.map(id => getStyleById(id)!).filter(Boolean);
 
   return (
-    <main className="aurora-bg flex min-h-dvh flex-col px-6 py-10">
-      <h1 className="font-serif text-3xl">Pick a style</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        We picked 3 that fit your dream. Tap one.
-      </p>
+    <PageShell>
+      <PageHeader
+        eyebrow="Style"
+        title="Pick a style"
+        subtitle="We picked 3 that fit your dream. Tap one."
+      />
       <div className="mt-8 flex flex-col gap-3">
         {loading
           ? [1, 2, 3].map(i => (
@@ -85,6 +87,6 @@ export default function StylePage() {
       >
         Show different styles
       </button>
-    </main>
+    </PageShell>
   );
 }

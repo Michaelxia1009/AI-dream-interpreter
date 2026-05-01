@@ -40,10 +40,11 @@ export async function GET(req: NextRequest) {
         'Cache-Control': 'public, max-age=30, s-maxage=30, stale-while-revalidate=60',
       },
     });
-  } catch (err: any) {
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : 'Unknown error';
     console.error('leaderboard fetch failed', err);
     return NextResponse.json(
-      { error: 'leaderboard_failed', detail: err?.message },
+      { error: 'leaderboard_failed', detail },
       { status: 500 },
     );
   }

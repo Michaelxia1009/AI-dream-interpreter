@@ -19,7 +19,7 @@ export function ReportCard({ score }: { score: ScoreResult }) {
   return (
     <div className="report-card-surface shrink-0 overflow-hidden rounded-3xl px-5 py-4">
       <div className="flex items-baseline justify-between">
-        <h2 className="font-serif text-lg leading-none">Dream Report Card</h2>
+        <h2 className="font-display text-lg leading-none">Dream Report Card</h2>
         <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">by ✦ Dreamweaver</span>
       </div>
 
@@ -27,7 +27,7 @@ export function ReportCard({ score }: { score: ScoreResult }) {
         {entries.map(m => (
           <div key={m.key} className="min-w-0">
             <div className="flex items-baseline gap-2">
-              <span className="aurora-text font-serif text-3xl leading-none tabular-nums">
+              <span className="aurora-text font-display text-3xl leading-none tabular-nums">
                 {m.score}
               </span>
               <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">

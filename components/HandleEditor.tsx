@@ -65,8 +65,8 @@ export function HandleEditor({ dreamId, handle, onChange, disabled }: Props) {
       onChange(draft.trim());
       setEditing(false);
       toast.success('Handle updated');
-    } catch (err: any) {
-      setError(err?.message ?? 'Something went wrong');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setBusy(false);
     }

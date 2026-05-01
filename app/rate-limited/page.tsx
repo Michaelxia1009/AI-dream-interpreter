@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { PageShell, Button } from '@/components/ui';
 import { getFingerprint } from '@/lib/fingerprint';
 
 export default function RateLimitedPage() {
@@ -28,21 +28,18 @@ export default function RateLimitedPage() {
   const mins = msLeft !== null ? Math.floor((msLeft % 3_600_000) / 60_000) : 0;
 
   return (
-    <main className="aurora-bg flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center">
-      <h1 className="font-serif text-3xl">
+    <PageShell className="items-center justify-center text-center">
+      <h1 className="text-h2">
         You&apos;ve dreamed <span className="aurora-text">3 times</span> today.
       </h1>
-      <p className="text-muted-foreground">
+      <p className="mt-6 text-muted-foreground">
         {msLeft !== null
           ? `Come back in ${hrs}h ${mins}m.`
           : 'Come back tomorrow for more.'}
       </p>
-      <Link
-        href="/"
-        className="rounded-full border border-border px-6 py-3 text-sm text-muted-foreground transition hover:text-foreground hover:border-ring/60"
-      >
+      <Button variant="secondary" size="lg" as="link" href="/" className="mt-6">
         Back to start
-      </Link>
-    </main>
+      </Button>
+    </PageShell>
   );
 }

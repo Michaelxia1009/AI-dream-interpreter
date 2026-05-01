@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { KeyRound } from 'lucide-react';
+import { Button, GlassPanel } from '@/components/ui';
 
 export function CircleJoinDialog({
   busy,
@@ -22,17 +23,18 @@ export function CircleJoinDialog({
 
   return (
     <div className="relative">
-      <button
+      <Button
         type="button"
+        variant="secondary"
+        size="lg"
         onClick={() => setOpen(o => !o)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-card/40 px-5 py-3 text-sm font-semibold text-foreground transition hover:border-ring/60"
       >
         <KeyRound className="h-4 w-4" />
         Join
-      </button>
+      </Button>
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-border bg-popover p-4 shadow-2xl">
-          <h2 className="font-serif text-xl">Join by invite</h2>
+        <GlassPanel size="sm" className="absolute right-0 top-full z-20 mt-3 w-[min(20rem,calc(100vw-2rem))] shadow-2xl">
+          <h2 className="font-display text-xl">Join by invite</h2>
           <input
             value={inviteCode}
             onChange={e => setInviteCode(e.target.value.toUpperCase())}
@@ -40,14 +42,14 @@ export function CircleJoinDialog({
             className="mt-4 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm uppercase tracking-[0.14em] outline-none focus:border-ring"
           />
           <div className="mt-4 flex justify-end gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground">
+            <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(false)}>
               Cancel
-            </button>
-            <button type="button" onClick={submit} disabled={busy || !inviteCode.trim()} className="aurora-cta rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-50">
+            </Button>
+            <Button type="button" size="sm" onClick={submit} disabled={busy || !inviteCode.trim()}>
               Join circle
-            </button>
+            </Button>
           </div>
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

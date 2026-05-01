@@ -1,6 +1,7 @@
 'use client';
 
 import { Activity, Brain, Eye, Zap } from 'lucide-react';
+import { GlassPanel } from '@/components/ui';
 
 export interface MoodSummary {
   avgWeirdness: number;
@@ -28,11 +29,11 @@ function widthFor(value: number): string {
 
 export function MoodSpectrum({ mood }: { mood: MoodSummary }) {
   return (
-    <section className="surface-glass rounded-2xl p-5">
+    <GlassPanel size="sm" as="section">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Mood spectrum</p>
-          <h2 className="mt-1 font-serif text-2xl tracking-tight">The weather of your recent dreams</h2>
+          <h2 className="mt-1 font-display text-2xl tracking-tight">The weather of your recent dreams</h2>
         </div>
         <span className="rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground">
           {mood.count} dreams
@@ -57,6 +58,6 @@ export function MoodSpectrum({ mood }: { mood: MoodSummary }) {
           );
         })}
       </div>
-    </section>
+    </GlassPanel>
   );
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Moon, Sparkles } from 'lucide-react';
 import { LandingHeader } from '@/components/LandingHeader';
+import { Button } from '@/components/ui';
 
 const productLinks = [
   { href: '/journal', label: 'Journal' },
@@ -57,18 +58,24 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
+            <Button
+              as="link"
               href="/capture"
-              className="hero-primary-cta bg-gradient-aurora inline-flex h-14 min-w-72 items-center justify-center rounded-full px-8 font-display text-lg font-normal text-primary-foreground shadow-glow-lg transition hover:scale-[1.02] hover:shadow-glow active:scale-[0.98]"
+              variant="primary"
+              size="lg"
+              className="hero-primary-cta h-14 min-w-72 text-lg"
             >
               Start journaling — it&apos;s free
-            </Link>
-            <Link
+            </Button>
+            <Button
+              as="link"
               href="/leaderboard"
-              className="inline-flex h-14 min-w-72 items-center justify-center rounded-full border border-border/50 bg-card/20 px-8 font-display text-lg font-light text-foreground/80 backdrop-blur-sm transition hover:border-border/80 hover:bg-card/35 hover:text-foreground"
+              variant="secondary"
+              size="lg"
+              className="h-14 min-w-72 text-lg font-light"
             >
               Explore the gallery
-            </Link>
+            </Button>
           </div>
 
           <p className="mx-auto mt-6 max-w-xl font-serif-italic text-sm italic leading-relaxed text-white/90 md:text-base">

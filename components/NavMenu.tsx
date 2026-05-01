@@ -12,6 +12,7 @@ import {
   UsersRound,
   UserRound,
 } from 'lucide-react';
+import { Button, GlassPanel } from '@/components/ui';
 
 type Item = {
   href: string;
@@ -71,19 +72,22 @@ export function NavMenu() {
 
   return (
     <div ref={ref} className="relative">
-      <button
+      <Button
+        variant="secondary"
+        size="sm"
         onClick={() => setOpen(o => !o)}
-        className="rounded-full p-2 text-muted-foreground transition hover:bg-secondary hover:text-foreground"
         aria-label="Navigation"
         aria-expanded={open}
       >
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </button>
+      </Button>
 
       {open && (
-        <div
+        <GlassPanel
+          as="div"
           role="menu"
-          className="surface-glass absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-2xl shadow-2xl"
+          size="sm"
+          className="absolute right-0 z-50 mt-2 w-72 overflow-hidden p-0 shadow-2xl"
         >
           <ul>
             {ITEMS.map(({ href, label, blurb, icon: Icon }) => {
@@ -115,7 +119,7 @@ export function NavMenu() {
               );
             })}
           </ul>
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

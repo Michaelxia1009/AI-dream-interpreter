@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Sparkles, Film } from 'lucide-react';
 import type { LeaderboardEntry } from '@/lib/dreams/types';
+import { GlassPanel } from '@/components/ui';
 
 interface Props {
   entry: LeaderboardEntry;
@@ -11,18 +12,22 @@ interface Props {
 
 export function LeaderboardCard({ entry, metricLabel }: Props) {
   return (
-    <Link
+    <GlassPanel
+      as={Link}
       href={`/d/${entry.id}`}
-      className="group flex items-center gap-3 rounded-2xl border border-border/50 bg-card/40 px-3 py-2 backdrop-blur transition hover:border-ring/60 hover:bg-card/60"
+      size="sm"
+      className="group flex items-center gap-3 px-3 py-2 transition hover:border-ring/60 hover:bg-card/60"
     >
       {/* Rank */}
-      <div className="w-7 shrink-0 text-center font-serif text-xl tabular-nums text-muted-foreground/80">
+      <div className="w-7 shrink-0 text-center font-display text-xl tabular-nums text-muted-foreground/80">
         {entry.rank}
       </div>
 
       {/* Thumbnail */}
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-zinc-900/60 ring-1 ring-border/50">
         {entry.thumbnailUrl ? (
+          // Generated Blob URLs are final display assets.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={entry.thumbnailUrl}
             alt=""
@@ -46,7 +51,7 @@ export function LeaderboardCard({ entry, metricLabel }: Props) {
             {entry.styleName}
           </span>
         </div>
-        <p className="truncate font-serif text-[13px] italic text-foreground/80">
+        <p className="truncate font-display text-[13px] italic text-foreground/80">
           “{entry.blurb}”
         </p>
       </div>
@@ -54,7 +59,7 @@ export function LeaderboardCard({ entry, metricLabel }: Props) {
       {/* Metric badge */}
       <div className="shrink-0 text-right">
         <div className="flex items-baseline justify-end gap-1">
-          <span className="aurora-text font-serif text-2xl leading-none tabular-nums">
+          <span className="aurora-text font-display text-2xl leading-none tabular-nums">
             {entry.metricScore}
           </span>
           <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -66,6 +71,6 @@ export function LeaderboardCard({ entry, metricLabel }: Props) {
           {metricLabel}
         </div>
       </div>
-    </Link>
+    </GlassPanel>
   );
 }

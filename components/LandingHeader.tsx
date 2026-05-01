@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BookOpenText, Menu, Moon, Plus, Trophy, UserRound, UsersRound, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Button } from '@/components/ui';
 
 const LINKS = [
   { href: '/journal', label: 'Journal', icon: BookOpenText },
@@ -35,14 +36,14 @@ export function LandingHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/60 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-[1800px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 w-full max-w-[1800px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           className="group inline-flex shrink-0 items-center gap-2 text-foreground transition hover:text-foreground"
           aria-label="Dreamweaver home"
         >
           <Moon className="h-6 w-6 -rotate-12 text-[var(--primary-glow)]" />
-          <span className="wordmark-font hidden text-3xl font-medium text-foreground sm:inline sm:text-[2.1rem] xl:text-[2.35rem]">
+          <span className="wordmark-font hidden text-2xl tracking-tight font-medium text-foreground sm:inline">
             Dreamweaver
           </span>
         </Link>
@@ -67,23 +68,21 @@ export function LandingHeader() {
           <div className="hidden sm:block">
             <ThemeToggle compact />
           </div>
-          <Link
-            href="/capture"
-            className="aurora-cta inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2 font-display text-sm font-normal shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-5 sm:py-3 lg:px-6 lg:text-base"
-          >
-            <Plus className="mr-1 h-4 w-4 shrink-0" />
+          <Button as="link" href="/capture" variant="primary" size="md">
+            <Plus className="h-4 w-4 shrink-0" />
             <span>New dream</span>
-          </Link>
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setOpen(value => !value)}
-            className="rounded-full border border-border/50 bg-card/40 p-2 text-muted-foreground backdrop-blur transition hover:text-foreground md:hidden"
+            className="md:hidden"
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </button>
+          </Button>
         </div>
       </div>
 

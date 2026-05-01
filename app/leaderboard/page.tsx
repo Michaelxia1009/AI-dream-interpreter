@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLeaderboard } from '@/lib/dreams/leaderboard';
 import { isoWeekKey, formatIsoWeekRange, msUntilNextIsoWeek } from '@/lib/dreams/iso-week';
 import { LeaderboardView } from '@/components/LeaderboardView';
+import { PageShell } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 30;
@@ -15,14 +16,16 @@ export default async function LeaderboardPage() {
   // SSR the default tab (Weirdest); the client picks up the other two on mount.
   const entries = await getLeaderboard('weirdness');
   return (
-    <LeaderboardView
-      initial={{
-        metric: 'weirdness',
-        isoWeek: isoWeekKey(),
-        isoWeekRange: formatIsoWeekRange(),
-        msUntilReset: msUntilNextIsoWeek(),
-        entries,
-      }}
-    />
+    <PageShell width="wide">
+      <LeaderboardView
+        initial={{
+          metric: 'weirdness',
+          isoWeek: isoWeekKey(),
+          isoWeekRange: formatIsoWeekRange(),
+          msUntilReset: msUntilNextIsoWeek(),
+          entries,
+        }}
+      />
+    </PageShell>
   );
 }

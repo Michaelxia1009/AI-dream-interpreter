@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { LandingHeader } from '@/components/LandingHeader';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 export const metadata = {
   title: 'How It Works · Dreamweaver',
@@ -26,28 +25,31 @@ const STEPS = [
 
 export default function HowItWorksPage() {
   return (
-    <main className="aurora-bg min-h-dvh">
-      <LandingHeader />
-      <section className="px-6 pb-24 pt-32 sm:pt-40">
-        <div className="mx-auto max-w-5xl">
-          <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">How it works</p>
-          <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-7xl">
-            Three breaths between you and <span className="aurora-text">understanding.</span>
-          </h1>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
-            {STEPS.map(item => (
-              <article key={item.title} className="surface-glass rounded-2xl p-6">
-                <p className="mb-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{item.step}</p>
-                <h2 className="font-serif text-2xl tracking-tight">{item.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-              </article>
-            ))}
-          </div>
-          <Link href="/capture" className="aurora-cta mt-10 inline-flex rounded-full px-6 py-3 text-sm font-semibold">
-            Start journaling
-          </Link>
+    <PageShell chrome="landing">
+      <section className="mx-auto max-w-5xl">
+        <PageHeader
+          eyebrow="How it works"
+          title={
+            <>
+              Three breaths between you and <span className="aurora-text">understanding.</span>
+            </>
+          }
+        />
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {STEPS.map(item => (
+            <GlassPanel key={item.title} size="md" as="article">
+              <p className="mb-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{item.step}</p>
+              <h2 className="font-display text-2xl tracking-tight">{item.title}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+            </GlassPanel>
+          ))}
         </div>
+
+        <Button variant="primary" as="link" href="/capture" className="mt-10">
+          Start journaling
+        </Button>
       </section>
-    </main>
+    </PageShell>
   );
 }

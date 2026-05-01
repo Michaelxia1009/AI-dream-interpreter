@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Loader2, UsersRound } from 'lucide-react';
 import { getFingerprint } from '@/lib/fingerprint';
 import { CircleCard, type CircleSummary } from '@/components/circles/CircleCard';
 import { CircleCreateDialog } from '@/components/circles/CircleCreateDialog';
 import { CircleJoinDialog } from '@/components/circles/CircleJoinDialog';
 import { toast } from 'sonner';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 export default function CirclesPage() {
   const [fingerprint, setFingerprint] = useState<string | null>(null);
@@ -85,50 +85,44 @@ export default function CirclesPage() {
   }
 
   return (
-    <main className="aurora-bg min-h-dvh px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Circles</p>
-            <h1 className="mt-2 font-serif text-5xl leading-tight tracking-tight">
-              Private dream groups.
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Create invite-only spaces where dreams can be shared with a few people, not the whole gallery.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <CircleJoinDialog busy={busy} onJoin={join} />
-            <CircleCreateDialog busy={busy} onCreate={create} />
-          </div>
-        </header>
+    <PageShell width="wide">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <PageHeader
+          eyebrow="Circles"
+          title="Private dream groups."
+          subtitle="Create invite-only spaces where dreams can be shared with a few people, not the whole gallery."
+        />
+        <div className="flex gap-2">
+          <CircleJoinDialog busy={busy} onJoin={join} />
+          <CircleCreateDialog busy={busy} onCreate={create} />
+        </div>
+      </header>
 
-        {loading ? (
-          <div className="grid min-h-[40vh] place-items-center text-muted-foreground">
-            <span className="inline-flex items-center gap-3">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading circles...
-            </span>
-          </div>
-        ) : circles.length === 0 ? (
-          <section className="surface-glass rounded-2xl p-8 text-center">
-            <UsersRound className="mx-auto h-8 w-8 text-muted-foreground" />
-            <h2 className="mt-4 font-serif text-3xl tracking-tight">No circles yet</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Make one for close friends, a writing group, or anyone you trust with the strange little movies your mind makes at night.
-            </p>
-            <Link href="/capture" className="mt-6 inline-flex rounded-full border border-border px-5 py-3 text-sm text-muted-foreground hover:text-foreground">
-              Capture a dream first
-            </Link>
-          </section>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {circles.map(circle => (
-              <CircleCard key={circle.id} circle={circle} />
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+      {loading ? (
+        <div className="grid min-h-[40vh] place-items-center text-muted-foreground">
+          <span className="inline-flex items-center gap-3">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading circles...
+          </span>
+        </div>
+      ) : circles.length === 0 ? (
+        <GlassPanel size="lg" className="text-center">
+          <UsersRound className="mx-auto h-8 w-8 text-muted-foreground" />
+          <h2 className="mt-4 text-h2">No circles yet</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Make one for close friends, a writing group, or anyone you trust with the strange little movies your mind makes at night.
+          </p>
+          <Button as="link" href="/capture" variant="secondary" size="lg" className="mt-6">
+            Capture a dream first
+          </Button>
+        </GlassPanel>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {circles.map(circle => (
+            <CircleCard key={circle.id} circle={circle} />
+          ))}
+        </div>
+      )}
+    </PageShell>
   );
 }

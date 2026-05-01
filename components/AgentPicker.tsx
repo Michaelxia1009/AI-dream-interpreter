@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AGENTS, type AgentDef, type AgentId } from '@/lib/interpret';
+import { Button, GlassPanel } from '@/components/ui';
 
 interface Props {
   agentId: AgentId;
@@ -41,11 +42,12 @@ export function AgentPicker({ agentId, disabled, onChange }: Props) {
 
   return (
     <div ref={ref} className="relative">
-      <button
+      <Button
         type="button"
+        variant="secondary"
+        size="sm"
         onClick={() => setOpen(o => !o)}
         disabled={disabled}
-        className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-4 py-2 text-sm backdrop-blur transition hover:border-ring/50 disabled:opacity-60"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -56,12 +58,14 @@ export function AgentPicker({ agentId, disabled, onChange }: Props) {
             open ? 'rotate-180' : ''
           }`}
         />
-      </button>
+      </Button>
 
       {open && (
-        <div
+        <GlassPanel
+          as="div"
           role="listbox"
-          className="surface-glass absolute right-0 z-30 mt-2 w-80 overflow-hidden rounded-2xl shadow-2xl"
+          size="sm"
+          className="absolute right-0 z-30 mt-2 w-80 overflow-hidden p-0 shadow-2xl"
         >
           {AGENTS.map(a => {
             const isActive = a.id === agentId;
@@ -81,7 +85,7 @@ export function AgentPicker({ agentId, disabled, onChange }: Props) {
                     : 'hover:bg-secondary/40'
                 }`}
               >
-                <span className="font-serif text-base tracking-tight">
+                <span className="font-display text-base tracking-tight">
                   {a.name}
                 </span>
                 <span className="text-[11px] leading-snug text-muted-foreground">
@@ -90,7 +94,7 @@ export function AgentPicker({ agentId, disabled, onChange }: Props) {
               </button>
             );
           })}
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

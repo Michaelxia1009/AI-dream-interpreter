@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { Button, GlassPanel } from '@/components/ui';
 
 export function CircleCreateDialog({
   busy,
@@ -24,17 +25,17 @@ export function CircleCreateDialog({
 
   return (
     <div className="relative">
-      <button
+      <Button
         type="button"
+        size="lg"
         onClick={() => setOpen(o => !o)}
-        className="aurora-cta inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold"
       >
         <Plus className="h-4 w-4" />
         Create
-      </button>
+      </Button>
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-3 w-[min(22rem,calc(100vw-2rem))] rounded-2xl border border-border bg-popover p-4 shadow-2xl">
-          <h2 className="font-serif text-xl">New circle</h2>
+        <GlassPanel size="sm" className="absolute right-0 top-full z-20 mt-3 w-[min(22rem,calc(100vw-2rem))] shadow-2xl">
+          <h2 className="font-display text-xl">New circle</h2>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
@@ -49,14 +50,14 @@ export function CircleCreateDialog({
             className="mt-3 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-ring"
           />
           <div className="mt-4 flex justify-end gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm text-muted-foreground">
+            <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(false)}>
               Cancel
-            </button>
-            <button type="button" onClick={submit} disabled={busy || !name.trim()} className="aurora-cta rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-50">
+            </Button>
+            <Button type="button" size="sm" onClick={submit} disabled={busy || !name.trim()}>
               Create circle
-            </button>
+            </Button>
           </div>
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

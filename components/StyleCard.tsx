@@ -1,6 +1,7 @@
 'use client';
 
 import type { Style } from '@/lib/styles';
+import { GlassPanel } from '@/components/ui';
 
 /* Mood-keyed gradients — procedural thumbnails keep the app vibrant
    while real style artwork is commissioned. */
@@ -54,9 +55,12 @@ interface Props {
 
 export function StyleCard({ style, showNarrator, onSelect }: Props) {
   return (
-    <button
+    <GlassPanel
+      as="button"
+      type="button"
       onClick={onSelect}
-      className="flex w-full items-center gap-4 rounded-2xl border border-border bg-card p-4 text-left transition hover:border-ring/60 active:scale-[0.99]"
+      size="sm"
+      className="flex w-full items-center gap-4 p-4 text-left transition hover:border-ring/60 active:scale-[0.99]"
     >
       <div
         className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl"
@@ -65,7 +69,7 @@ export function StyleCard({ style, showNarrator, onSelect }: Props) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.25),transparent_60%)]" />
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="font-serif text-lg">{style.name}</h3>
+        <h3 className="font-display text-lg">{style.name}</h3>
         <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{style.vibe}</p>
         {showNarrator && (
           <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground/80">
@@ -74,6 +78,6 @@ export function StyleCard({ style, showNarrator, onSelect }: Props) {
         )}
       </div>
       <span className="text-muted-foreground">&rsaquo;</span>
-    </button>
+    </GlassPanel>
   );
 }

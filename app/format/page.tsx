@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FormatCard } from '@/components/FormatCard';
+import { PageShell, PageHeader } from '@/components/ui';
 import { useDream } from '@/lib/state';
 import { getFingerprint } from '@/lib/fingerprint';
 
@@ -32,11 +33,16 @@ export default function FormatPage() {
   }
 
   return (
-    <main className="aurora-bg flex min-h-dvh flex-col px-6 py-10">
-      <h1 className="font-serif text-3xl">Pick a format</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {remaining !== null ? `${remaining} of ${limit ?? 5} generations left today` : 'Checking your quota...'}
-      </p>
+    <PageShell>
+      <PageHeader
+        eyebrow="Format"
+        title="Pick a format"
+        subtitle={
+          remaining !== null
+            ? `${remaining} of ${limit ?? 5} generations left today`
+            : 'Checking your quota...'
+        }
+      />
       <div className="mt-8 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         <FormatCard
           icon="&#127916;"
@@ -51,6 +57,6 @@ export default function FormatPage() {
           onSelect={() => pick('carousel')}
         />
       </div>
-    </main>
+    </PageShell>
   );
 }

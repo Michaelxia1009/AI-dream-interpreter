@@ -47,7 +47,7 @@ export function LoadingScene() {
             style={{ background: 'var(--dw-halo)' }}
           />
         </div>
-        <p className="font-serif text-2xl leading-snug">{MESSAGES[i]}</p>
+        <p className="font-display text-2xl leading-snug">{MESSAGES[i]}</p>
         <p className="mt-4 text-xs text-muted-foreground tabular-nums">{elapsed}s</p>
       </div>
     </div>

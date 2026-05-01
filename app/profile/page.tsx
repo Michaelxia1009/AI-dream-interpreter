@@ -10,6 +10,7 @@ import { MoodSpectrum, type MoodSummary } from '@/components/patterns/MoodSpectr
 import { SymbolCloud, type SymbolHit } from '@/components/patterns/SymbolCloud';
 import type { StreakInfo } from '@/lib/dreams/streak';
 import { toast } from 'sonner';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 interface Metric {
   score: number;
@@ -79,7 +80,7 @@ function formatReset(ms: number): string {
 function UsageCard({ label, used, cap }: { label: string; used: number; cap: number }) {
   const pct = cap > 0 ? Math.min(100, (used / cap) * 100) : 0;
   return (
-    <div className="surface-glass rounded-2xl p-4">
+    <GlassPanel size="sm">
       <div className="mb-2 flex justify-between text-sm">
         <span>{label}</span>
         <span className="text-muted-foreground">{used}/{cap}</span>
@@ -87,7 +88,7 @@ function UsageCard({ label, used, cap }: { label: string; used: number; cap: num
       <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
         <div className="h-full rounded-full bg-[var(--dw-gradient)]" style={{ width: `${pct}%` }} />
       </div>
-    </div>
+    </GlassPanel>
   );
 }
 
@@ -154,36 +155,40 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="aurora-bg grid min-h-dvh place-items-center px-6">
-        <span className="inline-flex items-center gap-3 text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading profile...
-        </span>
-      </main>
+      <PageShell>
+        <div className="grid flex-1 place-items-center">
+          <span className="inline-flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading profile...
+          </span>
+        </div>
+      </PageShell>
     );
   }
 
   if (!profile) {
     return (
-      <main className="aurora-bg grid min-h-dvh place-items-center px-6 text-center">
-        <div>
-          <h1 className="font-sans text-4xl font-semibold">Profile unavailable</h1>
-          <Link href="/capture" className="aurora-cta mt-5 inline-flex rounded-full px-5 py-3 text-sm font-semibold">
-            Start journaling
-          </Link>
+      <PageShell>
+        <div className="grid flex-1 place-items-center text-center">
+          <div>
+            <h1 className="text-h1">Profile unavailable</h1>
+            <Button as="link" href="/capture" size="lg" className="mt-5">
+              Start journaling
+            </Button>
+          </div>
         </div>
-      </main>
+      </PageShell>
     );
   }
 
   const used = Math.max(0, profile.usage.limit - profile.usage.remaining);
 
   return (
-    <main className="aurora-bg min-h-dvh px-4 py-12 sm:px-6">
-      <div className="mx-auto max-w-5xl space-y-14">
+    <PageShell width="wide">
+      <div className="space-y-14">
         <section>
-          <h1 className="font-sans text-5xl font-semibold leading-tight sm:text-6xl">My profile</h1>
-          <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
+          <PageHeader eyebrow="Profile" title="My profile" />
+          <GlassPanel size="lg" className="mt-4">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <div className="flex items-center gap-3">
@@ -191,7 +196,7 @@ export default function ProfilePage() {
                     <UserRound className="h-6 w-6 text-foreground/80" />
                   </div>
                   <div>
-                    <h2 className="font-serif text-2xl leading-tight tracking-tight text-foreground/90 sm:text-3xl">
+                    <h2 className="font-display text-2xl leading-tight tracking-tight text-foreground/90 sm:text-3xl">
                       {profile.account.displayName || profile.handle}
                     </h2>
                     <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
@@ -228,19 +233,19 @@ export default function ProfilePage() {
               </div>
 
               <div className="min-w-0 lg:w-[380px]">
-                <h2 className="mb-3 font-serif text-2xl tracking-tight">Your streak</h2>
+                <h2 className="mb-3 text-h3">Your streak</h2>
                 <StreakBadge streak={profile.streak} variant="full" />
                 <p className="mt-3 text-sm text-muted-foreground">
                   {profile.streak.totalDreams} dream{profile.streak.totalDreams === 1 ? '' : 's'} captured in total.
                 </p>
               </div>
             </div>
-          </div>
+          </GlassPanel>
         </section>
 
         <section>
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="font-serif text-3xl tracking-tight">Dream archive</h2>
+            <h2 className="text-h2">Dream archive</h2>
             <Link href="/leaderboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
               <Trophy className="h-4 w-4" />
               Explore dream leaderboard
@@ -248,19 +253,19 @@ export default function ProfilePage() {
           </div>
 
           {profile.dreams.length === 0 ? (
-            <div className="surface-glass rounded-2xl p-8 text-center">
-              <h3 className="font-serif text-3xl">No dreams recorded yet</h3>
+            <GlassPanel size="lg" className="text-center">
+              <h3 className="text-h3">No dreams recorded yet</h3>
               <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
                 Dreams appear here after you finish generating their image or video.
               </p>
-              <Link href="/capture" className="aurora-cta mt-6 inline-flex rounded-full px-5 py-3 text-sm font-semibold">
+              <Button as="link" href="/capture" size="lg" className="mt-6">
                 Start journaling
-              </Link>
-            </div>
+              </Button>
+            </GlassPanel>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {profile.dreams.map(dream => (
-                <article key={dream.id} className="surface-glass overflow-hidden rounded-2xl">
+                <GlassPanel key={dream.id} as="article" size="sm" className="overflow-hidden p-0">
                   {dream.thumbnailUrl ? (
                     // Generated Blob URLs are final display assets.
                     // eslint-disable-next-line @next/next/no-img-element
@@ -290,29 +295,28 @@ export default function ProfilePage() {
                       <span>Vivid {dream.metrics.vividness.score}/10</span>
                     </div>
                   </div>
-                </article>
+                </GlassPanel>
               ))}
             </div>
           )}
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl tracking-tight">Pattern summary</h2>
-          <div className="mt-4 rounded-2xl border border-ring/40 bg-card/50 p-6 shadow-[0_0_50px_rgba(125,92,255,0.14)] backdrop-blur sm:p-8">
-            <h3 className="font-serif text-2xl tracking-tight">
+          <h2 className="text-h2">Pattern summary</h2>
+          <GlassPanel size="lg" className="mt-4 border-ring/40 shadow-[0_0_50px_rgba(125,92,255,0.14)]">
+            <h3 className="text-h3">
               {profile.patternsUnlocked ? 'Your dream pattern is active' : 'Patterns unlock after 3 dreams'}
             </h3>
             <p className="mt-4 text-lg leading-relaxed text-foreground/90">{profile.patternSummary}</p>
-            <Link
+            <Button
+              as="link"
               href="/journal#patterns"
-              className={`mt-6 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold ${
-                profile.patternsUnlocked
-                  ? 'aurora-cta'
-                  : 'border border-border text-muted-foreground'
-              }`}
+              variant={profile.patternsUnlocked ? 'primary' : 'secondary'}
+              size="lg"
+              className="mt-6"
             >
               Open journal patterns
-            </Link>
+            </Button>
 
             {profile.patternsUnlocked && (
               <div className="mt-6 grid gap-5 lg:grid-cols-2">
@@ -320,20 +324,20 @@ export default function ProfilePage() {
                 <SymbolCloud symbols={profile.patterns.symbols} />
               </div>
             )}
-          </div>
+          </GlassPanel>
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl tracking-tight">Usage</h2>
+          <h2 className="text-h2">Usage</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <UsageCard label="Dream generations" used={used} cap={profile.usage.limit} />
-            <div className="surface-glass rounded-2xl p-4">
+            <GlassPanel size="sm">
               <div className="text-sm">Remaining today</div>
-              <div className="mt-2 font-serif text-3xl">{profile.usage.remaining}</div>
+              <div className="mt-2 font-display text-3xl">{profile.usage.remaining}</div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Resets around {formatReset(profile.usage.resetAt)}
               </p>
-            </div>
+            </GlassPanel>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
             During preview, free-plan art and video caps are waived on the server.
@@ -342,8 +346,8 @@ export default function ProfilePage() {
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl tracking-tight">Appearance</h2>
-          <div className="mt-4 surface-glass flex items-center justify-between gap-4 rounded-2xl p-5 sm:p-6">
+          <h2 className="text-h2">Appearance</h2>
+          <GlassPanel size="md" className="mt-4 flex items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <Palette className="mt-1 h-5 w-5 text-[var(--primary-glow)]" />
               <div>
@@ -354,22 +358,22 @@ export default function ProfilePage() {
               </div>
             </div>
             <ThemeToggle />
-          </div>
+          </GlassPanel>
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl tracking-tight">Save your dreams forever</h2>
-          <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
+          <h2 className="text-h2">Save your dreams forever</h2>
+          <GlassPanel size="lg" className="mt-4">
             {profile.account.claimed ? (
               <>
-                <h3 className="font-sans text-2xl font-semibold">Profile claimed</h3>
+                <h3 className="text-h3">Profile claimed</h3>
                 <p className="mt-3 text-sm text-muted-foreground">
                   This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
                 </p>
               </>
             ) : (
               <>
-                <h3 className="font-serif text-2xl tracking-tight">Claim this dream archive</h3>
+                <h3 className="text-h3">Claim this dream archive</h3>
                 <p className="mt-3 text-sm text-muted-foreground">
                   You are journaling anonymously. Add an email to mark this device profile as claimed.
                 </p>
@@ -390,19 +394,19 @@ export default function ProfilePage() {
                       className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-9 pr-3 text-sm outline-none focus:border-ring/70"
                     />
                   </div>
-                  <button
+                  <Button
                     type="submit"
                     disabled={claiming}
-                    className="aurora-cta inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold disabled:opacity-50"
+                    className="h-12 rounded-xl"
                   >
                     {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Claim'}
-                  </button>
+                  </Button>
                 </form>
               </>
             )}
-          </div>
+          </GlassPanel>
         </section>
       </div>
-    </main>
+    </PageShell>
   );
 }

@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { LandingHeader } from '@/components/LandingHeader';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 export const metadata = {
   title: 'Features · Dreamweaver',
@@ -35,27 +34,30 @@ const FEATURES = [
 
 export default function FeaturesPage() {
   return (
-    <main className="aurora-bg min-h-dvh">
-      <LandingHeader />
-      <section className="px-6 pb-24 pt-32 sm:pt-40">
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">Features</p>
-          <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-7xl">
-            A whole observatory for your <span className="aurora-text">inner sky.</span>
-          </h1>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(item => (
-              <article key={item.title} className="surface-glass rounded-2xl p-6">
-                <h2 className="font-serif text-2xl tracking-tight">{item.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
-              </article>
-            ))}
-          </div>
-          <Link href="/journal" className="mt-10 inline-flex rounded-full border border-border/60 bg-background/30 px-6 py-3 text-sm text-muted-foreground backdrop-blur transition hover:text-foreground">
-            Open journal
-          </Link>
+    <PageShell chrome="landing">
+      <section className="mx-auto max-w-6xl">
+        <PageHeader
+          eyebrow="Features"
+          title={
+            <>
+              A whole observatory for your <span className="aurora-text">inner sky.</span>
+            </>
+          }
+        />
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map(item => (
+            <GlassPanel key={item.title} size="md" as="article">
+              <h2 className="font-display text-2xl tracking-tight">{item.title}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+            </GlassPanel>
+          ))}
         </div>
+
+        <Button variant="secondary" as="link" href="/journal" className="mt-10">
+          Open journal
+        </Button>
       </section>
-    </main>
+    </PageShell>
   );
 }

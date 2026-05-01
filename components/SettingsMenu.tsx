@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Settings, X, Moon, Sun, Trophy } from 'lucide-react';
+import { GlassPanel } from '@/components/ui';
 import { useDream } from '@/lib/state';
 import { useTheme, type Theme } from '@/lib/theme';
 
@@ -61,9 +62,9 @@ export function SettingsMenu() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
           <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="surface-glass relative z-10 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+          <GlassPanel size="md" className="relative z-10 w-full max-w-sm shadow-2xl">
             <div className="flex items-center justify-between">
-              <h2 className="font-serif text-xl">Preferences</h2>
+              <h2 className="font-display text-xl">Preferences</h2>
               <button onClick={() => setOpen(false)} className="rounded-full p-1 text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
@@ -140,7 +141,7 @@ export function SettingsMenu() {
                 </button>
               </div>
             </div>
-          </div>
+          </GlassPanel>
         </div>
       )}
     </>

@@ -10,7 +10,7 @@ try {
     const m = line.match(/^([A-Z_]+)=(.*)$/);
     if (m) process.env[m[1]] = m[2];
   }
-} catch (e) {
+} catch {
   console.warn('No .env.local found — relying on existing process env.');
 }
 

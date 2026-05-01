@@ -1,6 +1,7 @@
 'use client';
 
 import { RefreshCw } from 'lucide-react';
+import { Button, GlassPanel } from '@/components/ui';
 
 export interface WeeklyLetterPayload {
   text: string;
@@ -18,21 +19,23 @@ export function WeeklyLetter({
   onRefresh: () => void;
 }) {
   return (
-    <section className="rounded-2xl border border-ring/40 bg-card/50 p-5 shadow-[0_0_50px_rgba(125,92,255,0.14)] backdrop-blur">
+    <GlassPanel as="section" size="sm" className="border-ring/40 shadow-[0_0_50px_rgba(125,92,255,0.14)]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Weekly letter</p>
-          <h2 className="mt-1 font-serif text-3xl tracking-tight">A note from the pattern</h2>
+          <h2 className="mt-1 font-display text-3xl tracking-tight">A note from the pattern</h2>
         </div>
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="rounded-full border border-border/70 p-2 text-muted-foreground transition hover:text-foreground disabled:opacity-50"
+          className="h-9 w-9 px-0"
           aria-label="Refresh weekly letter"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        </Button>
       </div>
       <p className="mt-5 font-serif text-xl leading-relaxed text-foreground/90">
         {loading && !letter
@@ -44,6 +47,6 @@ export function WeeklyLetter({
           {letter.cached ? 'Cached for this week' : 'Freshly generated'}
         </p>
       )}
-    </section>
+    </GlassPanel>
   );
 }

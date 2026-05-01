@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { Sparkles } from 'lucide-react';
@@ -9,6 +8,7 @@ import { VideoPlayer } from '@/components/VideoPlayer';
 import { Carousel } from '@/components/Carousel';
 import { ShareButton } from '@/components/ShareButton';
 import type { ScoreResult } from '@/lib/state';
+import { PageShell, GlassPanel, Button } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -71,22 +71,19 @@ export default async function PublicDreamPage({ params }: Params) {
   };
 
   return (
-    <main className="aurora-bg flex min-h-dvh flex-col gap-4 px-4 py-6">
+    <PageShell chrome="share" topPadClassName="pt-6">
       {/* Byline */}
       <header className="flex items-center justify-between text-xs">
-        <Link href="/" className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+        <Button as="link" href="/" variant="secondary" size="sm" className="uppercase tracking-[0.18em]">
           ✦ Dreamweaver
-        </Link>
-        <Link
-          href="/leaderboard"
-          className="rounded-full border border-border/60 bg-background/30 px-3 py-1 text-muted-foreground backdrop-blur transition hover:text-foreground"
-        >
+        </Button>
+        <Button as="link" href="/leaderboard" variant="secondary" size="sm">
           🏆 Leaderboard
-        </Link>
+        </Button>
       </header>
 
       {/* Media frame */}
-      <div className="relative">
+      <div className="relative mt-4">
         <div className="media-halo overflow-hidden rounded-3xl">
           {dream.generation.kind === 'video' ? (
             <div className="aspect-[9/16] w-full sm:aspect-video">
@@ -106,20 +103,22 @@ export default async function PublicDreamPage({ params }: Params) {
       </div>
 
       {/* Byline + blurb */}
-      <section className="rounded-3xl border border-border/40 bg-card/40 px-4 py-3 backdrop-blur">
+      <GlassPanel radius="3xl" size="sm" className="mt-4">
         <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           {dream.handle} · {dream.styleName}
         </div>
         <p className="mt-1 font-serif text-lg leading-snug">
-          “{dream.blurb}”
+          &ldquo;{dream.blurb}&rdquo;
         </p>
-      </section>
+      </GlassPanel>
 
       {/* Report card */}
-      <ReportCard score={score} />
+      <div className="mt-4">
+        <ReportCard score={score} />
+      </div>
 
       {/* CTAs */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <ShareButton
           url={shareUrl}
           title={`${dream.handle} dreamed something wild ✦`}
@@ -127,17 +126,14 @@ export default async function PublicDreamPage({ params }: Params) {
           className="aurora-cta flex-1 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold tracking-wide"
           label="Share this dream"
         />
-        <Link
-          href="/"
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border bg-card/60 px-5 py-3 text-sm font-medium text-muted-foreground transition hover:text-foreground hover:border-ring/60"
-        >
+        <Button as="link" href="/" variant="secondary" size="lg" className="flex-1">
           Make your own dream →
-        </Link>
+        </Button>
       </div>
 
       <footer className="pb-2 pt-2 text-center text-[11px] text-muted-foreground/70">
         Top dreams refresh every Monday at 00:00 UTC.
       </footer>
-    </main>
+    </PageShell>
   );
 }

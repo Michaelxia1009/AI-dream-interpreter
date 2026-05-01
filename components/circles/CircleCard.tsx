@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Users, MessageCircle } from 'lucide-react';
+import { GlassPanel } from '@/components/ui';
 
 export interface CircleSummary {
   id: string;
@@ -14,13 +15,15 @@ export interface CircleSummary {
 
 export function CircleCard({ circle }: { circle: CircleSummary }) {
   return (
-    <Link
+    <GlassPanel
+      size="sm"
+      as={Link}
       href={`/circles/${circle.id}`}
-      className="surface-glass block rounded-2xl p-5 transition hover:border-ring/60"
+      className="block transition hover:border-ring/60"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-serif text-2xl tracking-tight">{circle.name}</h2>
+          <h2 className="font-display text-2xl tracking-tight">{circle.name}</h2>
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
             {circle.description || 'A private circle for sharing dreams.'}
           </p>
@@ -39,6 +42,6 @@ export function CircleCard({ circle }: { circle: CircleSummary }) {
           {circle.sharedDreamCount} dreams
         </span>
       </div>
-    </Link>
+    </GlassPanel>
   );
 }

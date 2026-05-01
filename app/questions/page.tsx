@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { LandingHeader } from '@/components/LandingHeader';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 export const metadata = {
   title: 'Questions · Dreamweaver',
@@ -31,30 +30,33 @@ const QUESTIONS = [
 
 export default function QuestionsPage() {
   return (
-    <main className="aurora-bg min-h-dvh">
-      <LandingHeader />
-      <section className="px-6 pb-24 pt-32 sm:pt-40">
-        <div className="mx-auto max-w-3xl">
-          <p className="mb-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">Questions</p>
-          <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-7xl">
-            Things people <span className="aurora-text">wonder.</span>
-          </h1>
-          <div className="mt-12 space-y-5">
-            {QUESTIONS.map(item => (
-              <details key={item.q} className="surface-glass group rounded-2xl p-6 [&_summary]:cursor-pointer">
-                <summary className="flex items-center justify-between gap-4 font-serif text-xl tracking-tight">
-                  {item.q}
-                  <span className="text-muted-foreground transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-              </details>
-            ))}
-          </div>
-          <Link href="/capture" className="aurora-cta mt-10 inline-flex rounded-full px-6 py-3 text-sm font-semibold">
-            Start journaling
-          </Link>
+    <PageShell chrome="landing">
+      <section className="mx-auto max-w-3xl">
+        <PageHeader
+          eyebrow="Questions"
+          title={
+            <>
+              Things people <span className="aurora-text">wonder.</span>
+            </>
+          }
+        />
+
+        <div className="mt-12 space-y-5">
+          {QUESTIONS.map(item => (
+            <GlassPanel key={item.q} size="md" as="details" className="group [&_summary]:cursor-pointer">
+              <summary className="flex items-center justify-between gap-4 font-display text-xl tracking-tight">
+                {item.q}
+                <span className="text-muted-foreground transition group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+            </GlassPanel>
+          ))}
         </div>
+
+        <Button variant="primary" as="link" href="/capture" className="mt-10">
+          Start journaling
+        </Button>
       </section>
-    </main>
+    </PageShell>
   );
 }

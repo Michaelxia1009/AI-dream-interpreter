@@ -14,6 +14,7 @@ import {
 } from '@/lib/interpret';
 import { LensTab } from '@/components/LensTab';
 import { AgentPicker } from '@/components/AgentPicker';
+import { Button, GlassPanel } from '@/components/ui';
 
 interface Props {
   /** The dream the chat is anchored to. May be empty if the user hasn't journaled yet. */
@@ -183,29 +184,27 @@ export function InterpretChat({ dream }: Props) {
 
       {/* Dream banner — shows what the chat is anchored to. */}
       {hasDream ? (
-        <details className="surface-glass rounded-2xl p-4 text-sm">
+        <GlassPanel as="details" size="sm" className="text-sm">
           <summary className="cursor-pointer text-xs uppercase tracking-[0.18em] text-muted-foreground">
             ✦ Your dream
           </summary>
           <p className="mt-3 whitespace-pre-wrap text-foreground/90">
             {trimmedDream}
           </p>
-        </details>
+        </GlassPanel>
       ) : (
-        <div className="surface-glass rounded-2xl p-5 text-sm text-muted-foreground">
+        <GlassPanel size="sm" className="text-sm text-muted-foreground">
           You don&apos;t have a dream queued yet.{' '}
           <Link href="/capture" className="text-foreground underline underline-offset-4">
             Capture one →
           </Link>
-        </div>
+        </GlassPanel>
       )}
 
       {/* Transcript */}
-      <div
-        ref={scrollRef}
-        className="surface-glass max-h-[55vh] min-h-[18rem] overflow-y-auto rounded-2xl p-5"
-      >
-        {messages.length === 0 && !streamBuffer && (
+      <GlassPanel size="sm">
+        <div ref={scrollRef} className="max-h-[55vh] min-h-[18rem] overflow-y-auto">
+          {messages.length === 0 && !streamBuffer && (
           <div className="flex h-full min-h-[16rem] flex-col items-center justify-center gap-4 text-center">
             <Sparkles className="h-6 w-6 text-accent" aria-hidden />
             <p className="text-sm text-muted-foreground">
@@ -213,24 +212,25 @@ export function InterpretChat({ dream }: Props) {
             </p>
             <div className="flex flex-wrap justify-center gap-2">
               {LENSES.map(l => (
-                <button
+                <Button
                   key={l.id}
                   type="button"
+                  variant="secondary"
+                  size="sm"
                   disabled={!hasDream || streaming}
                   onClick={() => {
                     setLens(l.id);
                     void send(SEED_QUESTIONS[l.id]);
                   }}
-                  className="rounded-full border border-border/60 bg-background/30 px-4 py-2 text-xs text-muted-foreground transition hover:border-ring/50 hover:text-foreground disabled:opacity-50"
                 >
                   {SEED_QUESTIONS[l.id]}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
-        )}
+          )}
 
-        <ul className="space-y-5">
+          <ul className="space-y-5">
           {messages.map((m, i) => {
             // Strip the <DREAM>…</DREAM> wrapper from the first user turn for display.
             const display =
@@ -265,8 +265,9 @@ export function InterpretChat({ dream }: Props) {
               </p>
             </li>
           )}
-        </ul>
-      </div>
+          </ul>
+        </div>
+      </GlassPanel>
 
       {/* Composer */}
       <form
@@ -295,23 +296,26 @@ export function InterpretChat({ dream }: Props) {
           className="flex-1 resize-none rounded-2xl border border-border/60 bg-background/40 px-4 py-3 text-sm placeholder:text-muted-foreground/60 outline-none transition focus:border-ring/80 disabled:opacity-60"
         />
         {streaming ? (
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="lg"
             onClick={stop}
-            className="inline-flex h-12 items-center gap-2 rounded-full border border-border/60 bg-background/40 px-5 text-sm transition hover:border-ring/60"
+            className="h-12"
           >
             Stop
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="submit"
             disabled={!hasDream || !input.trim()}
-            className="aurora-cta inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
+            size="lg"
+            className="h-12"
             aria-label="Send"
           >
             <Send className="h-4 w-4" />
             Ask
-          </button>
+          </Button>
         )}
       </form>
     </div>

@@ -57,9 +57,9 @@ export function ShareButton({
         return;
       }
       throw new Error('no share api');
-    } catch (err: any) {
+    } catch (err) {
       // AbortError = user dismissed the share sheet — silent no-op.
-      if (err?.name === 'AbortError') return;
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       // Fall back to clipboard.
       try {
         await navigator.clipboard.writeText(url);

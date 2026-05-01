@@ -6,7 +6,7 @@ export default function DreamNotFound() {
       <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
         ✦ Dreamweaver
       </div>
-      <h1 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+      <h1 className="text-h1">
         This dream <span className="aurora-text">drifted away.</span>
       </h1>
       <p className="mt-5 max-w-md text-base text-muted-foreground">

@@ -12,8 +12,10 @@ export async function POST(req: NextRequest) {
   try {
     const result = await scoreDream(parsed.data.enrichedDream);
     return NextResponse.json(result);
-  } catch (err: any) {
-    console.error('Score error:', err?.message, err?.responseBody || err?.cause?.message || '');
-    return NextResponse.json({ error: 'scoring failed', detail: err?.message }, { status: 500 });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : 'Unknown error';
+    const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : '';
+    console.error('Score error:', detail, cause);
+    return NextResponse.json({ error: 'scoring failed', detail }, { status: 500 });
   }
 }

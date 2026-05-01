@@ -1,5 +1,6 @@
 import { Flame, Moon } from 'lucide-react';
 import type { StreakInfo } from '@/lib/dreams/streak';
+import { GlassPanel } from '@/components/ui';
 
 export function StreakBadge({
   streak,
@@ -15,7 +16,7 @@ export function StreakBadge({
 
   if (variant === 'full') {
     return (
-      <div className={`surface-glass flex items-center gap-4 rounded-2xl p-5 ${className}`}>
+      <GlassPanel size="sm" className={`flex items-center gap-4 ${className}`}>
         <div className="relative h-16 w-16 shrink-0">
           <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
             <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(244,240,255,0.14)" strokeWidth="2" />
@@ -47,7 +48,7 @@ export function StreakBadge({
           </div>
         </div>
         <div className="min-w-0">
-          <div className="font-serif text-2xl leading-tight">
+          <div className="font-display text-2xl leading-tight">
             {streak.current}{' '}
             <span className="font-sans text-sm text-muted-foreground">
               day{streak.current === 1 ? '' : 's'}
@@ -66,7 +67,7 @@ export function StreakBadge({
             </div>
           )}
         </div>
-      </div>
+      </GlassPanel>
     );
   }
 

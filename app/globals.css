@@ -4,11 +4,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   DREAMWEAVER TYPE & SPACING SCALE
+   ------------------------------------------------------------
+   Semantic utility classes — prefer these over raw `text-3xl`
+   etc. so every page reads from one shared scale. Application
+   rules:
+     - All headings use `var(--font-display)` (Urbanist).
+     - `.text-display-xl` → landing hero only (one per page).
+     - `.text-h1`         → top of every other page (one per page).
+     - `.text-h2`         → major section headings inside a page.
+     - `.text-h3`         → card titles, sub-section headings.
+     - `.text-body-lg`    → subtitles, long-form lede paragraphs.
+     - `.text-body`       → body copy.
+     - `.text-eyebrow`    → small uppercase chip label above an h1.
+     - `.text-caption`    → metadata, timestamps, helper text.
+
+   Glass-panel padding scale:
+     - `.glass-pad-sm`    → leaderboard / list rows (p-5).
+     - `.glass-pad-md`    → standard content cards (p-6).
+     - `.glass-pad-lg`    → featured / pricing cards (p-8).
+   ============================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-serif: var(--font-display);
+  --font-serif: var(--font-body-serif);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -297,8 +319,7 @@
   }
 
   .font-display {
-    font-family: var(--font-display), serif;
-    font-optical-sizing: auto;
+    font-family: var(--font-display), sans-serif;
   }
 
   .wordmark-font {
@@ -371,12 +392,19 @@
     box-shadow: none;
   }
 
-  /* Glass surface — frosted panel sitting on top of the aurora background */
+  /* Glass surface — frosted panel sitting on top of the aurora background.
+     Hover lifts the panel slightly with a soft brand-tinted glow. The
+     transition is short so it never feels gimmicky on long lists. */
   .surface-glass {
     background-color: var(--dw-surface-glass);
     backdrop-filter: blur(14px) saturate(1.2);
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
     border: 1px solid var(--border);
+    transition: box-shadow 220ms ease, border-color 220ms ease;
+  }
+  .surface-glass:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 40px -12px var(--dw-glow-soft);
   }
 
   /* Media halo — conic-gradient ring around generated media */
@@ -404,7 +432,12 @@
     pointer-events: none;
   }
 
-  /* Aurora background — slow drifting nebula for landing / hero */
+  /* Aurora background — slow drifting nebula for landing / hero.
+     The radial blobs animate via `background-position` so the page
+     subtly breathes underneath the fixed content. Keep the cycle slow
+     (18s) — anything quicker reads as motion sickness in peripheral
+     vision. Disabled under `prefers-reduced-motion` (see media query
+     below). */
   .aurora-bg {
     background-color: var(--background);
     background-image:
@@ -412,6 +445,18 @@
       radial-gradient(50% 35% at 85% 15%, var(--dw-glow) 0%, transparent 60%),
       radial-gradient(55% 45% at 75% 90%, rgba(94, 234, 212, 0.18) 0%, transparent 65%),
       radial-gradient(45% 35% at 10% 85%, rgba(253, 230, 138, 0.12) 0%, transparent 60%);
+    background-size: 140% 140%, 130% 130%, 150% 150%, 130% 130%;
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+    animation: aurora-drift 18s ease-in-out infinite alternate;
+  }
+
+  @keyframes aurora-drift {
+    0% {
+      background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+    }
+    100% {
+      background-position: 6% 4%, 94% 6%, 96% 94%, 4% 96%;
+    }
   }
 
   /* Daylight: plain cream background, no aurora radials */
@@ -427,6 +472,56 @@
       var(--dw-gradient);
     background-blend-mode: normal, overlay;
     border: 1px solid var(--border);
+  }
+}
+
+/* ============================================================
+   Type & spacing scale — see header comment for usage rules.
+   ============================================================ */
+@layer utilities {
+  /* Type scale — semantic over numeric */
+  .text-display-xl {
+    font-family: var(--font-display), sans-serif;
+    @apply tracking-tight leading-[1.05] text-5xl sm:text-7xl lg:text-8xl font-light;
+  }
+  .text-display-lg {
+    font-family: var(--font-display), sans-serif;
+    @apply tracking-tight leading-[1.08] text-5xl sm:text-6xl font-light;
+  }
+  .text-h1 {
+    font-family: var(--font-display), sans-serif;
+    @apply tracking-tight leading-[1.1] text-4xl sm:text-5xl font-light;
+  }
+  .text-h2 {
+    font-family: var(--font-display), sans-serif;
+    @apply tracking-tight leading-[1.15] text-3xl sm:text-4xl font-light;
+  }
+  .text-h3 {
+    font-family: var(--font-display), sans-serif;
+    @apply tracking-tight leading-[1.2] text-2xl font-normal;
+  }
+  .text-body-lg {
+    @apply text-lg leading-relaxed;
+  }
+  .text-body {
+    @apply text-base leading-relaxed;
+  }
+  .text-eyebrow {
+    @apply text-[11px] uppercase tracking-[0.18em] text-muted-foreground;
+  }
+  .text-caption {
+    @apply text-xs text-muted-foreground/80;
+  }
+
+  /* Glass-card padding scale */
+  .glass-pad-sm {
+    @apply p-5;
+  }
+  .glass-pad-md {
+    @apply p-6;
+  }
+  .glass-pad-lg {
+    @apply p-8;
   }
 }
 
@@ -498,10 +593,16 @@
   }
 }
 
-/* Reduce motion preference — disable animated aurora */
+/* Reduce motion preference — disable animated aurora + glass hover lift */
 @media (prefers-reduced-motion: reduce) {
   .aurora-bg,
   .media-halo::before {
     animation: none !important;
+  }
+  .surface-glass {
+    transition: none !important;
+  }
+  .surface-glass:hover {
+    box-shadow: none !important;
   }
 }

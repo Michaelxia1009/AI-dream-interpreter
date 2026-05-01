@@ -34,6 +34,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
       if (stored === 'nightshade' || stored === 'daylight') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setThemeState(stored);
         applyTheme(stored);
       } else {

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { LandingHeader } from '@/components/LandingHeader';
+import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 
 export const metadata: Metadata = {
   title: 'About · Dreamweaver',
@@ -10,19 +9,16 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="relative min-h-dvh overflow-hidden aurora-bg">
-      <LandingHeader />
-      {/* Aurora vignette to keep text legible against the drifting nebula */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/40 to-background/90" />
-
-      <section className="relative z-10 mx-auto flex min-h-dvh max-w-3xl flex-col px-6 pt-28 pb-16 sm:pt-36">
-        <div className="mb-5 inline-flex items-center gap-2 self-start rounded-full border border-border/60 bg-background/30 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-          ✦ About
-        </div>
-
-        <h1 className="font-serif text-5xl leading-tight tracking-tight sm:text-6xl">
-          About <span className="aurora-text">Dreamweaver.</span>
-        </h1>
+    <PageShell chrome="landing">
+      <section className="mx-auto flex max-w-3xl flex-col">
+        <PageHeader
+          eyebrow="About"
+          title={
+            <>
+              About <span className="aurora-text">Dreamweaver.</span>
+            </>
+          }
+        />
 
         <div className="mt-10 space-y-6 text-lg leading-relaxed text-muted-foreground">
           <p>
@@ -60,44 +56,35 @@ export default function AboutPage() {
                 'Drop it into a private circle, or send it into the public gallery for the week.',
             },
           ].map((s) => (
-            <div
-              key={s.step}
-              className="surface-glass rounded-2xl p-5 text-left"
-            >
-              <h3 className="font-serif text-xl tracking-tight">{s.step}</h3>
+            <GlassPanel key={s.step} size="md" className="text-left">
+              <h3 className="font-display text-xl tracking-tight">{s.step}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {s.body}
               </p>
-            </div>
+            </GlassPanel>
           ))}
         </div>
 
         {/* Privacy promise */}
-        <div className="surface-glass mt-12 rounded-2xl p-6">
-          <h2 className="font-serif text-2xl tracking-tight">Privacy promise</h2>
+        <GlassPanel size="md" className="mt-12">
+          <h2 className="font-display text-2xl tracking-tight">Privacy promise</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             No accounts required. Your fingerprint stays on your device.
             Dreams expire on their own unless you keep them. Public sharing
             is opt-in, per dream — not on by default.
           </p>
-        </div>
+        </GlassPanel>
 
         {/* CTAs */}
         <div className="mt-12 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <Link
-            href="/capture"
-            className="aurora-cta inline-flex items-center gap-2 rounded-full px-6 py-3 text-base font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98]"
-          >
+          <Button variant="primary" size="lg" as="link" href="/capture">
             Start journaling →
-          </Link>
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-5 py-3 text-sm text-muted-foreground backdrop-blur transition hover:text-foreground hover:border-ring/60"
-          >
+          </Button>
+          <Button variant="secondary" as="link" href="/pricing">
             Pricing →
-          </Link>
+          </Button>
         </div>
       </section>
-    </main>
+    </PageShell>
   );
 }

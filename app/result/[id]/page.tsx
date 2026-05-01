@@ -13,6 +13,7 @@ import { HandleEditor } from '@/components/HandleEditor';
 import { useDream } from '@/lib/state';
 import { muxVideoWithAudio } from '@/lib/mux/clientMux';
 import { toast } from 'sonner';
+import { PageShell, GlassPanel, Button } from '@/components/ui';
 
 export default function ResultPage() {
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function ResultPage() {
   const canShare = session.isPublic && !moderated;
 
   return (
-    <main className="aurora-bg flex min-h-dvh flex-col gap-3 px-4 py-6">
+    <PageShell topPadClassName="pt-6">
       {/* Media frame — gradient halo */}
       <div className="relative">
         <div className="media-halo overflow-hidden rounded-3xl">
@@ -92,7 +93,7 @@ export default function ResultPage() {
       </div>
 
       {/* Privacy + handle row */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <PrivacyToggle
           dreamId={dreamId}
           isPublic={session.isPublic}
@@ -111,7 +112,7 @@ export default function ResultPage() {
 
       {/* Share-link preview */}
       {canShare && shareUrl && (
-        <div className="flex items-center gap-2 truncate rounded-2xl border border-border/40 bg-card/30 px-3 py-2 text-[12px] text-muted-foreground">
+        <div className="mt-3 flex items-center gap-2 truncate rounded-2xl border border-border/40 bg-card/30 px-3 py-2 text-[12px] text-muted-foreground">
           <span className="shrink-0">Public link:</span>
           <a
             href={shareUrl}
@@ -125,20 +126,21 @@ export default function ResultPage() {
       )}
 
       {/* Report card */}
-      <ReportCard score={session.score} />
+      <div className="mt-3">
+        <ReportCard score={session.score} />
+      </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
-        <button
+      <div className="mt-3 flex gap-3">
+        <Button
           onClick={download}
           disabled={muxing}
-          className="aurora-cta flex-1 rounded-full px-5 py-4 text-sm font-semibold tracking-wide disabled:cursor-not-allowed"
+          size="lg"
+          className="flex-1 py-4"
         >
-          <span className="inline-flex items-center justify-center gap-2">
-            <Download className="h-4 w-4" />
-            Save & Share
-          </span>
-        </button>
+          <Download className="h-4 w-4" />
+          Save & Share
+        </Button>
         <ShareButton
           url={canShare ? shareUrl : ''}
           title="My dream, visualised ✦"
@@ -147,39 +149,35 @@ export default function ResultPage() {
           disabled={!canShare || muxing || !shareUrl}
           label="Share dream link"
         />
-        <button
+        <Button
+          variant="secondary"
+          size="lg"
           onClick={newDream}
-          className="rounded-full border border-border px-5 py-4 text-sm font-medium text-muted-foreground transition hover:text-foreground hover:border-ring/60"
+          className="py-4"
         >
           + New
-        </button>
+        </Button>
       </div>
 
       {/* Soft secondary CTA — chat with the dream you just made. */}
       {session.enrichedDream && (
-        <div className="mt-1 grid gap-2 sm:grid-cols-2">
-          <Link
-            href="/interpret"
-            className="surface-glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm transition hover:border-ring/60"
-          >
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <GlassPanel as={Link} href="/interpret" size="sm" className="flex items-center justify-between gap-3 transition hover:border-ring/60">
             <span className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" aria-hidden />
               <span className="font-medium">Interpret this dream</span>
             </span>
             <span className="text-muted-foreground">→</span>
-          </Link>
-          <Link
-            href="/circles"
-            className="surface-glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm transition hover:border-ring/60"
-          >
+          </GlassPanel>
+          <GlassPanel as={Link} href="/circles" size="sm" className="flex items-center justify-between gap-3 transition hover:border-ring/60">
             <span className="flex items-center gap-2">
               <UsersRound className="h-4 w-4 text-accent" aria-hidden />
               <span className="font-medium">Share to a circle</span>
             </span>
             <span className="text-muted-foreground">→</span>
-          </Link>
+          </GlassPanel>
         </div>
       )}
-    </main>
+    </PageShell>
   );
 }

@@ -23,10 +23,14 @@ export function Carousel({ urls }: { urls: string[] }) {
           return (
             <div key={pg} className="flex h-full w-full flex-shrink-0 gap-1 p-1">
               <div className="h-full flex-1 overflow-hidden rounded-xl bg-zinc-900">
+                {/* Generated Blob URLs are final display assets. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={left} alt={`Scene ${pg * 2 + 1}`} className="h-full w-full object-cover" />
               </div>
               {right ? (
                 <div className="h-full flex-1 overflow-hidden rounded-xl bg-zinc-900">
+                  {/* Generated Blob URLs are final display assets. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={right} alt={`Scene ${pg * 2 + 2}`} className="h-full w-full object-cover" />
                 </div>
               ) : (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MetricTab } from './MetricTab';
 import { LeaderboardCard } from './LeaderboardCard';
+import { Button, Eyebrow, GlassPanel } from '@/components/ui';
 import type { LeaderboardEntry, LeaderboardMetric } from '@/lib/dreams/types';
 
 const METRICS: { id: LeaderboardMetric; tab: string; cardLabel: string }[] = [
@@ -80,17 +81,19 @@ export function LeaderboardView({ initial }: Props) {
   const metricMeta = METRICS.find(m => m.id === active)!;
 
   return (
-    <main className="aurora-bg min-h-dvh px-4 py-6 sm:px-6">
+    <>
       {/* Header */}
-      <header className="mx-auto flex max-w-2xl flex-col gap-3">
+      <header className="flex flex-col gap-3">
         <div className="flex items-center justify-between text-xs">
-          <Link href="/" className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-            ← ✦ Dreamweaver
-          </Link>
+          <Eyebrow>
+            <Link href="/" className="text-muted-foreground hover:text-foreground transition">
+              ← Dreamweaver
+            </Link>
+          </Eyebrow>
           <span className="text-muted-foreground">↻ Resets in {formatCountdown(resetMs)}</span>
         </div>
 
-        <h1 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+        <h1 className="text-h1">
           Top dreams · <span className="aurora-text">this week</span>
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -112,20 +115,17 @@ export function LeaderboardView({ initial }: Props) {
       </header>
 
       {/* List */}
-      <section className="mx-auto mt-5 flex max-w-2xl flex-col gap-2">
+      <section className="mt-5 flex flex-col gap-2">
         {entries.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-border/60 bg-card/30 px-6 py-10 text-center">
-            <p className="font-serif text-xl">Nothing here yet.</p>
+          <GlassPanel size="lg" radius="3xl" className="border-dashed text-center">
+            <p className="font-display text-xl">Nothing here yet.</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Be the first dreamer this week →
             </p>
-            <Link
-              href="/"
-              className="aurora-cta mt-4 inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold tracking-wide"
-            >
+            <Button as="link" href="/" variant="primary" size="md" className="mt-4">
               Tell us your dream &rarr;
-            </Link>
-          </div>
+            </Button>
+          </GlassPanel>
         ) : (
           entries.map(e => (
             <LeaderboardCard key={e.id} entry={e} metricLabel={metricMeta.cardLabel} />
@@ -133,9 +133,9 @@ export function LeaderboardView({ initial }: Props) {
         )}
       </section>
 
-      <footer className="mx-auto mt-8 max-w-2xl pb-4 text-center text-[11px] text-muted-foreground/70">
+      <footer className="mt-8 pb-4 text-center text-[11px] text-muted-foreground/70">
         Boards reset Monday 00:00 UTC. Top 20 per category.
       </footer>
-    </main>
+    </>
   );
 }
