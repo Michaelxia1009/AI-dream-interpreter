@@ -45,8 +45,13 @@ export function NavMenu() {
   const pathname = usePathname();
   const ref = useRef<HTMLDivElement>(null);
 
-  // Hide on public share pages — same rule as SettingsMenu.
-  const hidden = pathname?.startsWith('/d/');
+  // Hide on public share pages (clean handoff for first-time recipients) and
+  // on the marketing pages where <LandingHeader /> already renders a top-bar
+  // nav — two nav surfaces would compete.
+  const MARKETING_ROUTES = ['/', '/about', '/pricing'];
+  const hidden =
+    pathname?.startsWith('/d/') ||
+    (pathname !== undefined && MARKETING_ROUTES.includes(pathname));
 
   // Click-outside + Escape.
   useEffect(() => {

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { WaitlistForm } from '@/components/WaitlistForm';
+import { LandingHeader } from '@/components/LandingHeader';
 
 export const metadata: Metadata = {
   title: 'Pricing · Dreamweaver',
@@ -28,9 +29,10 @@ const PLUS_BULLETS = [
 export default function PricingPage() {
   return (
     <main className="relative min-h-dvh overflow-hidden aurora-bg">
+      <LandingHeader />
       <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/40 to-background/90" />
 
-      <section className="relative z-10 mx-auto max-w-5xl px-6 pt-24 pb-16 sm:pt-32">
+      <section className="relative z-10 mx-auto max-w-5xl px-6 pt-28 pb-16 sm:pt-36">
         <div className="mb-12 text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
             ✦ Pricing

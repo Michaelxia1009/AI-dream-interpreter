@@ -1,15 +1,18 @@
 import Link from 'next/link';
 import { HeroLoop } from '@/components/HeroLoop';
+import { LandingHeader } from '@/components/LandingHeader';
 
 export default function LandingPage() {
   return (
     <main className="relative min-h-dvh overflow-hidden aurora-bg">
+      <LandingHeader />
+
       {/* ─── HERO ──────────────────────────────────────────────────── */}
       <section className="relative min-h-dvh">
         <HeroLoop />
         {/* Aurora vignette — deepens the edges, lets hero video glow through the middle */}
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/90" />
-        <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 text-center">
+        <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pt-20 text-center sm:pt-24">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
             ✦ Your subconscious, illustrated
           </div>
