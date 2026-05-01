@@ -211,6 +211,14 @@
     -webkit-text-fill-color: transparent;
   }
 
+  .hero-title-aurora {
+    background-image: linear-gradient(120deg, #A78BFA 0%, #F4F0FF 42%, #7DD3FC 68%, #F0ABFC 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* Primary CTA with aurora fill + glow */
   .aurora-cta {
     background-image: var(--dw-gradient-warm);
