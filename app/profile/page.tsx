@@ -182,7 +182,7 @@ export default function ProfilePage() {
     <main className="aurora-bg min-h-dvh px-4 py-12 sm:px-6">
       <div className="mx-auto max-w-5xl space-y-14">
         <section>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Your profile</p>
+          <h1 className="font-serif text-3xl tracking-tight">Your profile</h1>
           <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -191,9 +191,9 @@ export default function ProfilePage() {
                     <UserRound className="h-6 w-6 text-foreground/80" />
                   </div>
                   <div>
-                    <h1 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
+                    <h2 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
                       {profile.account.displayName || profile.handle}
-                    </h1>
+                    </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Dreamer #{profile.dreamerCode}
                     </p>
@@ -239,11 +239,69 @@ export default function ProfilePage() {
         </section>
 
         <section>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Pattern summary</p>
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="font-serif text-3xl tracking-tight">Dream archive</h2>
+            <Link href="/leaderboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <Trophy className="h-4 w-4" />
+              Explore dream leaderboard
+            </Link>
+          </div>
+
+          {profile.dreams.length === 0 ? (
+            <div className="surface-glass rounded-2xl p-8 text-center">
+              <h3 className="font-serif text-3xl">No dreams recorded yet</h3>
+              <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+                Dreams appear here after you finish generating their image or video.
+              </p>
+              <Link href="/capture" className="aurora-cta mt-6 inline-flex rounded-full px-5 py-3 text-sm font-semibold">
+                Start journaling
+              </Link>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {profile.dreams.map(dream => (
+                <article key={dream.id} className="surface-glass overflow-hidden rounded-2xl">
+                  {dream.thumbnailUrl ? (
+                    // Generated Blob URLs are final display assets.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={dream.thumbnailUrl} alt="" className="h-40 w-full object-cover" />
+                  ) : (
+                    <div className="grid h-40 place-items-center bg-secondary/70 text-sm text-muted-foreground">
+                      Video dream
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                        {formatDate(dream.createdAt)} · {dream.format}
+                      </p>
+                      {!dream.isPublic && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {dream.symbols.slice(0, 4).map(symbol => (
+                        <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
+                          {symbol}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                      <span>Weird {dream.metrics.weirdness.score}/10</span>
+                      <span>Vivid {dream.metrics.vividness.score}/10</span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section>
+          <h2 className="font-serif text-3xl tracking-tight">Pattern summary</h2>
           <div className="mt-4 rounded-2xl border border-ring/40 bg-card/50 p-6 shadow-[0_0_50px_rgba(125,92,255,0.14)] backdrop-blur sm:p-8">
-            <h2 className="font-serif text-3xl tracking-tight">
+            <h3 className="font-serif text-2xl tracking-tight">
               {profile.patternsUnlocked ? 'Your dream pattern is active' : 'Patterns unlock after 3 dreams'}
-            </h2>
+            </h3>
             <p className="mt-4 text-lg leading-relaxed text-foreground/90">{profile.patternSummary}</p>
             <Link
               href="/journal#patterns"
@@ -300,109 +358,49 @@ export default function ProfilePage() {
         </section>
 
         <section>
-          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Dream archive</p>
-              <h2 className="font-serif text-3xl tracking-tight">All dreams recorded here</h2>
-            </div>
-            <Link href="/leaderboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-              <Trophy className="h-4 w-4" />
-              Explore dream leaderboard
-            </Link>
-          </div>
-
-          {profile.dreams.length === 0 ? (
-            <div className="surface-glass rounded-2xl p-8 text-center">
-              <h3 className="font-serif text-3xl">No dreams recorded yet</h3>
-              <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-                Once you generate a dream, it will appear here with its symbols, score, and privacy state.
-              </p>
-              <Link href="/capture" className="aurora-cta mt-6 inline-flex rounded-full px-5 py-3 text-sm font-semibold">
-                Start journaling
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {profile.dreams.map(dream => (
-                <article key={dream.id} className="surface-glass overflow-hidden rounded-2xl">
-                  {dream.thumbnailUrl ? (
-                    // Generated Blob URLs are final display assets.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={dream.thumbnailUrl} alt="" className="h-40 w-full object-cover" />
-                  ) : (
-                    <div className="grid h-40 place-items-center bg-secondary/70 text-sm text-muted-foreground">
-                      Video dream
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                        {formatDate(dream.createdAt)} · {dream.format}
-                      </p>
-                      {!dream.isPublic && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {dream.symbols.slice(0, 4).map(symbol => (
-                        <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
-                          {symbol}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                      <span>Weird {dream.metrics.weirdness.score}/10</span>
-                      <span>Vivid {dream.metrics.vividness.score}/10</span>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="surface-glass rounded-2xl p-6 sm:p-8">
-          {profile.account.claimed ? (
-            <>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Save your dreams forever</p>
-              <h2 className="mt-2 font-serif text-3xl tracking-tight">Profile claimed</h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Save your dreams forever</p>
-              <h2 className="mt-2 font-serif text-3xl tracking-tight">Claim this dream archive</h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                You are journaling anonymously. Add an email to mark this device profile as claimed.
-              </p>
-              <form onSubmit={claimAccount} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
-                <input
-                  value={displayName}
-                  onChange={e => setDisplayName(e.target.value)}
-                  placeholder="Display name"
-                  className="h-12 rounded-xl border border-border/50 bg-card/50 px-3 text-sm outline-none focus:border-ring/70"
-                />
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <h2 className="font-serif text-3xl tracking-tight">Save your dreams forever</h2>
+          <div className="mt-4 surface-glass rounded-2xl p-6 sm:p-8">
+            {profile.account.claimed ? (
+              <>
+                <h3 className="font-serif text-2xl tracking-tight">Profile claimed</h3>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  This prototype profile is attached to {profile.account.emailMasked}. Full cross-device recovery comes later.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="font-serif text-2xl tracking-tight">Claim this dream archive</h3>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  You are journaling anonymously. Add an email to mark this device profile as claimed.
+                </p>
+                <form onSubmit={claimAccount} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
                   <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-9 pr-3 text-sm outline-none focus:border-ring/70"
+                    value={displayName}
+                    onChange={e => setDisplayName(e.target.value)}
+                    placeholder="Display name"
+                    className="h-12 rounded-xl border border-border/50 bg-card/50 px-3 text-sm outline-none focus:border-ring/70"
                   />
-                </div>
-                <button
-                  type="submit"
-                  disabled={claiming}
-                  className="aurora-cta inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold disabled:opacity-50"
-                >
-                  {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Claim'}
-                </button>
-              </form>
-            </>
-          )}
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="h-12 w-full rounded-xl border border-border/50 bg-card/50 pl-9 pr-3 text-sm outline-none focus:border-ring/70"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={claiming}
+                    className="aurora-cta inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold disabled:opacity-50"
+                  >
+                    {claiming ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Claim'}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
         </section>
       </div>
     </main>

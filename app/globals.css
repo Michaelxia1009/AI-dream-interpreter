@@ -230,6 +230,38 @@
     --dw-gradient-warm: linear-gradient(120deg, #A274F0 0%, #73D5F4 50%, #E899CB 100%);
   }
 
+  .theme-daylight .dreamtok-landing {
+    --background: #FAF6EF;
+    --foreground: #1F1B16;
+    --card: #FFFBF3;
+    --card-foreground: #1F1B16;
+    --primary: #D4572A;
+    --primary-foreground: #FAF6EF;
+    --secondary: #EFE6D6;
+    --secondary-foreground: #1F1B16;
+    --muted: #EFE6D6;
+    --muted-foreground: #6B6456;
+    --accent: #8FD8F5;
+    --accent-foreground: #1F1B16;
+    --border: rgba(31, 27, 22, 0.12);
+    --input: rgba(31, 27, 22, 0.10);
+    --ring: #D4572A;
+    --primary-glow: #D4572A;
+    --dw-aurora-from: #D4572A;
+    --dw-aurora-mid: #8FD8F5;
+    --dw-aurora-to: #D9A9D2;
+    --dw-glow: rgba(212, 87, 42, 0.25);
+    --dw-glow-soft: rgba(212, 87, 42, 0.12);
+    --dw-surface-glass: rgba(255, 251, 243, 0.75);
+    --dw-gradient: linear-gradient(120deg, #D4572A 0%, #8FD8F5 52%, #D9A9D2 100%);
+    --dw-gradient-warm: linear-gradient(120deg, #D4572A 0%, #8FD8F5 52%, #D9A9D2 100%);
+  }
+
+  .theme-daylight .dreamtok-landing .dreamtok-hero-image {
+    opacity: 0.22;
+    filter: saturate(0.7) brightness(1.25);
+  }
+
   .font-display {
     font-family: var(--font-display), serif;
     font-optical-sizing: auto;

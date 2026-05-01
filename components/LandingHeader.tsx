@@ -35,44 +35,45 @@ export function LandingHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/60 backdrop-blur-xl">
-      <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-6">
+      <div className="mx-auto flex h-16 w-full max-w-[1800px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 text-foreground transition hover:text-foreground"
+          className="group inline-flex shrink-0 items-center gap-2 text-foreground transition hover:text-foreground"
           aria-label="Dreamweaver home"
         >
           <Moon className="h-6 w-6 -rotate-12 text-[var(--primary-glow)]" />
-          <span className="font-display text-2xl font-light tracking-tight text-foreground sm:text-[1.7rem]">
+          <span className="hidden font-display text-2xl font-light tracking-tight text-foreground sm:inline sm:text-[1.7rem] xl:text-3xl">
             Dreamweaver
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-3 md:flex lg:gap-5 xl:gap-8" aria-label="Primary">
           {LINKS.map(link => {
             const Icon = link.icon;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className="inline-flex items-center gap-2 text-base font-semibold text-foreground/80 transition hover:text-foreground lg:text-lg"
+                className="inline-flex min-w-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-foreground/80 transition hover:text-foreground lg:text-base xl:text-lg"
               >
-                <Icon className="h-4 w-4 text-foreground/60" />
-                {link.label}
+                <Icon className="h-4 w-4 shrink-0 text-foreground/60 xl:h-5 xl:w-5" />
+                <span className="hidden lg:inline">{link.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <div className="hidden sm:block">
             <ThemeToggle compact />
           </div>
           <Link
             href="/capture"
-            className="aurora-cta inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-6 sm:py-3 sm:text-base"
+            className="aurora-cta inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-glow transition hover:scale-[1.02] active:scale-[0.98] sm:px-5 sm:py-3 lg:px-6 lg:text-base"
           >
-            <Plus className="mr-1 h-4 w-4" />
-            Start journaling
+            <Plus className="mr-1 h-4 w-4 shrink-0" />
+            <span className="hidden xl:inline">Start journaling</span>
+            <span className="xl:hidden">New dream</span>
           </Link>
 
           <button

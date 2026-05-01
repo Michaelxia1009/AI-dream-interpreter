@@ -26,7 +26,7 @@ export default function LandingPage() {
           <img
             src="/hero-dream.jpg"
             alt=""
-            className="h-full w-full object-cover opacity-60"
+            className="dreamtok-hero-image h-full w-full object-cover opacity-60"
             width={1920}
             height={1280}
             fetchPriority="high"
