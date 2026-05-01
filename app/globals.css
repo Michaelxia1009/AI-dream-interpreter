@@ -296,6 +296,17 @@
   }
 }
 
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.36;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.64;
+  }
+}
+
 /* Reduce motion preference — disable animated aurora */
 @media (prefers-reduced-motion: reduce) {
   .aurora-bg,

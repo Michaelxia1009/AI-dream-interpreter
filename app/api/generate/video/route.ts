@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
           isPublic,
           moderation: parsed.data.score.moderation,
           blurb: parsed.data.score.blurb.slice(0, 80),
+          dreamType: dreamTypeFromEnrichedDream(parsed.data.enrichedDream),
           symbols: sanitizeSymbolsForPersist(parsed.data.score.symbols),
         };
         await persistDream(record);
@@ -172,4 +173,9 @@ function sanitizeSymbolsForPersist(raw: string[] | undefined): string[] | undefi
     if (out.length >= 8) break;
   }
   return out.length ? out : undefined;
+}
+
+function dreamTypeFromEnrichedDream(text: string): DreamRecord['dreamType'] {
+  const match = text.match(/^DREAM TYPE:\s*(normal|nightmare|recurring|prophetic)$/m);
+  return match?.[1] as DreamRecord['dreamType'] | undefined;
 }

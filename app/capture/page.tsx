@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MicButton } from '@/components/MicButton';
+import { Loader2, Mic, Sparkles } from 'lucide-react';
+import { BreathingOrb } from '@/components/BreathingOrb';
 import { ChatThread } from '@/components/ChatThread';
+import { MicButton } from '@/components/MicButton';
 import { useDream, type InterviewTurn } from '@/lib/state';
 import { toast } from 'sonner';
 
@@ -11,6 +13,17 @@ const OPENING: InterviewTurn = {
   role: 'assistant',
   content: 'What did you dream about?',
 };
+
+const MOODS = [
+  { value: 'peaceful', label: 'Peaceful', glyph: 'moon' },
+  { value: 'anxious', label: 'Anxious', glyph: 'spiral' },
+  { value: 'joyful', label: 'Joyful', glyph: 'spark' },
+  { value: 'strange', label: 'Strange', glyph: 'mirror' },
+  { value: 'scary', label: 'Scary', glyph: 'shadow' },
+  { value: 'sad', label: 'Sad', glyph: 'rain' },
+];
+
+const DREAM_TYPES = ['normal', 'nightmare', 'recurring', 'prophetic'] as const;
 
 export default function CapturePage() {
   const router = useRouter();
@@ -21,7 +34,11 @@ export default function CapturePage() {
       ? session.history
       : [OPENING];
   const [turns, setTurns] = useState<InterviewTurn[]>(initialTurns);
-  const [text, setText] = useState('');
+  const [dreamText, setDreamText] = useState('');
+  const [replyText, setReplyText] = useState('');
+  const [mood, setMood] = useState('peaceful');
+  const [dreamType, setDreamType] = useState<(typeof DREAM_TYPES)[number]>('normal');
+  const [sleepy, setSleepy] = useState(true);
   const [pending, setPending] = useState(false);
   const [qCount, setQCount] = useState(
     initialTurns.filter(t => t.role === 'assistant').length || 1,
@@ -29,29 +46,25 @@ export default function CapturePage() {
   const [done, setDone] = useState(false);
   const initialized = useRef(false);
 
-  // On first hydrate, decide between three states:
-  //   1. Completed interview parked in storage (enrichedDream set) → user is
-  //      starting a NEW dream (otherwise they wouldn't be on /capture). Reset
-  //      so they get a clean chat instead of being silently bounced to /format.
-  //   2. Interview in progress (history but no enrichedDream) → restore turns
-  //      so a refresh mid-conversation doesn't lose their work.
-  //   3. Empty session → just show the opener.
+  const hasStartedInterview = useMemo(
+    () => turns.some(t => t.role === 'user'),
+    [turns],
+  );
+
   useEffect(() => {
     if (!isHydrated) return;
     if (initialized.current) return;
     initialized.current = true;
-    if (session.enrichedDream) {
-      reset();
-      return;
-    }
-  }, [session, isHydrated, reset]);
+    if (session.enrichedDream) reset();
+  }, [session.enrichedDream, isHydrated, reset]);
 
   async function submit(content: string) {
     const clean = content.trim();
-    if (!clean) return;
+    if (!clean || pending) return;
     const nextTurns = [...turns, { role: 'user' as const, content: clean }];
     setTurns(nextTurns);
-    setText('');
+    setDreamText('');
+    setReplyText('');
     setPending(true);
     try {
       const res = await fetch('/api/interview', {
@@ -65,14 +78,15 @@ export default function CapturePage() {
       if (!res.ok) throw new Error('interview failed');
       const data = await res.json();
       if (data.done) {
+        const enrichedDream = [
+          `MOOD: ${mood}`,
+          `DREAM TYPE: ${dreamType}`,
+          ...nextTurns.map(t => `${t.role === 'user' ? 'USER' : 'Q'}: ${t.content}`),
+        ].join('\n');
         setDone(true);
-        update({
-          history: nextTurns,
-          enrichedDream: nextTurns.map(t => `${t.role === 'user' ? 'USER' : 'Q'}: ${t.content}`).join('\n'),
-        });
-        setTurns([...nextTurns, { role: 'assistant', content: 'Got it — let\u2019s bring your dream to life.' }]);
-        // Auto-advance after brief pause
-        setTimeout(() => router.push('/format'), 1800);
+        update({ history: nextTurns, enrichedDream });
+        setTurns([...nextTurns, { role: 'assistant', content: 'Got it — let us bring your dream to life.' }]);
+        setTimeout(() => router.push('/format'), 1400);
       } else {
         setQCount(q => q + 1);
         setTurns([...nextTurns, { role: 'assistant', content: data.question }]);
@@ -85,54 +99,164 @@ export default function CapturePage() {
     }
   }
 
+  const setActiveText = hasStartedInterview ? setReplyText : setDreamText;
+
   return (
-    <main className="aurora-bg relative flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 px-4 py-3 backdrop-blur">
-        <span className="font-serif text-lg">Tell us your dream</span>
-      </header>
-
-      <div className="flex-1 overflow-y-auto">
-        <ChatThread turns={turns} pending={pending} />
-      </div>
-
-      {/* Public-by-default disclosure */}
-      <div className="px-4 pb-1 pt-3 text-center text-[11px] text-muted-foreground/80">
-        🌐 Public on the leaderboard by default — easy to toggle off after.
-      </div>
-
-      <div className="sticky bottom-0 z-10 border-t border-border bg-background/90 px-4 pb-6 pt-4 backdrop-blur">
-        {done ? (
+    <main
+      className={`aurora-bg min-h-dvh px-4 py-8 transition-all sm:px-6 ${
+        sleepy ? 'brightness-90 saturate-[0.85]' : ''
+      }`}
+    >
+      <div className="mx-auto max-w-3xl">
+        <header className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="font-serif text-4xl tracking-tight sm:text-5xl">Tell the night</h1>
+            <p className="mt-2 text-lg italic text-muted-foreground">
+              Capture it before it fades.
+            </p>
+          </div>
           <button
-            onClick={() => router.push('/format')}
-            className="aurora-cta w-full rounded-full px-6 py-4 font-semibold tracking-wide"
+            type="button"
+            onClick={() => setSleepy(s => !s)}
+            className="rounded-full border border-border/50 bg-card/30 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:text-foreground"
           >
-            Continue &rarr;
+            {sleepy ? 'Sleepy mode' : 'Awake mode'}
           </button>
-        ) : (
-          <div className="flex items-end gap-3">
-            <textarea
-              rows={1}
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="Type or tap the mic..."
-              className="flex-1 resize-none rounded-2xl border border-border bg-card px-4 py-3 text-[15px] text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(text); }
-              }}
-            />
-            {text.trim() ? (
+        </header>
+
+        <section className="surface-glass rounded-2xl p-5 sm:p-7">
+          <div className="flex flex-col items-center py-4">
+            <div className="relative grid place-items-center">
+              <BreathingOrb size={150} className={pending ? 'opacity-60' : ''}>
+                <Mic className="h-9 w-9 text-foreground/90" />
+              </BreathingOrb>
+            </div>
+            <div className="mt-3">
+              <MicButton
+                onTranscript={t => setActiveText(prev => prev ? `${prev} ${t}` : t)}
+                disabled={pending || done}
+              />
+            </div>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Tap to dictate, or type below.
+            </p>
+          </div>
+
+          {!hasStartedInterview && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label htmlFor="dream" className="text-sm text-muted-foreground">
+                  The dream
+                </label>
+                <textarea
+                  id="dream"
+                  value={dreamText}
+                  onChange={e => setDreamText(e.target.value)}
+                  placeholder="I was walking through a forest of mirrors..."
+                  className="min-h-52 w-full resize-y rounded-2xl border border-border/50 bg-card/40 px-4 py-4 font-serif text-lg italic leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
+                  autoFocus
+                />
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">How did it feel?</p>
+                <div className="flex flex-wrap gap-2">
+                  {MOODS.map(item => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setMood(item.value)}
+                      className={`rounded-full border px-4 py-2 text-sm transition ${
+                        mood === item.value
+                          ? 'border-ring/60 bg-ring/20 text-foreground shadow-[0_0_24px_rgba(167,139,250,0.22)]'
+                          : 'border-border/40 bg-card/30 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="mr-1.5 text-[11px] uppercase tracking-[0.12em]">{item.glyph}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">Dream type</p>
+                <div className="flex flex-wrap gap-2">
+                  {DREAM_TYPES.map(type => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setDreamType(type)}
+                      className={`rounded-full border px-4 py-2 text-sm capitalize transition ${
+                        dreamType === type
+                          ? 'border-fuchsia-300/50 bg-fuchsia-300/15 text-foreground'
+                          : 'border-border/40 bg-card/30 text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {hasStartedInterview && (
+            <div className="mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/25">
+              <ChatThread turns={turns} pending={pending} />
+            </div>
+          )}
+
+          <div className="mt-6">
+            {done ? (
               <button
-                onClick={() => submit(text)}
-                disabled={pending}
-                className="aurora-cta h-12 rounded-full px-5 font-semibold disabled:opacity-50"
+                type="button"
+                onClick={() => router.push('/format')}
+                className="aurora-cta inline-flex w-full items-center justify-center rounded-full px-6 py-4 font-semibold tracking-wide"
               >
-                Send
+                Continue
               </button>
+            ) : hasStartedInterview ? (
+              <div className="flex items-end gap-3">
+                <textarea
+                  rows={1}
+                  value={replyText}
+                  onChange={e => setReplyText(e.target.value)}
+                  placeholder="Answer the follow-up..."
+                  className="min-h-12 flex-1 resize-none rounded-2xl border border-border/50 bg-card/60 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      submit(replyText);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => submit(replyText)}
+                  disabled={pending || !replyText.trim()}
+                  className="aurora-cta inline-flex h-12 items-center justify-center rounded-full px-5 font-semibold disabled:opacity-50"
+                >
+                  {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
+                </button>
+              </div>
             ) : (
-              <MicButton onTranscript={t => setText(prev => prev ? `${prev} ${t}` : t)} disabled={pending} />
+              <button
+                type="button"
+                onClick={() => submit(dreamText)}
+                disabled={pending || !dreamText.trim()}
+                className="aurora-cta mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold disabled:opacity-50"
+              >
+                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Continue
+              </button>
             )}
           </div>
-        )}
+        </section>
+
+        <p className="mx-auto mt-5 max-w-xl text-center text-[11px] text-muted-foreground/80">
+          Public on the leaderboard by default — easy to toggle off after generation.
+        </p>
       </div>
     </main>
   );

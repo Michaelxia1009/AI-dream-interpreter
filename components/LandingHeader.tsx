@@ -9,7 +9,7 @@ import { Menu, Moon, X } from 'lucide-react';
  *
  * Layout follows the brand reference:
  *   • crescent-moon mark + wordmark on the left
- *   • centered nav: Gallery · Pricing · About
+ *   • centered nav: Journal · Leaderboard · Circles · Profile
  *   • aurora-CTA pill on the right
  *
  * On narrow screens the centered nav collapses into a dropdown opened by a
@@ -21,12 +21,10 @@ import { Menu, Moon, X } from 'lucide-react';
  */
 
 const LINKS = [
+  { href: '/journal',     label: 'Journal' },
   { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/profile',     label: 'Profile' },
-  { href: '/patterns',    label: 'Patterns' },
   { href: '/circles',     label: 'Circles' },
-  { href: '/pricing',     label: 'Pricing' },
-  { href: '/about',       label: 'About' },
+  { href: '/profile',     label: 'Profile' },
 ];
 
 export function LandingHeader() {
@@ -54,26 +52,26 @@ export function LandingHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-40">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
         {/* Logo */}
         <Link
           href="/"
-          className="group inline-flex items-center gap-2 rounded-full px-1 py-1 text-foreground transition"
+          className="group inline-flex items-center gap-3 rounded-full px-1 py-1 text-foreground transition"
           aria-label="Dreamweaver — home"
         >
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-secondary/60 text-foreground/90 shadow-inner backdrop-blur transition group-hover:text-foreground">
-            <Moon className="h-4 w-4 -rotate-12" />
+          <span className="grid h-11 w-11 place-items-center rounded-full border border-ring/30 bg-secondary/70 text-ring shadow-[0_0_28px_rgba(167,139,250,0.28)] backdrop-blur transition group-hover:text-foreground">
+            <Moon className="h-6 w-6 -rotate-12" />
           </span>
-          <span className="font-serif text-lg tracking-tight">Dreamweaver</span>
+          <span className="font-serif text-2xl tracking-tight text-foreground">Dreamweaver</span>
         </Link>
 
         {/* Center nav (desktop) */}
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
           {LINKS.map(l => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm text-muted-foreground transition hover:text-foreground"
+              className="text-base font-semibold text-foreground/80 transition hover:text-foreground"
             >
               {l.label}
             </Link>
@@ -84,7 +82,7 @@ export function LandingHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/capture"
-            className="aurora-cta inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98] sm:px-5 sm:py-2.5"
+            className="aurora-cta inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-xl transition hover:scale-[1.02] active:scale-[0.98] sm:px-6 sm:py-3 sm:text-base"
           >
             Start journaling
           </Link>

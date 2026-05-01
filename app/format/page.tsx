@@ -10,6 +10,7 @@ export default function FormatPage() {
   const router = useRouter();
   const { session, isHydrated, update } = useDream();
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [limit, setLimit] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -17,7 +18,11 @@ export default function FormatPage() {
     (async () => {
       const fp = await getFingerprint();
       const res = await fetch(`/api/quota?fp=${encodeURIComponent(fp)}`);
-      if (res.ok) { const d = await res.json(); setRemaining(d.remaining); }
+      if (res.ok) {
+        const d = await res.json();
+        setRemaining(d.remaining);
+        setLimit(d.limit);
+      }
     })();
   }, [session.enrichedDream, isHydrated, router]);
 
@@ -30,7 +35,7 @@ export default function FormatPage() {
     <main className="aurora-bg flex min-h-dvh flex-col px-6 py-10">
       <h1 className="font-serif text-3xl">Pick a format</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        {remaining !== null ? `${remaining} of 3 dreams left today` : 'Checking your quota...'}
+        {remaining !== null ? `${remaining} of ${limit ?? 5} generations left today` : 'Checking your quota...'}
       </p>
       <div className="mt-8 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         <FormatCard

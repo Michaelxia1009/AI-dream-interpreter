@@ -38,6 +38,7 @@ export interface RecentCard {
   styleName: string;
   format: 'video' | 'carousel';
   thumbnailUrl: string | null;
+  dreamType: 'normal' | 'nightmare' | 'recurring' | 'prophetic';
   symbols: string[];
   weirdness: number;
 }
@@ -143,6 +144,7 @@ export function aggregatePatterns(
       styleName: d.styleName,
       format: d.format,
       thumbnailUrl: thumbnailFor(d),
+      dreamType: d.dreamType ?? 'normal',
       symbols: d.symbols ?? [],
       weirdness: d.metrics.weirdness.score,
     }));

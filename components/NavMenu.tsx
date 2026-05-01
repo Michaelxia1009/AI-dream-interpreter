@@ -8,11 +8,7 @@ import {
   X,
   Sparkles,
   Trophy,
-  Tag,
-  BookOpen,
-  Wand2,
-  Home,
-  ChartBar,
+  BookOpenText,
   UsersRound,
   UserRound,
 } from 'lucide-react';
@@ -35,15 +31,10 @@ type Item = {
  */
 
 const ITEMS: Item[] = [
-  { href: '/',            label: 'Home',         blurb: 'Landing & overview',           icon: Home },
-  { href: '/capture',     label: 'Capture',      blurb: 'Start a new dream',            icon: Wand2 },
-  { href: '/profile',     label: 'Profile',      blurb: 'Your dream archive',           icon: UserRound },
-  { href: '/interpret',   label: 'Interpret',    blurb: 'Read your dream closely',      icon: Sparkles },
-  { href: '/patterns',    label: 'Patterns',     blurb: 'Mood and symbol analytics',    icon: ChartBar },
+  { href: '/journal',     label: 'Journal',      blurb: 'Archive and patterns',         icon: BookOpenText },
+  { href: '/leaderboard', label: 'Leaderboard',  blurb: 'This week\u2019s top dreams', icon: Trophy },
   { href: '/circles',     label: 'Circles',      blurb: 'Private dream groups',         icon: UsersRound },
-  { href: '/leaderboard', label: 'Gallery',      blurb: 'This week\u2019s top dreams', icon: Trophy },
-  { href: '/pricing',     label: 'Pricing',      blurb: 'Free forever or Plus',         icon: Tag },
-  { href: '/about',       label: 'About',        blurb: 'What Dreamweaver is',          icon: BookOpen },
+  { href: '/profile',     label: 'Profile',      blurb: 'Your dream-self',              icon: UserRound },
 ];
 
 export function NavMenu() {
@@ -54,7 +45,7 @@ export function NavMenu() {
   // Hide on public share pages (clean handoff for first-time recipients) and
   // on the marketing pages where <LandingHeader /> already renders a top-bar
   // nav — two nav surfaces would compete.
-  const MARKETING_ROUTES = ['/', '/about', '/pricing'];
+  const MARKETING_ROUTES = ['/', '/about', '/pricing', '/how-it-works', '/features', '/questions'];
   const hidden =
     pathname?.startsWith('/d/') ||
     (pathname !== undefined && MARKETING_ROUTES.includes(pathname));

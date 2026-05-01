@@ -5,6 +5,9 @@ import { getHandleForFpHash } from '@/lib/dreams/handle';
 import { backfillUserDreamIndex, getUserDreamIds } from '@/lib/dreams/user-index';
 import { getDream } from '@/lib/dreams/repo';
 import { aggregatePatterns } from '@/lib/dreams/patterns';
+import { getPrototypeAccount, publicAccountState } from '@/lib/dreams/account';
+import { computeStreakInfo } from '@/lib/dreams/streak';
+import { buildRateLimitKey, DAILY_GENERATION_LIMIT, peek } from '@/lib/ratelimit';
 import type { DreamRecord } from '@/lib/dreams/types';
 
 export const runtime = 'nodejs';
@@ -35,6 +38,7 @@ function profileDream(dream: DreamRecord) {
     format: dream.format,
     styleName: dream.styleName,
     thumbnailUrl: thumbnailFor(dream),
+    dreamType: dream.dreamType ?? 'normal',
     metrics: dream.metrics,
     symbols: dream.symbols ?? [],
     isPublic: dream.isPublic,
@@ -69,15 +73,25 @@ export async function GET(req: NextRequest) {
   }
 
   const fpHash = fpHashOf(parsed.data.fingerprint);
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    req.headers.get('x-real-ip') ??
+    '0.0.0.0';
+  const ua = req.headers.get('user-agent') ?? '';
   await backfillUserDreamIndex(fpHash);
   const ids = await getUserDreamIds(fpHash, { limit: 100 });
   const records = (await Promise.all(ids.map(id => getDream(id))))
     .filter((d): d is DreamRecord => d != null && d.fpHash === fpHash)
     .sort((a, b) => b.createdAt - a.createdAt);
   const patterns = aggregatePatterns(records, { windowDays: 90 });
-  const handle = await getHandleForFpHash(fpHash);
+  const [handle, account, usage] = await Promise.all([
+    getHandleForFpHash(fpHash),
+    getPrototypeAccount(fpHash),
+    peek(buildRateLimitKey(ip, ua, parsed.data.fingerprint)),
+  ]);
   const firstDreamAt = records.length ? records[records.length - 1].createdAt : null;
   const lastDreamAt = records.length ? records[0].createdAt : null;
+  const publicDreams = records.filter(d => d.isPublic).length;
 
   return NextResponse.json({
     ok: true,
@@ -86,11 +100,19 @@ export async function GET(req: NextRequest) {
       handle,
       dreamerCode: dreamerCode(fpHash),
       totalDreams: records.length,
+      publicDreams,
       firstDreamAt,
       lastDreamAt,
       patternsUnlocked: records.length >= 3,
       patternSummary: summaryText(records),
       patterns,
+      account: publicAccountState(account),
+      streak: computeStreakInfo(records),
+      usage: {
+        limit: DAILY_GENERATION_LIMIT,
+        remaining: usage.remaining,
+        resetAt: usage.resetAt,
+      },
       dreams: records.map(profileDream),
     },
   }, {
