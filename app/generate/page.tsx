@@ -8,6 +8,31 @@ import { useDream, type GenerationResult } from '@/lib/state';
 import { getFingerprint } from '@/lib/fingerprint';
 import { toast } from 'sonner';
 
+async function readGenerationError(res: Response): Promise<string> {
+  const fallback = `generation failed (${res.status})`;
+  const contentType = res.headers.get('content-type') ?? '';
+
+  try {
+    if (contentType.includes('application/json')) {
+      const payload = await res.json() as {
+        detail?: unknown;
+        error?: unknown;
+        message?: unknown;
+      };
+      const detail = payload.detail ?? payload.message ?? payload.error;
+      return typeof detail === 'string' && detail.trim() ? detail : fallback;
+    }
+
+    const text = await res.text();
+    if (res.status === 504 || text.includes('FUNCTION_INVOCATION_TIMEOUT')) {
+      return 'generation timed out before the server finished';
+    }
+    return text.trim().slice(0, 180) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function GeneratePage() {
   const router = useRouter();
   const { session, isHydrated, update } = useDream();
@@ -52,7 +77,7 @@ export default function GeneratePage() {
           router.replace('/rate-limited');
           return;
         }
-        if (!res.ok) throw new Error('generation failed');
+        if (!res.ok) throw new Error(await readGenerationError(res));
         const data: GenerationResult & { isPublic?: boolean; handle?: string | null } =
           await res.json();
         // Pull off the persistence-side fields, keep just the GenerationResult shape in state.
@@ -65,7 +90,8 @@ export default function GeneratePage() {
         router.replace(`/result/${data.id}`);
       } catch (err) {
         console.error(err);
-        toast.error('The dream escaped us. Try again?');
+        const detail = err instanceof Error ? err.message : '';
+        toast.error(detail ? `The dream escaped us: ${detail}` : 'The dream escaped us. Try again?');
         router.replace('/style');
       }
     })();

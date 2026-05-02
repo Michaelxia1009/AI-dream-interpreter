@@ -80,6 +80,14 @@ async function timeStage<T>(
   }
 }
 
+function sanitizeErrorDetail(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err || 'unknown');
+  return raw
+    .replace(/r8_[A-Za-z0-9_-]+/g, '[redacted-token]')
+    .replace(/sk_[A-Za-z0-9_-]+/g, '[redacted-key]')
+    .slice(0, 240);
+}
+
 export async function POST(req: NextRequest) {
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: 'bad body' }, { status: 400 });
@@ -199,9 +207,16 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     timings.totalMs = Math.round(performance.now() - totalStart);
-    console.error('video gen failed', err);
+    const detail = sanitizeErrorDetail(err);
+    console.error('video gen failed', {
+      provider: provider.id,
+      modelLabel: provider.modelLabel,
+      timings,
+      detail,
+    }, err);
     return NextResponse.json({
       error: 'generation_failed',
+      detail,
       ...(debug ? {
         _provider: {
           id: provider.id,

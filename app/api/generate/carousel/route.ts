@@ -78,9 +78,35 @@ function dreamTypeFromEnrichedDream(text: string): DreamRecord['dreamType'] {
   return match?.[1] as DreamRecord['dreamType'] | undefined;
 }
 
+type TimingKey = 'promptMs' | 'imageMs' | 'zipMs' | 'uploadMs' | 'totalMs';
+type Timings = Partial<Record<TimingKey, number>>;
+
+async function timeStage<T>(
+  timings: Timings,
+  key: TimingKey,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const start = performance.now();
+  try {
+    return await fn();
+  } finally {
+    timings[key] = Math.round(performance.now() - start);
+  }
+}
+
+function sanitizeErrorDetail(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err || 'unknown');
+  return raw
+    .replace(/r8_[A-Za-z0-9_-]+/g, '[redacted-token]')
+    .replace(/sk_[A-Za-z0-9_-]+/g, '[redacted-key]')
+    .slice(0, 240);
+}
+
 export async function POST(req: NextRequest) {
   const parsed = Body.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: 'bad body' }, { status: 400 });
+  const timings: Timings = {};
+  const totalStart = performance.now();
 
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? req.headers.get('x-real-ip') ?? '0.0.0.0';
@@ -98,25 +124,29 @@ export async function POST(req: NextRequest) {
   if (!style) return NextResponse.json({ error: 'unknown style' }, { status: 400 });
 
   try {
-    const prompts = await buildCarouselPrompts(parsed.data.enrichedDream, style);
-    const images = await generateImages(prompts);
+    const prompts = await timeStage(timings, 'promptMs', () =>
+      buildCarouselPrompts(parsed.data.enrichedDream, style),
+    );
+    const images = await timeStage(timings, 'imageMs', () => generateImages(prompts));
 
     const zip = new JSZip();
     images.forEach((img, i) => zip.file(`dream-${i + 1}.jpg`, img));
-    const zipBuffer = Buffer.from(await zip.generateAsync({ type: 'nodebuffer' }));
-
-    const id = uuid();
-    const zipUrl = await uploadArtifact(
-      `carousels/${id}.zip`,
-      zipBuffer,
-      'application/zip',
+    const zipBuffer = await timeStage(timings, 'zipMs', async () =>
+      Buffer.from(await zip.generateAsync({ type: 'nodebuffer' })),
     );
 
-    // upload each image individually for in-browser carousel display
-    const imageUrls = await Promise.all(
-      images.map((img, i) =>
-        uploadArtifact(`carousels/${id}/image-${i + 1}.jpg`, img, 'image/jpeg'),
-      ),
+    const id = uuid();
+    const [zipUrl, imageUrls] = await timeStage(
+      timings,
+      'uploadMs',
+      () => Promise.all([
+        uploadArtifact(`carousels/${id}.zip`, zipBuffer, 'application/zip'),
+        Promise.all(
+          images.map((img, i) =>
+            uploadArtifact(`carousels/${id}/image-${i + 1}.jpg`, img, 'image/jpeg'),
+          ),
+        ),
+      ]),
     );
 
     // Persist the dream (best-effort)
@@ -177,9 +207,10 @@ export async function POST(req: NextRequest) {
       handle,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'unknown';
+    timings.totalMs = Math.round(performance.now() - totalStart);
+    const message = sanitizeErrorDetail(err);
     const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : '';
-    console.error('carousel gen failed', message, cause);
+    console.error('carousel gen failed', { detail: message, cause, timings }, err);
     return NextResponse.json({ error: 'generation_failed', detail: message }, { status: 500 });
   }
 }
