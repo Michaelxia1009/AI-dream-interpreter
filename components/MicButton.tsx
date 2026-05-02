@@ -24,7 +24,10 @@ interface SpeechRecognitionInstance extends EventTarget {
   onend: (() => void) | null;
 }
 interface SpeechRecognitionEventLike {
-  results: ArrayLike<{ 0: { transcript: string } }>;
+  results: ArrayLike<{
+    0: { transcript: string };
+    isFinal?: boolean;
+  }>;
 }
 interface SpeechRecognitionErrorLike {
   error?: string;
@@ -59,7 +62,7 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
 
     const Ctor = getSpeechCtor();
     if (!Ctor) {
-      toast.error('Speech recognition is not supported in this browser.');
+      toast.error('Voice dictation is not supported in this browser. Chrome works best for this feature.');
       return null;
     }
 
@@ -68,7 +71,7 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
     rec.interimResults = true;
     rec.lang = localStorage.getItem('dream-lang') || 'en-US';
 
-    rec.onresult = (e) => {
+    rec.onresult = e => {
       let text = '';
       for (let i = 0; i < e.results.length; i++) {
         text += e.results[i][0].transcript;
@@ -76,7 +79,7 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       bufferRef.current = text;
     };
 
-    rec.onerror = (e) => {
+    rec.onerror = e => {
       const error = e?.error ?? 'unknown';
       if (error === 'not-allowed' || error === 'permission-denied') {
         toast.error('Microphone access denied. Please allow it in your browser settings.');
@@ -108,7 +111,11 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
   async function start() {
     if (disabled) return;
     if (!getSpeechCtor()) {
-      toast.error('Speech recognition is not supported in this browser.');
+      toast.error('Voice dictation is not supported in this browser. Chrome works best for this feature.');
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast.error('This browser cannot access the microphone here. Please try Chrome or Safari over localhost/HTTPS.');
       return;
     }
 
@@ -116,8 +123,15 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop());
-    } catch {
-      toast.error('Microphone access is required for voice input. Please allow it and try again.');
+    } catch (err) {
+      const name = err instanceof DOMException ? err.name : 'unknown';
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        toast.error('Microphone access is blocked. Allow microphone permission for this site, then try again.');
+      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        toast.error('No microphone was found on this computer.');
+      } else {
+        toast.error(`Could not access the microphone (${name}). Please check your browser settings.`);
+      }
       return;
     }
 
@@ -132,7 +146,7 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       onRecordingChangeRef.current?.(true);
     } catch (err) {
       if (err instanceof Error && err.message.includes('already started')) return;
-      toast.error('Could not start recording. Please try again.');
+      toast.error('Could not start voice dictation. Please try Chrome, or type your dream instead.');
     }
   }
 
@@ -146,12 +160,12 @@ export function MicButton({ onTranscript, onRecordingChange, disabled }: Props) 
       onClick={recording ? stop : start}
       disabled={disabled}
       aria-label={recording ? 'Stop recording' : 'Start recording'}
-      className={`flex h-12 w-12 items-center justify-center rounded-full shadow-xl transition ${
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full shadow-xl transition ${
         recording ? 'bg-destructive animate-pulse text-white' : 'aurora-cta'
       } disabled:opacity-40`}
     >
       {recording
-        ? <Square className="h-5 w-5 fill-current" />
+        ? <Square className="h-[18px] w-[18px] fill-current" />
         : <Mic className="h-5 w-5" />}
     </button>
   );
