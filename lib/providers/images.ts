@@ -1,8 +1,9 @@
 import Replicate from 'replicate';
+import { CAROUSEL_IMAGE_COUNT } from '@/lib/ai/scenePrompt';
 
 const IMAGE_MODEL = 'black-forest-labs/flux-1.1-pro';
 const IMAGE_REQUEST_SPACING_MS = 1200;
-const RATE_LIMIT_RETRY_DELAYS_MS = [15_000, 30_000, 45_000];
+const RATE_LIMIT_RETRY_DELAYS_MS = [5_000];
 
 let _replicate: Replicate | null = null;
 function getClient() {
@@ -79,7 +80,7 @@ export async function generateImage(prompt: string): Promise<Buffer> {
 
 export async function generateImages(prompts: string[]): Promise<Buffer[]> {
   const images: Buffer[] = [];
-  for (const [index, prompt] of prompts.entries()) {
+  for (const [index, prompt] of prompts.slice(0, CAROUSEL_IMAGE_COUNT).entries()) {
     if (index > 0) await sleep(IMAGE_REQUEST_SPACING_MS);
     images.push(await generateImage(prompt));
   }

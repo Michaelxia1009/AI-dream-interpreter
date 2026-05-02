@@ -2,14 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { CarouselPromptsSchema, VideoPromptSchema } from '@/lib/ai/scenePrompt';
 
 describe('scene prompt schemas', () => {
-  it('carousel accepts 4-6 prompts', () => {
+  it('carousel accepts exactly 5 prompts', () => {
     expect(() =>
-      CarouselPromptsSchema.parse({ prompts: ['scene one here', 'scene two here', 'scene three here', 'scene four here'] }),
+      CarouselPromptsSchema.parse({ prompts: Array(5).fill('a valid scene prompt') }),
     ).not.toThrow();
-    expect(() => CarouselPromptsSchema.parse({ prompts: ['scene one here'] })).toThrow();
-    expect(() =>
-      CarouselPromptsSchema.parse({ prompts: Array(7).fill('a valid scene prompt') }),
-    ).toThrow();
+    expect(() => CarouselPromptsSchema.parse({ prompts: Array(4).fill('a valid scene prompt') })).toThrow();
+    expect(() => CarouselPromptsSchema.parse({ prompts: Array(6).fill('a valid scene prompt') })).toThrow();
   });
 
   it('video accepts one prompt', () => {
