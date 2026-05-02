@@ -11,6 +11,7 @@ import { WeeklyLetter, type WeeklyLetterPayload } from '@/components/patterns/We
 import type { StreakInfo } from '@/lib/dreams/streak';
 import { toast } from 'sonner';
 import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
+import { DreamArchiveCover } from '@/components/DreamArchiveCover';
 
 type DreamType = 'normal' | 'nightmare' | 'recurring' | 'prophetic';
 
@@ -21,6 +22,7 @@ interface ProfileDream {
   format: 'video' | 'carousel';
   styleName: string;
   thumbnailUrl: string | null;
+  videoUrl: string | null;
   dreamType: DreamType;
   symbols: string[];
   isPublic: boolean;
@@ -46,6 +48,7 @@ interface RecentCard {
   styleName: string;
   format: 'video' | 'carousel';
   thumbnailUrl: string | null;
+  videoUrl?: string | null;
   dreamType: DreamType;
   symbols: string[];
   weirdness: number;
@@ -82,15 +85,7 @@ function barHeight(day: DayBin): string {
 function DreamCard({ dream }: { dream: ProfileDream }) {
   const content = (
     <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
-      {dream.thumbnailUrl ? (
-        // Generated Blob URLs are final display assets.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={dream.thumbnailUrl} alt="" className="h-40 w-full object-cover" />
-      ) : (
-        <div className="grid h-40 place-items-center bg-secondary/60 text-sm text-muted-foreground">
-          Video dream
-        </div>
-      )}
+      <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
       <div className="p-5">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>

@@ -7,6 +7,7 @@ import {
   Menu,
   X,
   Sparkles,
+  House,
   Trophy,
   BookOpenText,
   UsersRound,
@@ -32,6 +33,7 @@ type Item = {
  */
 
 const ITEMS: Item[] = [
+  { href: '/',            label: 'Home',         blurb: 'Back to landing page',         icon: House },
   { href: '/journal',     label: 'Journal',      blurb: 'Archive and patterns',         icon: BookOpenText },
   { href: '/leaderboard', label: 'Leaderboard',  blurb: 'This week\u2019s top dreams', icon: Trophy },
   { href: '/circles',     label: 'Circles',      blurb: 'Private dream groups',         icon: UsersRound },

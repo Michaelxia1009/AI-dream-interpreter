@@ -11,6 +11,7 @@ import { SymbolCloud, type SymbolHit } from '@/components/patterns/SymbolCloud';
 import type { StreakInfo } from '@/lib/dreams/streak';
 import { toast } from 'sonner';
 import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
+import { DreamArchiveCover } from '@/components/DreamArchiveCover';
 
 interface Metric {
   score: number;
@@ -24,6 +25,7 @@ interface ProfileDream {
   format: 'video' | 'carousel';
   styleName: string;
   thumbnailUrl: string | null;
+  videoUrl: string | null;
   dreamType: 'normal' | 'nightmare' | 'recurring' | 'prophetic';
   metrics: {
     weirdness: Metric;
@@ -266,15 +268,7 @@ export default function ProfilePage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {profile.dreams.map(dream => (
                 <GlassPanel key={dream.id} as="article" size="sm" className="overflow-hidden p-0">
-                  {dream.thumbnailUrl ? (
-                    // Generated Blob URLs are final display assets.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={dream.thumbnailUrl} alt="" className="h-40 w-full object-cover" />
-                  ) : (
-                    <div className="grid h-40 place-items-center bg-secondary/70 text-sm text-muted-foreground">
-                      Video dream
-                    </div>
-                  )}
+                  <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
                   <div className="p-4">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">

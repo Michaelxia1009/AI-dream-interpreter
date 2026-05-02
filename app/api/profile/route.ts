@@ -49,6 +49,7 @@ function profileDream(dream: DreamRecord) {
     format: dream.format,
     styleName: dream.styleName,
     thumbnailUrl: thumbnailFor(dream),
+    videoUrl: dream.generation.kind === 'video' ? dream.generation.videoUrl : null,
     dreamType: dream.dreamType ?? 'normal',
     metrics: dream.metrics,
     symbols: dream.symbols ?? [],
