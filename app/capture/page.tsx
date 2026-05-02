@@ -123,7 +123,7 @@ export default function CapturePage() {
         </button>
       </header>
 
-      <GlassPanel size="md" className="sm:p-7">
+      <GlassPanel size="md" className="capture-panel sm:p-7">
         <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-border/40 bg-background/25 px-4 py-3">
           <div>
             <p className="text-sm font-medium text-foreground">Voice input</p>
