@@ -46,14 +46,14 @@ export default function FormatPage() {
       <div className="mt-8 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         <FormatCard
           icon="&#127916;"
-          title="10s Narrated Video"
+          title="10s Cinematic Video"
           description="A short cinematic scene, narrated in a voice matched to your style."
           onSelect={() => pick('video')}
         />
         <FormatCard
           icon="&#128444;"
-          title="Image Carousel"
-          description="A sequence of dreamlike images to swipe through."
+          title="5-Image Dream Series"
+          description="Five dreamlike stills that unfold like a visual sequence."
           onSelect={() => pick('carousel')}
         />
       </div>
