@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { headers } from 'next/headers';
 import { Sparkles } from 'lucide-react';
 import { getDream } from '@/lib/dreams/repo';
 import { ReportCard } from '@/components/ReportCard';
@@ -10,8 +9,9 @@ import { ShareButton } from '@/components/ShareButton';
 import type { ScoreResult } from '@/lib/state';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
 
-export const dynamic = 'force-dynamic';
 export const revalidate = 60;
+
+const CANONICAL_HOST = 'dreamweaver.app';
 
 interface Params { params: Promise<{ id: string }> }
 
@@ -48,11 +48,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-async function buildShareUrl(id: string): Promise<string> {
-  const h = await headers();
-  const proto = h.get('x-forwarded-proto') ?? 'https';
-  const host = h.get('host') ?? 'dreamweaver.app';
-  return `${proto}://${host}/d/${id}`;
+function buildShareUrl(id: string): string {
+  return `https://${CANONICAL_HOST}/d/${id}`;
 }
 
 export default async function PublicDreamPage({ params }: Params) {
@@ -60,7 +57,7 @@ export default async function PublicDreamPage({ params }: Params) {
   const dream = await loadPublicDream(id);
   if (!dream) notFound();
 
-  const shareUrl = await buildShareUrl(id);
+  const shareUrl = buildShareUrl(id);
 
   // Build a ScoreResult-shaped object the existing ReportCard expects.
   const score: ScoreResult = {
