@@ -6,7 +6,7 @@ const Body = z.object({
   history: z.array(
     z.object({ role: z.enum(['user', 'assistant']), content: z.string() }),
   ),
-  questionsAsked: z.number().int().min(0).max(10),
+  questionsAsked: z.number().int().min(0).max(12),
 });
 
 export async function POST(req: NextRequest) {

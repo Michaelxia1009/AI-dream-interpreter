@@ -6,7 +6,12 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { ChatThread } from '@/components/ChatThread';
 import { MicButton } from '@/components/MicButton';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
-import { useDream, type InterviewTurn } from '@/lib/state';
+import {
+  useDream,
+  type InterviewTurn,
+  type InterviewCategory,
+  type InterviewQuestionMeta,
+} from '@/lib/state';
 import { toast } from 'sonner';
 
 const OPENING: InterviewTurn = {
@@ -25,6 +30,40 @@ const MOODS = [
 
 const DREAM_TYPES = ['normal', 'nightmare', 'recurring', 'prophetic'] as const;
 
+const CATEGORY_LABELS: Record<InterviewCategory, string> = {
+  figuresAppearance: 'FIGURES & APPEARANCE',
+  environment: 'ENVIRONMENT',
+  emotion: 'EMOTION',
+  lighting: 'LIGHTING',
+  motion: 'MOTION',
+  color: 'COLOR',
+  keyObject: 'KEY OBJECT',
+  sound: 'SOUND',
+  twist: 'TWIST',
+};
+
+function buildEnrichedDream(
+  turns: InterviewTurn[],
+  mood: string,
+  dreamType: string,
+): string {
+  const initialUser = turns.find(t => t.role === 'user' && !t.answeredCategory);
+  const labeled = turns
+    .filter(t => t.role === 'user' && t.answeredCategory)
+    .map(t => `${CATEGORY_LABELS[t.answeredCategory!]}: ${t.content}`);
+  const lines: string[] = [];
+  lines.push('INITIAL DREAM:');
+  lines.push(initialUser?.content ?? '');
+  lines.push('');
+  lines.push(`MOOD: ${mood}`);
+  lines.push(`DREAM TYPE: ${dreamType}`);
+  if (labeled.length) {
+    lines.push('');
+    lines.push(...labeled);
+  }
+  return lines.join('\n');
+}
+
 export default function CapturePage() {
   const router = useRouter();
   const { session, isHydrated, update, reset } = useDream();
@@ -35,7 +74,6 @@ export default function CapturePage() {
       : [OPENING];
   const [turns, setTurns] = useState<InterviewTurn[]>(initialTurns);
   const [dreamText, setDreamText] = useState('');
-  const [replyText, setReplyText] = useState('');
   const [mood, setMood] = useState('peaceful');
   const [dreamType, setDreamType] = useState<(typeof DREAM_TYPES)[number]>('normal');
   const [sleepy, setSleepy] = useState(true);
@@ -52,6 +90,18 @@ export default function CapturePage() {
     [turns],
   );
 
+  // The most recent assistant turn that carries chip metadata AND is unanswered.
+  const pendingQuestionTurn = useMemo(() => {
+    for (let i = turns.length - 1; i >= 0; i--) {
+      const t = turns[i];
+      if (t.role !== 'assistant' || !t.question) continue;
+      const hasUserAfter = turns.slice(i + 1).some(x => x.role === 'user');
+      if (!hasUserAfter) return t;
+      return null;
+    }
+    return null;
+  }, [turns]);
+
   useEffect(() => {
     if (!isHydrated) return;
     if (initialized.current) return;
@@ -59,38 +109,46 @@ export default function CapturePage() {
     if (session.enrichedDream) reset();
   }, [session.enrichedDream, isHydrated, reset]);
 
-  async function submit(content: string) {
-    const clean = content.trim();
-    if (!clean || pending) return;
-    const nextTurns = [...turns, { role: 'user' as const, content: clean }];
-    setTurns(nextTurns);
-    setDreamText('');
-    setReplyText('');
+  async function callInterview(nextTurns: InterviewTurn[], nextQCount: number) {
     setPending(true);
     try {
       const res = await fetch('/api/interview', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          history: nextTurns,
-          questionsAsked: qCount,
+          // Server only needs role/content; strip UI metadata.
+          history: nextTurns.map(t => ({ role: t.role, content: t.content })),
+          questionsAsked: nextQCount,
         }),
       });
       if (!res.ok) throw new Error('interview failed');
       const data = await res.json();
       if (data.done) {
-        const enrichedDream = [
-          `MOOD: ${mood}`,
-          `DREAM TYPE: ${dreamType}`,
-          ...nextTurns.map(t => `${t.role === 'user' ? 'USER' : 'Q'}: ${t.content}`),
-        ].join('\n');
+        const enrichedDream = buildEnrichedDream(nextTurns, mood, dreamType);
         setDone(true);
         update({ history: nextTurns, enrichedDream });
-        setTurns([...nextTurns, { role: 'assistant', content: 'Got it — let us bring your dream to life.' }]);
+        setTurns([
+          ...nextTurns,
+          { role: 'assistant', content: 'Got it — let us bring your dream to life.' },
+        ]);
         setTimeout(() => router.push('/format'), 1400);
       } else {
-        setQCount(q => q + 1);
-        setTurns([...nextTurns, { role: 'assistant', content: data.question }]);
+        const q = data.question as {
+          text: string;
+          category: InterviewCategory;
+          selectionMode: 'one' | 'many';
+          options: string[];
+        };
+        const meta: InterviewQuestionMeta = {
+          category: q.category,
+          selectionMode: q.selectionMode,
+          options: q.options,
+        };
+        setQCount(qc => qc + 1);
+        setTurns([
+          ...nextTurns,
+          { role: 'assistant', content: q.text, question: meta },
+        ]);
       }
     } catch (err) {
       console.error(err);
@@ -100,7 +158,38 @@ export default function CapturePage() {
     }
   }
 
-  const setActiveText = hasStartedInterview ? setReplyText : setDreamText;
+  // Initial dream submission (free text).
+  async function submitInitialDream() {
+    const clean = dreamText.trim();
+    if (!clean || pending) return;
+    const nextTurns: InterviewTurn[] = [
+      ...turns,
+      { role: 'user', content: clean },
+    ];
+    setTurns(nextTurns);
+    setDreamText('');
+    await callInterview(nextTurns, qCount);
+  }
+
+  // Chip-or-Other answer to a structured question.
+  async function submitChoice(values: string[], isFreeText: boolean) {
+    if (!pendingQuestionTurn || pending) return;
+    const cleaned = values.map(v => v.trim()).filter(Boolean);
+    if (cleaned.length === 0) return;
+    const content = cleaned.join(', ');
+    const category = pendingQuestionTurn.question!.category;
+    const nextTurns: InterviewTurn[] = [
+      ...turns,
+      {
+        role: 'user',
+        content,
+        answeredCategory: category,
+        isFreeText,
+      },
+    ];
+    setTurns(nextTurns);
+    await callInterview(nextTurns, qCount);
+  }
 
   return (
     <PageShell
@@ -124,19 +213,21 @@ export default function CapturePage() {
       </header>
 
       <GlassPanel size="md" className="capture-panel sm:p-7">
-        <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-border/40 bg-background/25 px-4 py-3">
-          <div>
-            <p className="text-sm font-medium text-foreground">Voice input</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {recording ? 'Listening... tap again to stop.' : 'Optional: dictate your dream.'}
-            </p>
+        {!hasStartedInterview && (
+          <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-border/40 bg-background/25 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">Voice input</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {recording ? 'Listening... tap again to stop.' : 'Optional: dictate your dream.'}
+              </p>
+            </div>
+            <MicButton
+              onTranscript={t => setDreamText(prev => prev ? `${prev} ${t}` : t)}
+              onRecordingChange={setRecording}
+              disabled={pending || done}
+            />
           </div>
-          <MicButton
-            onTranscript={t => setActiveText(prev => prev ? `${prev} ${t}` : t)}
-            onRecordingChange={setRecording}
-            disabled={pending || done}
-          />
-        </div>
+        )}
 
         {!hasStartedInterview && (
           <div className="space-y-6">
@@ -202,7 +293,11 @@ export default function CapturePage() {
 
         {hasStartedInterview && (
           <div className="mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/25">
-            <ChatThread turns={turns} pending={pending} />
+            <ChatThread
+              turns={turns}
+              pending={pending}
+              onAnswer={submitChoice}
+            />
           </div>
         )}
 
@@ -216,43 +311,18 @@ export default function CapturePage() {
             >
               Continue
             </Button>
-          ) : hasStartedInterview ? (
-            <div className="flex items-end gap-3">
-              <textarea
-                rows={1}
-                value={replyText}
-                onChange={e => setReplyText(e.target.value)}
-                placeholder="Answer the follow-up..."
-                className="min-h-12 flex-1 resize-none appearance-none rounded-2xl border border-border/50 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
-                style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    submit(replyText);
-                  }
-                }}
-              />
-              <Button
-                variant="primary"
-                onClick={() => submit(replyText)}
-                disabled={pending || !replyText.trim()}
-                className="h-12"
-              >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
-              </Button>
-            </div>
-          ) : (
+          ) : !hasStartedInterview ? (
             <Button
               variant="primary"
               size="lg"
-              onClick={() => submit(dreamText)}
+              onClick={submitInitialDream}
               disabled={pending || !dreamText.trim()}
               className="mx-auto w-full max-w-md"
             >
               {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               Continue
             </Button>
-          )}
+          ) : null}
         </div>
       </GlassPanel>
 
