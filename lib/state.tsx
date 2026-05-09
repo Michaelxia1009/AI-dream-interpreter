@@ -62,7 +62,7 @@ export interface DreamSession {
 
 export type GenerationResult =
   | { id: string; kind: 'carousel'; zipUrl: string; imageUrls: string[] }
-  | { id: string; kind: 'video'; videoUrl: string; audioUrl: string; narrationText: string };
+  | { id: string; kind: 'video'; videoUrl: string };
 
 const STORAGE_KEY = 'dream-session-v1';
 const empty: DreamSession = {

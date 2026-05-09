@@ -29,9 +29,7 @@ export type PersistedGeneration =
     }
   | {
       kind: 'video';
-      videoUrl: string;      // proxy URL (already-muxed)
-      audioUrl: string;      // proxy URL
-      narrationText: string;
+      videoUrl: string;      // proxy URL — audio (if any) is baked into the video by the model
     };
 
 export interface ModerationResult {

@@ -77,7 +77,7 @@ export default function StylePage() {
               <div key={i} className="h-24 animate-pulse rounded-2xl bg-card" />
             ))
           : styles.map(s => (
-              <StyleCard key={s.id} style={s} showNarrator={session.format === 'video'} onSelect={() => pick(s.id)} />
+              <StyleCard key={s.id} style={s} onSelect={() => pick(s.id)} />
             ))}
       </div>
       <button

@@ -12,8 +12,6 @@ describe('style library', () => {
       expect(s.name).toBeTruthy();
       expect(s.vibe).toBeTruthy();
       expect(s.imagePromptSuffix).toBeTruthy();
-      expect(s.narratorVoiceId).toMatch(/^[A-Za-z0-9_-]+$/);
-      expect(s.narratorPersona).toBeTruthy();
       expect(Array.isArray(s.moodTags)).toBe(true);
       expect(s.moodTags.length).toBeGreaterThan(0);
     }

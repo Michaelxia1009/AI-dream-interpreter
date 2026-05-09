@@ -5,14 +5,12 @@ import { createHash } from 'node:crypto';
 import { buildRateLimitKey, checkAndConsume } from '@/lib/ratelimit';
 import { getStyleById } from '@/lib/styles';
 import { buildVideoScenePrompt } from '@/lib/ai/scenePrompt';
-import { buildNarrationScript } from '@/lib/ai/narration';
 import {
   DEFAULT_ASPECT_RATIO,
   DEFAULT_DURATION_SECONDS,
   DEFAULT_RESOLUTION,
   selectVideoProvider,
 } from '@/lib/providers/video';
-import { synthesizeNarration } from '@/lib/providers/tts';
 import { uploadArtifact } from '@/lib/providers/blob';
 import { persistDream } from '@/lib/dreams/repo';
 import { addDreamToBoards } from '@/lib/dreams/leaderboard';
@@ -55,10 +53,7 @@ function fpHashOf(fingerprint: string): string {
 
 type TimingKey =
   | 'scenePromptMs'
-  | 'narrationMs'
   | 'videoMs'
-  | 'ttsMs'
-  | 'muxMs'
   | 'uploadMs'
   | 'totalMs';
 
@@ -117,25 +112,23 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const [scenePrompt, narration] = await Promise.all([
-      timeStage(timings, 'scenePromptMs', () => buildVideoScenePrompt(parsed.data.enrichedDream, style)),
-      timeStage(timings, 'narrationMs', () => buildNarrationScript(parsed.data.enrichedDream, style)),
-    ]);
-    const [videoBuf, audioBuf] = await Promise.all([
-      timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, {
-        durationSeconds: DEFAULT_DURATION_SECONDS,
-        resolution: DEFAULT_RESOLUTION,
-        aspectRatio: DEFAULT_ASPECT_RATIO,
-      })),
-      timeStage(timings, 'ttsMs', () => synthesizeNarration(narration, style.narratorVoiceId)),
-    ]);
-    timings.muxMs = 0;
+    const scenePrompt = await timeStage(
+      timings,
+      'scenePromptMs',
+      () => buildVideoScenePrompt(parsed.data.enrichedDream, style),
+    );
+    const videoBuf = await timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, {
+      durationSeconds: DEFAULT_DURATION_SECONDS,
+      resolution: DEFAULT_RESOLUTION,
+      aspectRatio: DEFAULT_ASPECT_RATIO,
+    }));
 
     const id = uuid();
-    const [videoUrl, audioUrl] = await timeStage(timings, 'uploadMs', () => Promise.all([
-      uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4'),
-      uploadArtifact(`videos/${id}/audio.mp3`, audioBuf, 'audio/mpeg'),
-    ]));
+    const videoUrl = await timeStage(
+      timings,
+      'uploadMs',
+      () => uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4'),
+    );
 
     // Persist the dream (best-effort — don't block the response on persistence errors)
     let isPublic = parsed.data.isPublic ?? true;
@@ -165,8 +158,6 @@ export async function POST(req: NextRequest) {
           generation: {
             kind: 'video',
             videoUrl,
-            audioUrl,
-            narrationText: narration,
           },
           fpHash,
           handle,
@@ -192,8 +183,6 @@ export async function POST(req: NextRequest) {
       id,
       kind: 'video',
       videoUrl,
-      audioUrl,
-      narrationText: narration,
       remaining: rl.remaining,
       isPublic,
       handle,

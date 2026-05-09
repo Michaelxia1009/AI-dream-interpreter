@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Download, Sparkles, UsersRound } from 'lucide-react';
@@ -11,33 +11,17 @@ import { ShareButton } from '@/components/ShareButton';
 import { PrivacyToggle } from '@/components/PrivacyToggle';
 import { HandleEditor } from '@/components/HandleEditor';
 import { useDream } from '@/lib/state';
-import { muxVideoWithAudio } from '@/lib/mux/clientMux';
 import { toast } from 'sonner';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
 
 export default function ResultPage() {
   const router = useRouter();
   const { session, isHydrated, update, reset } = useDream();
-  const [muxedUrl, setMuxedUrl] = useState<string | null>(null);
-  const [muxing, setMuxing] = useState(false);
 
   useEffect(() => {
     if (!isHydrated) return;
     const gen = session.generation;
     if (!gen || !session.score) { router.replace('/'); return; }
-    if (gen.kind === 'video') {
-      (async () => {
-        setMuxing(true);
-        try {
-          const blob = await muxVideoWithAudio(gen.videoUrl, gen.audioUrl);
-          setMuxedUrl(URL.createObjectURL(blob));
-        } catch (err) {
-          console.error(err);
-          toast.error('Could not combine video and audio. Downloading silent version.');
-          setMuxedUrl(gen.videoUrl);
-        } finally { setMuxing(false); }
-      })();
-    }
   }, [isHydrated, session.generation, session.score, router]);
 
   const dreamId = session.generation?.id ?? '';
@@ -54,7 +38,7 @@ export default function ResultPage() {
     if (!gen) return;
     const a = document.createElement('a');
     if (gen.kind === 'video') {
-      a.href = muxedUrl ?? gen.videoUrl;
+      a.href = gen.videoUrl;
       a.download = `dream-${gen.id}.mp4`;
     } else {
       a.href = gen.zipUrl;
@@ -75,11 +59,7 @@ export default function ResultPage() {
         <div className="media-halo overflow-hidden rounded-3xl">
           <div className="aspect-[9/16] w-full sm:aspect-video">
             {session.generation.kind === 'video' ? (
-              muxing ? (
-                <div className="h-full w-full animate-pulse bg-card" />
-              ) : (
-                <VideoPlayer src={muxedUrl ?? session.generation.videoUrl} />
-              )
+              <VideoPlayer src={session.generation.videoUrl} />
             ) : (
               <Carousel urls={session.generation.imageUrls} />
             )}
@@ -134,7 +114,6 @@ export default function ResultPage() {
       <div className="mt-3 flex gap-3">
         <Button
           onClick={download}
-          disabled={muxing}
           size="lg"
           className="flex-1 py-4"
         >
@@ -146,7 +125,7 @@ export default function ResultPage() {
           title="My dream, visualised ✦"
           text="I turned my dream into a cinematic short. Made with Dreamweaver."
           iconOnly
-          disabled={!canShare || muxing || !shareUrl}
+          disabled={!canShare || !shareUrl}
           label="Share dream link"
         />
         <Button

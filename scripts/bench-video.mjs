@@ -120,8 +120,8 @@ function renderReport(date, data) {
     `Generated: ${date.toISOString()}`,
     `Base URL: ${BASE_URL}`,
     '',
-    '| Case | Provider | Model | Status | Scene | Narration | Video | TTS | Mux | Upload | Total | Wall | Video URL / Error |',
-    '|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|',
+    '| Case | Provider | Model | Status | Scene | Video | Upload | Total | Wall | Video URL / Error |',
+    '|---|---|---|---:|---:|---:|---:|---:|---:|---|',
   ];
 
   for (const row of data) {
@@ -132,10 +132,7 @@ function renderReport(date, data) {
       row.modelLabel,
       row.status,
       ms(t.scenePromptMs),
-      ms(t.narrationMs),
       ms(t.videoMs),
-      ms(t.ttsMs),
-      ms(t.muxMs),
       ms(t.uploadMs),
       ms(t.totalMs),
       ms(row.wallClockMs),

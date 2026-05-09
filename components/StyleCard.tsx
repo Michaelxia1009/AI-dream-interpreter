@@ -49,11 +49,10 @@ function thumbnailStyle(moodTags: string[]): React.CSSProperties {
 
 interface Props {
   style: Style;
-  showNarrator: boolean;
   onSelect(): void;
 }
 
-export function StyleCard({ style, showNarrator, onSelect }: Props) {
+export function StyleCard({ style, onSelect }: Props) {
   return (
     <GlassPanel
       as="button"
@@ -71,11 +70,6 @@ export function StyleCard({ style, showNarrator, onSelect }: Props) {
       <div className="min-w-0 flex-1">
         <h3 className="font-display text-lg">{style.name}</h3>
         <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{style.vibe}</p>
-        {showNarrator && (
-          <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground/80">
-            {style.narratorPersona}
-          </p>
-        )}
       </div>
       <span className="text-muted-foreground">&rsaquo;</span>
     </GlassPanel>
