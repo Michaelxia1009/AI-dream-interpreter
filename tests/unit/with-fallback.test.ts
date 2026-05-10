@@ -45,17 +45,34 @@ describe('generateObjectWithFallback', () => {
     expect(generateObjectMock).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to MiniMax when Claude throws', async () => {
-    generateObjectMock
-      .mockRejectedValueOnce(new Error('anthropic 503'))
-      .mockResolvedValueOnce({ object: { ok: 'from-minimax' } });
+  it('falls back to MiniMax (via generateText + JSON parse) when Claude throws', async () => {
+    generateObjectMock.mockRejectedValueOnce(new Error('anthropic 503'));
+    // MiniMax fallback path uses generateText so the wrapper can strip
+    // <think> blocks and parse the JSON manually.
+    generateTextMock.mockResolvedValueOnce({
+      text: '<think>let me reason about this</think>\n{"ok":"from-minimax"}',
+      usage: { inputTokens: 10, outputTokens: 5 },
+      finishReason: 'stop',
+    });
     const result = await generateObjectWithFallback({ system: 's', prompt: 'p' });
-    expect(result).toEqual({ object: { ok: 'from-minimax' } });
-    expect(generateObjectMock).toHaveBeenCalledTimes(2);
-    // Second call's model should be the MiniMax one (different from Claude).
-    const firstModel = generateObjectMock.mock.calls[0][0].model;
-    const secondModel = generateObjectMock.mock.calls[1][0].model;
-    expect(secondModel).not.toBe(firstModel);
+    expect(result.object).toEqual({ ok: 'from-minimax' });
+    expect(generateObjectMock).toHaveBeenCalledTimes(1);
+    expect(generateTextMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('validates MiniMax JSON against the provided zod schema', async () => {
+    const fakeSchema = {
+      safeParse: vi.fn().mockReturnValue({ success: true, data: { validated: true } }),
+    };
+    generateObjectMock.mockRejectedValueOnce(new Error('anthropic 500'));
+    generateTextMock.mockResolvedValueOnce({
+      text: '{"raw":"value"}',
+      usage: {},
+      finishReason: 'stop',
+    });
+    const result = await generateObjectWithFallback({ schema: fakeSchema, prompt: 'p' });
+    expect(fakeSchema.safeParse).toHaveBeenCalledWith({ raw: 'value' });
+    expect(result.object).toEqual({ validated: true });
   });
 
   it('does NOT fall back on AbortError', async () => {
