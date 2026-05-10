@@ -1,9 +1,8 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { streamText } from 'ai';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { gateway, CLAUDE_MODEL } from '@/lib/ai/client';
+import { streamTextWithFallback } from '@/lib/ai/with-fallback';
 import { getAgent, getLens, type Lens, type AgentId } from '@/lib/interpret';
 
 /**
@@ -65,8 +64,7 @@ export async function POST(req: NextRequest) {
   const system = buildSystemPrompt(parsed.lens, parsed.agent);
 
   try {
-    const result = streamText({
-      model: gateway(CLAUDE_MODEL),
+    const result = streamTextWithFallback({
       system,
       messages: parsed.messages,
       maxOutputTokens: 700,

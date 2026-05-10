@@ -17,6 +17,7 @@ export const VIDEO_PROVIDER_IDS = [
   'seedance-pro',
   'seedance-lite',
   'kling-turbo',
+  'minimax-direct',
 ] as const;
 
 export type VideoProviderId = typeof VIDEO_PROVIDER_IDS[number];

@@ -1,7 +1,6 @@
-import { generateText } from 'ai';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { gateway, CLAUDE_MODEL } from './client';
+import { generateTextWithFallback } from './with-fallback';
 import { getRedis } from '@/lib/redis';
 import type { PatternsAggregation } from '@/lib/dreams/patterns';
 
@@ -107,8 +106,7 @@ export async function getOrGenerateWeeklyLetter(
   }
 
   try {
-    const { text } = await generateText({
-      model: gateway(CLAUDE_MODEL),
+    const { text } = await generateTextWithFallback({
       system: SYSTEM_PROMPT,
       prompt: buildUserPrompt(agg, recentBlurbs),
       maxOutputTokens: 220,

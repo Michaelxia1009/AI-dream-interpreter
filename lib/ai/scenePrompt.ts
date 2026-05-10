@@ -1,8 +1,7 @@
-import { generateObject } from 'ai';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import { gateway, CLAUDE_MODEL } from './client';
+import { generateObjectWithFallback } from './with-fallback';
 import type { Style } from '@/lib/styles';
 
 export const CAROUSEL_IMAGE_COUNT = 5;
@@ -49,13 +48,13 @@ export async function buildCarouselPrompts(
   enrichedDream: string,
   style: Style,
 ): Promise<string[]> {
-  const { object } = await generateObject({
-    model: gateway(CLAUDE_MODEL),
+  const result = await generateObjectWithFallback({
     system: SYSTEM_PROMPT,
     schema: CarouselPromptsSchemaLLM,
     prompt: `MODE: CAROUSEL\nIMAGE_COUNT: ${CAROUSEL_IMAGE_COUNT}\nSTYLE_SUFFIX: ${style.imagePromptSuffix}\nDREAM:\n${enrichedDream}`,
     temperature: 0.85,
   });
+  const object = result.object as z.infer<typeof CarouselPromptsSchemaLLM>;
   return toFivePrompts(object.prompts).map(p => `${style.imagePromptSuffix}, ${p}`);
 }
 
@@ -63,12 +62,12 @@ export async function buildVideoScenePrompt(
   enrichedDream: string,
   style: Style,
 ): Promise<string> {
-  const { object } = await generateObject({
-    model: gateway(CLAUDE_MODEL),
+  const result = await generateObjectWithFallback({
     system: SYSTEM_PROMPT,
     schema: VideoPromptSchemaLLM,
     prompt: `MODE: VIDEO\nSTYLE_SUFFIX: ${style.imagePromptSuffix}\nDREAM:\n${enrichedDream}`,
     temperature: 0.85,
   });
+  const object = result.object as z.infer<typeof VideoPromptSchemaLLM>;
   return `${style.imagePromptSuffix}, ${object.prompt}`;
 }

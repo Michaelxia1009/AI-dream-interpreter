@@ -1,8 +1,7 @@
-import { generateObject } from 'ai';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import { gateway, CLAUDE_MODEL } from './client';
+import { generateObjectWithFallback } from './with-fallback';
 
 const MAX_QUESTIONS = 5;
 const MIN_OPTIONS = 4;
@@ -105,14 +104,13 @@ export async function nextInterviewStep(
 
   let raw: z.infer<typeof InterviewStepSchemaLLM>;
   try {
-    const result = await generateObject({
-      model: gateway(CLAUDE_MODEL),
+    const result = await generateObjectWithFallback({
       system: SYSTEM_PROMPT,
       schema: InterviewStepSchemaLLM,
       messages: history,
       temperature: 0.8,
     });
-    raw = result.object;
+    raw = result.object as z.infer<typeof InterviewStepSchemaLLM>;
   } catch (err) {
     console.error('[interview] generateObject failed:', err);
     // Graceful degradation: end the interview rather than crashing the page.

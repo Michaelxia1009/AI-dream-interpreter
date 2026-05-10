@@ -15,6 +15,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.71",
     "@ai-sdk/gateway": "^3.0.104",
+    "@ai-sdk/openai-compatible": "^2.0.47",
     "@base-ui/react": "^1.4.1",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",

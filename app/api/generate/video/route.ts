@@ -9,6 +9,8 @@ import {
   DEFAULT_ASPECT_RATIO,
   DEFAULT_DURATION_SECONDS,
   DEFAULT_RESOLUTION,
+  getFallbackVideoProvider,
+  isMiniMaxFallbackConfigured,
   selectVideoProvider,
 } from '@/lib/providers/video';
 import { uploadArtifact } from '@/lib/providers/blob';
@@ -54,6 +56,7 @@ function fpHashOf(fingerprint: string): string {
 type TimingKey =
   | 'scenePromptMs'
   | 'videoMs'
+  | 'videoFallbackMs'
   | 'uploadMs'
   | 'totalMs';
 
@@ -111,17 +114,46 @@ export async function POST(req: NextRequest) {
     durationSeconds: DEFAULT_DURATION_SECONDS,
   });
 
+  let videoSourceId = provider.id;
+  let videoSourceLabel = provider.modelLabel;
+  let usedFallback = false;
+
   try {
     const scenePrompt = await timeStage(
       timings,
       'scenePromptMs',
       () => buildVideoScenePrompt(parsed.data.enrichedDream, style),
     );
-    const videoBuf = await timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, {
+
+    const genOpts = {
       durationSeconds: DEFAULT_DURATION_SECONDS,
       resolution: DEFAULT_RESOLUTION,
       aspectRatio: DEFAULT_ASPECT_RATIO,
-    }));
+    };
+
+    let videoBuf: Buffer;
+    try {
+      videoBuf = await timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, genOpts));
+    } catch (primaryErr) {
+      // Don't fallback if user aborted, or if MINIMAX_API_KEY isn't configured.
+      const aborted = primaryErr instanceof Error && primaryErr.name === 'AbortError';
+      if (aborted || !isMiniMaxFallbackConfigured()) {
+        throw primaryErr;
+      }
+      const fallbackProvider = getFallbackVideoProvider();
+      console.warn(
+        `[video] primary "${provider.id}" failed → falling back to "${fallbackProvider.id}":`,
+        sanitizeErrorDetail(primaryErr),
+      );
+      usedFallback = true;
+      videoSourceId = fallbackProvider.id;
+      videoSourceLabel = fallbackProvider.modelLabel;
+      videoBuf = await timeStage(
+        timings,
+        'videoFallbackMs',
+        () => fallbackProvider.generate(scenePrompt, genOpts),
+      );
+    }
 
     const id = uuid();
     const videoUrl = await timeStage(
@@ -188,8 +220,10 @@ export async function POST(req: NextRequest) {
       handle,
       ...(debug ? {
         _provider: {
-          id: provider.id,
-          modelLabel: provider.modelLabel,
+          id: videoSourceId,
+          modelLabel: videoSourceLabel,
+          primary: provider.id,
+          usedFallback,
         },
         _timings: timings,
       } : {}),

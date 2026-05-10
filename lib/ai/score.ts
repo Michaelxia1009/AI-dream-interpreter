@@ -1,8 +1,7 @@
-import { generateObject } from 'ai';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import { gateway, CLAUDE_MODEL } from './client';
+import { generateObjectWithFallback } from './with-fallback';
 import { STYLES, listStyleIds } from '@/lib/styles';
 
 const SYSTEM_PROMPT = readFileSync(
@@ -91,8 +90,7 @@ export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
   }));
   const validIds = listStyleIds();
 
-  const { object } = await generateObject({
-    model: gateway(CLAUDE_MODEL),
+  const result = await generateObjectWithFallback({
     system: SYSTEM_PROMPT + EXTRA_INSTRUCTIONS,
     schema: ScoreResultSchemaLLM,
     prompt: [
@@ -104,6 +102,7 @@ export async function scoreDream(enrichedDream: string): Promise<ScoreResult> {
     ].join('\n'),
     temperature: 0.4,
   });
+  const object = result.object as z.infer<typeof ScoreResultSchemaLLM>;
 
   // Clamp scores to 1-10 and oneLiners to ≤80
   const metrics = {
