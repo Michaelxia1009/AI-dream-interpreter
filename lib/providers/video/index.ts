@@ -43,11 +43,11 @@ const PROVIDERS_BY_ID = new Map<VideoProviderId, VideoProvider>(
 export function getDefaultVideoProviderId(): VideoProviderId {
   return isVideoProviderId(process.env.VIDEO_PROVIDER)
     ? process.env.VIDEO_PROVIDER
-    : 'seedance-lite';
+    : 'seedance-pro';
 }
 
 export function getVideoProvider(id: VideoProviderId): VideoProvider {
-  return PROVIDERS_BY_ID.get(id) ?? seedanceLiteProvider;
+  return PROVIDERS_BY_ID.get(id) ?? seedanceProProvider;
 }
 
 export function selectVideoProvider({
@@ -67,7 +67,7 @@ export function selectVideoProvider({
 
   if (provider.supportsDuration(durationSeconds)) return provider;
   if (envProvider.supportsDuration(durationSeconds)) return envProvider;
-  return seedanceLiteProvider;
+  return seedanceProProvider;
 }
 
 export async function generateVideo(prompt: string, opts: VideoGenOpts = {}): Promise<Buffer> {
