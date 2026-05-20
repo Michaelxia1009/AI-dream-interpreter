@@ -22,7 +22,7 @@ const BASE_URL = 'https://api.minimax.io/v1';
 const MODEL = 'MiniMax-Hailuo-2.3';
 
 const POLL_INTERVAL_MS = 5_000;
-const POLL_MAX_ATTEMPTS = 15;             // 15 * 5s = 75s wall-clock max wait
+const POLL_MAX_ATTEMPTS = 30;             // 30 * 5s = 150s wall-clock max wait
 
 export const minimaxDirectProvider: VideoProvider = {
   id: 'minimax-direct',
