@@ -19,6 +19,7 @@ export default function ResultPage() {
   const router = useRouter();
   const { session, isHydrated, update, reset } = useDream();
   const [muxedUrl, setMuxedUrl] = useState<string | null>(null);
+  const [muxFallbackAudioUrl, setMuxFallbackAudioUrl] = useState<string | null>(null);
   const [muxing, setMuxing] = useState(false);
 
   useEffect(() => {
@@ -31,10 +32,12 @@ export default function ResultPage() {
         try {
           const blob = await muxVideoWithAudio(gen.videoUrl, gen.audioUrl);
           setMuxedUrl(URL.createObjectURL(blob));
+          setMuxFallbackAudioUrl(null);
         } catch (err) {
           console.error(err);
-          toast.error('Could not combine video and audio. Downloading silent version.');
           setMuxedUrl(gen.videoUrl);
+          setMuxFallbackAudioUrl(gen.audioUrl);
+          toast.warning('Playing narration separately for this video.');
         } finally { setMuxing(false); }
       })();
     }
@@ -52,15 +55,16 @@ export default function ResultPage() {
   async function download() {
     const gen = session.generation;
     if (!gen) return;
-    const a = document.createElement('a');
     if (gen.kind === 'video') {
-      a.href = muxedUrl ?? gen.videoUrl;
-      a.download = `dream-${gen.id}.mp4`;
+      triggerDownload(muxedUrl ?? gen.videoUrl, `dream-${gen.id}.mp4`);
+      if (muxFallbackAudioUrl) {
+        triggerDownload(muxFallbackAudioUrl, `dream-${gen.id}-narration.mp3`);
+        toast.success('Saved video and narration separately.');
+        return;
+      }
     } else {
-      a.href = gen.zipUrl;
-      a.download = `dream-${gen.id}.zip`;
+      triggerDownload(gen.zipUrl, `dream-${gen.id}.zip`);
     }
-    a.click();
     toast.success('Saved! Ready to share ✨');
   }
 
@@ -78,7 +82,10 @@ export default function ResultPage() {
               muxing ? (
                 <div className="h-full w-full animate-pulse bg-card" />
               ) : (
-                <VideoPlayer src={muxedUrl ?? session.generation.videoUrl} />
+                <VideoPlayer
+                  src={muxedUrl ?? session.generation.videoUrl}
+                  audioSrc={muxFallbackAudioUrl ?? undefined}
+                />
               )
             ) : (
               <Carousel urls={session.generation.imageUrls} />
@@ -180,4 +187,11 @@ export default function ResultPage() {
       )}
     </PageShell>
   );
+}
+
+function triggerDownload(href: string, filename: string) {
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  a.click();
 }
