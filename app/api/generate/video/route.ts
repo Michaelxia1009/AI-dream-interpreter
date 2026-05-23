@@ -121,21 +121,38 @@ export async function POST(req: NextRequest) {
       timeStage(timings, 'scenePromptMs', () => buildVideoScenePrompt(parsed.data.enrichedDream, style)),
       timeStage(timings, 'narrationMs', () => buildNarrationScript(parsed.data.enrichedDream, style)),
     ]);
-    const [videoBuf, audioBuf] = await Promise.all([
-      timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, {
-        durationSeconds: DEFAULT_DURATION_SECONDS,
-        resolution: DEFAULT_RESOLUTION,
-        aspectRatio: DEFAULT_ASPECT_RATIO,
-      })),
-      timeStage(timings, 'ttsMs', () => synthesizeNarration(narration, style.narratorVoiceId)),
-    ]);
+
+    let videoBuf: Buffer;
+    let audioBuf: Buffer | null = null;
+    const videoOpts = {
+      durationSeconds: DEFAULT_DURATION_SECONDS,
+      resolution: DEFAULT_RESOLUTION,
+      aspectRatio: DEFAULT_ASPECT_RATIO,
+      ...(provider.usesNativeAudio ? { narrationText: narration } : {}),
+    };
+
+    if (provider.usesNativeAudio) {
+      videoBuf = await timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, videoOpts));
+      timings.ttsMs = 0;
+    } else {
+      [videoBuf, audioBuf] = await Promise.all([
+        timeStage(timings, 'videoMs', () => provider.generate(scenePrompt, videoOpts)),
+        timeStage(timings, 'ttsMs', () => synthesizeNarration(narration, style.narratorVoiceId)),
+      ]);
+    }
     timings.muxMs = 0;
 
     const id = uuid();
-    const [videoUrl, audioUrl] = await timeStage(timings, 'uploadMs', () => Promise.all([
-      uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4'),
-      uploadArtifact(`videos/${id}/audio.mp3`, audioBuf, 'audio/mpeg'),
-    ]));
+    const [videoUrl, audioUrl] = await timeStage(timings, 'uploadMs', async () => {
+      if (!audioBuf) {
+        const uploadedVideoUrl = await uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4');
+        return [uploadedVideoUrl, uploadedVideoUrl] as const;
+      }
+      return Promise.all([
+        uploadArtifact(`videos/${id}/video.mp4`, videoBuf, 'video/mp4'),
+        uploadArtifact(`videos/${id}/audio.mp3`, audioBuf, 'audio/mpeg'),
+      ]);
+    });
 
     // Persist the dream (best-effort — don't block the response on persistence errors)
     let isPublic = parsed.data.isPublic ?? true;

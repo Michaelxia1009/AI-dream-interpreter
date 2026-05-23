@@ -20,6 +20,7 @@ describe('video provider defaults', () => {
     expect(getDefaultVideoProviderId()).toBe('seedance-2-fast');
     expect(selectVideoProvider().id).toBe('seedance-2-fast');
     expect(getVideoProvider('seedance-2-fast').modelLabel).toBe('Seedance 2.0 Fast');
+    expect(getVideoProvider('seedance-2-fast').usesNativeAudio).toBe(true);
   });
 
   it('allows Seedance 2.0 Fast durations up to 15 seconds', () => {

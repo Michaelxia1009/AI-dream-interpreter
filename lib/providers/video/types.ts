@@ -31,6 +31,8 @@ export interface VideoGenOpts {
   /** Negative prompt (where supported). Adapters silently ignore if unsupported. */
   negativePrompt?: string;
   aspectRatio?: VideoAspectRatio;
+  /** Narration to fold into prompts for providers with native audio generation. */
+  narrationText?: string;
 }
 
 export interface VideoProvider {
@@ -40,6 +42,8 @@ export interface VideoProvider {
   modelLabel: string;
   /** Capability gate. Must return true for any seconds value the bench will pass. */
   supportsDuration(seconds: number): boolean;
+  /** True when the returned MP4 is expected to include its own audio track. */
+  usesNativeAudio?: boolean;
   /** Run the model and return the raw MP4 bytes. */
   generate(scenePrompt: string, opts?: VideoGenOpts): Promise<Buffer>;
 }

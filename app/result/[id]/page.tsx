@@ -27,6 +27,15 @@ export default function ResultPage() {
     const gen = session.generation;
     if (!gen || !session.score) { router.replace('/'); return; }
     if (gen.kind === 'video') {
+      if (gen.audioUrl === gen.videoUrl) {
+        (async () => {
+          setMuxing(false);
+          setMuxedUrl(gen.videoUrl);
+          setMuxFallbackAudioUrl(null);
+        })();
+        return;
+      }
+
       (async () => {
         setMuxing(true);
         try {

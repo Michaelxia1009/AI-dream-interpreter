@@ -29,8 +29,8 @@ export type PersistedGeneration =
     }
   | {
       kind: 'video';
-      videoUrl: string;      // proxy URL (already-muxed)
-      audioUrl: string;      // proxy URL
+      videoUrl: string;      // proxy URL
+      audioUrl: string;      // proxy URL; same as videoUrl when native audio is embedded
       narrationText: string;
     };
 
