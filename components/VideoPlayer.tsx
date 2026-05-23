@@ -45,7 +45,7 @@ export function VideoPlayer({ src, audioSrc }: { src: string; audioSrc?: string 
   }
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-black">
+    <div className="relative h-full w-full overflow-hidden rounded-3xl bg-black">
       <video
         ref={videoRef}
         src={src}
