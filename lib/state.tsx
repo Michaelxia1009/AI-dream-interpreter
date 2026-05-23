@@ -4,7 +4,33 @@ import {
   createContext, useCallback, useContext, useEffect, useState, ReactNode,
 } from 'react';
 
-export interface InterviewTurn { role: 'user' | 'assistant'; content: string }
+export type InterviewCategory =
+  | 'figuresAppearance'
+  | 'environment'
+  | 'emotion'
+  | 'lighting'
+  | 'motion'
+  | 'color'
+  | 'keyObject'
+  | 'sound'
+  | 'twist';
+
+export interface InterviewQuestionMeta {
+  category: InterviewCategory;
+  selectionMode: 'one' | 'many';
+  options: string[];
+}
+
+export interface InterviewTurn {
+  role: 'user' | 'assistant';
+  content: string;
+  /** Assistant turns only — present when the bubble carries a structured choice question. */
+  question?: InterviewQuestionMeta;
+  /** User turns only — copied from the preceding assistant turn so we can label the answer. */
+  answeredCategory?: InterviewCategory;
+  /** User turns only — true when the answer came from the "Other..." text fallback. */
+  isFreeText?: boolean;
+}
 export interface Metric { score: number; oneLiner: string }
 export interface Moderation { ok: boolean; flags: string[] }
 export interface ScoreResult {
