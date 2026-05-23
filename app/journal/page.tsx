@@ -12,10 +12,11 @@ import type { StreakInfo } from '@/lib/dreams/streak';
 import { toast } from 'sonner';
 import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 import { DreamArchiveCover } from '@/components/DreamArchiveCover';
+import { cacheDreamDetailPreview, type CachedDreamDetail } from '@/lib/dreams/detail-cache';
 
 type DreamType = 'normal' | 'nightmare' | 'recurring' | 'prophetic';
 
-interface ProfileDream {
+interface ProfileDream extends CachedDreamDetail {
   id: string;
   createdAt: number;
   blurb: string;
@@ -118,7 +119,11 @@ function DreamCard({ dream }: { dream: ProfileDream }) {
   );
 
   return (
-    <Link href={`/dreams/${dream.id}`} className="block h-full">
+    <Link
+      href={`/dreams/${dream.id}`}
+      className="block h-full"
+      onClick={() => cacheDreamDetailPreview(dream)}
+    >
       {content}
     </Link>
   );
@@ -348,7 +353,15 @@ export default function JournalPage() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {patterns.recent.map(dream => (
-                <Link key={dream.id} href={`/dreams/${dream.id}`} className="block h-full">
+                <Link
+                  key={dream.id}
+                  href={`/dreams/${dream.id}`}
+                  className="block h-full"
+                  onClick={() => {
+                    const fullDream = profile?.dreams.find(item => item.id === dream.id);
+                    if (fullDream) cacheDreamDetailPreview(fullDream);
+                  }}
+                >
                   <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
                     <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} className="h-32" />
                     <div className="p-4">

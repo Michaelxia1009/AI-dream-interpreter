@@ -12,13 +12,14 @@ import type { StreakInfo } from '@/lib/dreams/streak';
 import { toast } from 'sonner';
 import { PageShell, PageHeader, GlassPanel, Button } from '@/components/ui';
 import { DreamArchiveCover } from '@/components/DreamArchiveCover';
+import { cacheDreamDetailPreview, type CachedDreamDetail } from '@/lib/dreams/detail-cache';
 
 interface Metric {
   score: number;
   oneLiner: string;
 }
 
-interface ProfileDream {
+interface ProfileDream extends CachedDreamDetail {
   id: string;
   createdAt: number;
   blurb: string;
@@ -271,7 +272,12 @@ export default function ProfilePage() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {profile.dreams.map(dream => (
-                <Link key={dream.id} href={`/dreams/${dream.id}`} className="block h-full">
+                <Link
+                  key={dream.id}
+                  href={`/dreams/${dream.id}`}
+                  className="block h-full"
+                  onClick={() => cacheDreamDetailPreview(dream)}
+                >
                   <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
                     <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
                     <div className="p-4">

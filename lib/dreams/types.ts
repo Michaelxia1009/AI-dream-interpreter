@@ -57,6 +57,7 @@ export interface DreamRecord {
   isPublic: boolean;
   moderation: ModerationResult;
   blurb: string;                 // ≤ 80 chars — LLM-generated card excerpt, never the raw transcript
+  dreamText?: string;            // enriched dream text for private interpretation chats; optional for older records
   dreamType?: 'normal' | 'nightmare' | 'recurring' | 'prophetic';
   /**
    * 3–8 short, lower-case symbols/motifs the LLM extracted from the dream

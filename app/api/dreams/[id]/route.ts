@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getDream } from '@/lib/dreams/repo';
+import { dreamTextForInterpretation } from '@/lib/dreams/interpretation-text';
 
 export const runtime = 'nodejs';
 
@@ -59,6 +60,7 @@ export async function GET(req: NextRequest, { params }: Params) {
       styleId: dream.styleId,
       styleName: dream.styleName,
       blurb: dream.blurb,
+      dreamText: dreamTextForInterpretation(dream),
       dreamType: dream.dreamType ?? 'normal',
       symbols: dream.symbols ?? [],
       generation: dream.generation,

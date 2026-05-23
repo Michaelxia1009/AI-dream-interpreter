@@ -5,19 +5,27 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, CalendarDays, Loader2, Lock, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { DreamGenerationViewer } from '@/components/DreamGenerationViewer';
+import { InterpretChat } from '@/components/InterpretChat';
 import { ReportCard } from '@/components/ReportCard';
 import { getFingerprint } from '@/lib/fingerprint';
 import type { ScoreResult } from '@/lib/state';
+import {
+  cacheDreamDetailPreview,
+  readCachedDreamDetail,
+  type CachedDreamDetail,
+} from '@/lib/dreams/detail-cache';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
 
 type DreamType = 'normal' | 'nightmare' | 'recurring' | 'prophetic';
 
-type DreamDetail = {
+type DreamDetail = CachedDreamDetail & {
   id: string;
   createdAt: number;
   format: 'video' | 'carousel';
+  styleId?: string;
   styleName: string;
   blurb: string;
+  dreamText: string;
   dreamType: DreamType;
   symbols: string[];
   generation:
@@ -44,8 +52,9 @@ function formatLabel(format: 'video' | 'carousel'): string {
 export default function DreamDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const [dream, setDream] = useState<DreamDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+  const dreamId = params.id;
+  const [dream, setDream] = useState<DreamDetail | null>(() => readCachedDreamDetail(dreamId));
+  const [loading, setLoading] = useState(() => !readCachedDreamDetail(dreamId));
 
   useEffect(() => {
     let cancelled = false;
@@ -53,12 +62,15 @@ export default function DreamDetailPage() {
       try {
         const fingerprint = await getFingerprint();
         if (cancelled) return;
-        const res = await fetch(`/api/dreams/${encodeURIComponent(params.id)}?fingerprint=${encodeURIComponent(fingerprint)}`, {
+        const res = await fetch(`/api/dreams/${encodeURIComponent(dreamId)}?fingerprint=${encodeURIComponent(fingerprint)}`, {
           cache: 'no-store',
         });
         if (!res.ok) throw new Error(res.status === 404 ? 'Dream not found.' : 'Could not load this dream.');
         const data = await res.json() as { dream: DreamDetail };
-        if (!cancelled) setDream(data.dream);
+        if (!cancelled) {
+          setDream(data.dream);
+          cacheDreamDetailPreview(data.dream);
+        }
       } catch (err) {
         console.error(err);
         toast.error(err instanceof Error ? err.message : 'Could not load this dream.');
@@ -69,7 +81,7 @@ export default function DreamDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [params.id]);
+  }, [dreamId]);
 
   if (loading) {
     return (
@@ -157,6 +169,17 @@ export default function DreamDetailPage() {
       <div className="mt-4">
         <ReportCard score={score} />
       </div>
+
+      <section className="mt-10">
+        <div className="mb-5">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Interpret</p>
+          <h2 className="mt-2 text-h2">Ask about this dream</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            A private reading space for the symbols, feelings, and story preserved in this archive.
+          </p>
+        </div>
+        <InterpretChat key={dream.id} dream={dream.dreamText || dream.blurb} />
+      </section>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <Button as="link" href="/journal" variant="secondary" size="lg" className="flex-1">

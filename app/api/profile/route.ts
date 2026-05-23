@@ -7,6 +7,7 @@ import { getDream } from '@/lib/dreams/repo';
 import { aggregatePatterns } from '@/lib/dreams/patterns';
 import { getPrototypeAccount, publicAccountState } from '@/lib/dreams/account';
 import { computeStreakInfo } from '@/lib/dreams/streak';
+import { dreamTextForInterpretation } from '@/lib/dreams/interpretation-text';
 import { buildRateLimitKey, DAILY_GENERATION_LIMIT, peek } from '@/lib/ratelimit';
 import type { DreamRecord } from '@/lib/dreams/types';
 
@@ -47,13 +48,18 @@ function profileDream(dream: DreamRecord) {
     createdAt: dream.createdAt,
     blurb: dream.blurb,
     format: dream.format,
+    styleId: dream.styleId,
     styleName: dream.styleName,
+    dreamText: dreamTextForInterpretation(dream),
     thumbnailUrl: thumbnailFor(dream),
     videoUrl: dream.generation.kind === 'video' ? dream.generation.videoUrl : null,
     dreamType: dream.dreamType ?? 'normal',
+    generation: dream.generation,
     metrics: dream.metrics,
+    moderation: dream.moderation,
     symbols: dream.symbols ?? [],
     isPublic: dream.isPublic,
+    handle: dream.handle,
   };
 }
 

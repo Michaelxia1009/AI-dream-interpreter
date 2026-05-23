@@ -183,6 +183,7 @@ export async function POST(req: NextRequest) {
           isPublic,
           moderation: parsed.data.score.moderation,
           blurb: parsed.data.score.blurb.slice(0, 80),
+          dreamText: parsed.data.enrichedDream,
           dreamType: dreamTypeFromEnrichedDream(parsed.data.enrichedDream),
           symbols: sanitizeSymbolsForPersist(parsed.data.score.symbols),
         };
