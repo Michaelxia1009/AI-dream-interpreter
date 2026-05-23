@@ -1,18 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Sparkles } from 'lucide-react';
-import { ChatThread } from '@/components/ChatThread';
+import { Sparkles } from 'lucide-react';
 import { MicButton } from '@/components/MicButton';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
 import { useDream, type InterviewTurn } from '@/lib/state';
-import { toast } from 'sonner';
-
-const OPENING: InterviewTurn = {
-  role: 'assistant',
-  content: 'What did you dream about?',
-};
 
 const MOODS = [
   { value: 'peaceful', label: 'Peaceful', glyph: 'moon' },
@@ -28,29 +21,13 @@ const DREAM_TYPES = ['normal', 'nightmare', 'recurring', 'prophetic'] as const;
 export default function CapturePage() {
   const router = useRouter();
   const { session, isHydrated, update, reset } = useDream();
-  const initialTurns = session.enrichedDream
-    ? [OPENING]
-    : session.history.length
-      ? session.history
-      : [OPENING];
-  const [turns, setTurns] = useState<InterviewTurn[]>(initialTurns);
   const [dreamText, setDreamText] = useState('');
-  const [replyText, setReplyText] = useState('');
   const [mood, setMood] = useState('peaceful');
   const [dreamType, setDreamType] = useState<(typeof DREAM_TYPES)[number]>('normal');
   const [sleepy, setSleepy] = useState(true);
   const [pending, setPending] = useState(false);
   const [recording, setRecording] = useState(false);
-  const [qCount, setQCount] = useState(
-    initialTurns.filter(t => t.role === 'assistant').length || 1,
-  );
-  const [done, setDone] = useState(false);
   const initialized = useRef(false);
-
-  const hasStartedInterview = useMemo(
-    () => turns.some(t => t.role === 'user'),
-    [turns],
-  );
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -59,48 +36,19 @@ export default function CapturePage() {
     if (session.enrichedDream) reset();
   }, [session.enrichedDream, isHydrated, reset]);
 
-  async function submit(content: string) {
+  function submit(content: string) {
     const clean = content.trim();
     if (!clean || pending) return;
-    const nextTurns = [...turns, { role: 'user' as const, content: clean }];
-    setTurns(nextTurns);
-    setDreamText('');
-    setReplyText('');
     setPending(true);
-    try {
-      const res = await fetch('/api/interview', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          history: nextTurns,
-          questionsAsked: qCount,
-        }),
-      });
-      if (!res.ok) throw new Error('interview failed');
-      const data = await res.json();
-      if (data.done) {
-        const enrichedDream = [
-          `MOOD: ${mood}`,
-          `DREAM TYPE: ${dreamType}`,
-          ...nextTurns.map(t => `${t.role === 'user' ? 'USER' : 'Q'}: ${t.content}`),
-        ].join('\n');
-        setDone(true);
-        update({ history: nextTurns, enrichedDream });
-        setTurns([...nextTurns, { role: 'assistant', content: 'Got it — let us bring your dream to life.' }]);
-        setTimeout(() => router.push('/format'), 1400);
-      } else {
-        setQCount(q => q + 1);
-        setTurns([...nextTurns, { role: 'assistant', content: data.question }]);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Something went wrong. Try again.');
-    } finally {
-      setPending(false);
-    }
+    const history: InterviewTurn[] = [{ role: 'user', content: clean }];
+    const enrichedDream = [
+      `MOOD: ${mood}`,
+      `DREAM TYPE: ${dreamType}`,
+      `USER: ${clean}`,
+    ].join('\n');
+    update({ history, enrichedDream });
+    router.push('/format');
   }
-
-  const setActiveText = hasStartedInterview ? setReplyText : setDreamText;
 
   return (
     <PageShell
@@ -132,127 +80,83 @@ export default function CapturePage() {
             </p>
           </div>
           <MicButton
-            onTranscript={t => setActiveText(prev => prev ? `${prev} ${t}` : t)}
+            onTranscript={t => setDreamText(prev => prev ? `${prev} ${t}` : t)}
             onRecordingChange={setRecording}
-            disabled={pending || done}
+            disabled={pending}
           />
         </div>
 
-        {!hasStartedInterview && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="dream" className="text-sm text-muted-foreground">
-                The dream
-              </label>
-              <textarea
-                id="dream"
-                value={dreamText}
-                onChange={e => setDreamText(e.target.value)}
-                placeholder="I was walking through a forest of mirrors..."
-                className="min-h-52 w-full resize-y appearance-none rounded-2xl border border-border/50 px-4 py-4 font-serif text-lg leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
-                style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
-                autoFocus
-              />
-            </div>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="dream" className="text-sm text-muted-foreground">
+              The dream
+            </label>
+            <textarea
+              id="dream"
+              value={dreamText}
+              onChange={e => setDreamText(e.target.value)}
+              placeholder="I was walking through a forest of mirrors..."
+              className="min-h-52 w-full resize-y appearance-none rounded-2xl border border-border/50 px-4 py-4 font-serif text-lg leading-relaxed text-foreground outline-none transition placeholder:text-muted-foreground focus:border-ring/70 focus:ring-4 focus:ring-ring/20"
+              style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
+              autoFocus
+            />
+          </div>
 
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">How did it feel?</p>
-              <div className="flex flex-wrap gap-2">
-                {MOODS.map(item => (
-                  <Button
-                    key={item.value}
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setMood(item.value)}
-                    className={
-                      mood === item.value
-                        ? 'border-ring/60 bg-ring/20 text-foreground shadow-[0_0_24px_rgba(167,139,250,0.22)]'
-                        : ''
-                    }
-                  >
-                    <span className="mr-1.5 text-[11px] uppercase tracking-[0.12em]">{item.glyph}</span>
-                    {item.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Dream type</p>
-              <div className="flex flex-wrap gap-2">
-                {DREAM_TYPES.map(type => (
-                  <Button
-                    key={type}
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setDreamType(type)}
-                    className={`capitalize ${
-                      dreamType === type
-                        ? 'border-fuchsia-300/50 bg-fuchsia-300/15 text-foreground'
-                        : ''
-                    }`}
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">How did it feel?</p>
+            <div className="flex flex-wrap gap-2">
+              {MOODS.map(item => (
+                <Button
+                  key={item.value}
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setMood(item.value)}
+                  className={
+                    mood === item.value
+                      ? 'border-ring/60 bg-ring/20 text-foreground shadow-[0_0_24px_rgba(167,139,250,0.22)]'
+                      : ''
+                  }
+                >
+                  <span className="mr-1.5 text-[11px] uppercase tracking-[0.12em]">{item.glyph}</span>
+                  {item.label}
+                </Button>
+              ))}
             </div>
           </div>
-        )}
 
-        {hasStartedInterview && (
-          <div className="mt-2 overflow-hidden rounded-2xl border border-border/40 bg-background/25">
-            <ChatThread turns={turns} pending={pending} />
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Dream type</p>
+            <div className="flex flex-wrap gap-2">
+              {DREAM_TYPES.map(type => (
+                <Button
+                  key={type}
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setDreamType(type)}
+                  className={`capitalize ${
+                    dreamType === type
+                      ? 'border-fuchsia-300/50 bg-fuchsia-300/15 text-foreground'
+                      : ''
+                  }`}
+                >
+                  {type}
+                </Button>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
 
         <div className="mt-6">
-          {done ? (
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => router.push('/format')}
-              className="w-full"
-            >
-              Continue
-            </Button>
-          ) : hasStartedInterview ? (
-            <div className="flex items-end gap-3">
-              <textarea
-                rows={1}
-                value={replyText}
-                onChange={e => setReplyText(e.target.value)}
-                placeholder="Answer the follow-up..."
-                className="min-h-12 flex-1 resize-none appearance-none rounded-2xl border border-border/50 px-4 py-3 text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus:border-ring/70"
-                style={{ backgroundColor: 'var(--dw-textbox-bg)' }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    submit(replyText);
-                  }
-                }}
-              />
-              <Button
-                variant="primary"
-                onClick={() => submit(replyText)}
-                disabled={pending || !replyText.trim()}
-                className="h-12"
-              >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => submit(dreamText)}
-              disabled={pending || !dreamText.trim()}
-              className="mx-auto w-full max-w-md"
-            >
-              {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              Continue
-            </Button>
-          )}
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => submit(dreamText)}
+            disabled={pending || !dreamText.trim()}
+            className="mx-auto w-full max-w-md"
+          >
+            <Sparkles className="h-4 w-4" />
+            Continue
+          </Button>
         </div>
       </GlassPanel>
 
