@@ -11,7 +11,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { PrivacyToggle } from '@/components/PrivacyToggle';
 import { HandleEditor } from '@/components/HandleEditor';
 import { useDream } from '@/lib/state';
-import { muxVideoWithAudio } from '@/lib/mux/clientMux';
+import { muxVideoWithAudio, normalizeVideoForPlayback } from '@/lib/mux/clientMux';
 import { toast } from 'sonner';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
 
@@ -29,9 +29,17 @@ export default function ResultPage() {
     if (gen.kind === 'video') {
       if (gen.audioUrl === gen.videoUrl) {
         (async () => {
-          setMuxing(false);
-          setMuxedUrl(gen.videoUrl);
-          setMuxFallbackAudioUrl(null);
+          setMuxing(true);
+          try {
+            const blob = await normalizeVideoForPlayback(gen.videoUrl);
+            setMuxedUrl(URL.createObjectURL(blob));
+            setMuxFallbackAudioUrl(null);
+          } catch (err) {
+            console.error(err);
+            setMuxedUrl(gen.videoUrl);
+            setMuxFallbackAudioUrl(null);
+            toast.warning('Playing the original video file.');
+          } finally { setMuxing(false); }
         })();
         return;
       }

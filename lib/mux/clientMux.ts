@@ -50,6 +50,39 @@ export async function muxVideoWithAudio(
   }
 }
 
+export async function normalizeVideoForPlayback(videoUrl: string): Promise<Blob> {
+  const ffmpeg = await getFFmpeg();
+  const runId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const inputPath = `native-${runId}.mp4`;
+  const outputPath = `playable-${runId}.mp4`;
+
+  await ffmpeg.writeFile(inputPath, await fetchFile(videoUrl));
+
+  try {
+    await ffmpeg.exec([
+      '-y',
+      '-i', inputPath,
+      '-map', '0:v:0',
+      '-map', '0:a?',
+      '-c:v', 'libx264',
+      '-preset', 'ultrafast',
+      '-crf', '23',
+      '-c:a', 'aac',
+      '-movflags', '+faststart',
+      outputPath,
+    ]);
+
+    const data = await ffmpeg.readFile(outputPath);
+    const bytes = new Uint8Array(data as Uint8Array);
+    return new Blob([bytes], { type: 'video/mp4' });
+  } finally {
+    await Promise.allSettled([
+      ffmpeg.deleteFile(inputPath),
+      ffmpeg.deleteFile(outputPath),
+    ]);
+  }
+}
+
 async function runMux(
   ffmpeg: FFmpeg,
   videoPath: string,
