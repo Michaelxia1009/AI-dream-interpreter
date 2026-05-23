@@ -1,6 +1,6 @@
 import { hailuoProvider } from './hailuo';
 import { klingTurboProvider } from './kling-turbo';
-import { luma720pProvider } from './luma-720p';
+import { seedance2FastProvider } from './seedance-2-fast';
 import { seedanceLiteProvider } from './seedance-lite';
 import { seedanceProProvider } from './seedance-pro';
 import {
@@ -15,7 +15,7 @@ import { wan25Provider } from './wan25';
 export * from './types';
 
 export const VIDEO_PROVIDERS = [
-  luma720pProvider,
+  seedance2FastProvider,
   hailuoProvider,
   wan25Provider,
   seedanceProProvider,
@@ -30,11 +30,11 @@ const PROVIDERS_BY_ID = new Map<VideoProviderId, VideoProvider>(
 export function getDefaultVideoProviderId(): VideoProviderId {
   return isVideoProviderId(process.env.VIDEO_PROVIDER)
     ? process.env.VIDEO_PROVIDER
-    : 'luma-720p';
+    : 'seedance-2-fast';
 }
 
 export function getVideoProvider(id: VideoProviderId): VideoProvider {
-  return PROVIDERS_BY_ID.get(id) ?? luma720pProvider;
+  return PROVIDERS_BY_ID.get(id) ?? seedance2FastProvider;
 }
 
 export function selectVideoProvider({
@@ -54,7 +54,7 @@ export function selectVideoProvider({
 
   if (provider.supportsDuration(durationSeconds)) return provider;
   if (envProvider.supportsDuration(durationSeconds)) return envProvider;
-  return luma720pProvider;
+  return seedance2FastProvider;
 }
 
 export async function generateVideo(prompt: string, opts: VideoGenOpts = {}): Promise<Buffer> {

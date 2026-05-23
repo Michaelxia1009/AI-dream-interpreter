@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const BASE_URL = process.env.BENCH_BASE_URL ?? 'http://localhost:3000';
 const PROVIDERS = [
-  'luma-720p',
+  'seedance-2-fast',
   'hailuo',
   'wan25',
   'seedance-pro',

@@ -12,7 +12,7 @@
  */
 
 export const VIDEO_PROVIDER_IDS = [
-  'luma-720p',
+  'seedance-2-fast',
   'hailuo',
   'wan25',
   'seedance-pro',
@@ -44,7 +44,7 @@ export interface VideoProvider {
   generate(scenePrompt: string, opts?: VideoGenOpts): Promise<Buffer>;
 }
 
-export const DEFAULT_DURATION_SECONDS = 9;
+export const DEFAULT_DURATION_SECONDS = 10;
 export const DEFAULT_RESOLUTION: VideoResolution = '720p';
 export const DEFAULT_ASPECT_RATIO: VideoAspectRatio = '9:16';
 

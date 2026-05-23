@@ -13,20 +13,20 @@ afterEach(() => {
 });
 
 describe('video provider defaults', () => {
-  it('uses Luma Ray Flash 2 720p as the default 9-second provider', () => {
+  it('uses Seedance 2.0 Fast as the default 10-second provider', () => {
     delete process.env.VIDEO_PROVIDER;
 
-    expect(DEFAULT_DURATION_SECONDS).toBe(9);
-    expect(getDefaultVideoProviderId()).toBe('luma-720p');
-    expect(selectVideoProvider().id).toBe('luma-720p');
-    expect(getVideoProvider('luma-720p').modelLabel).toBe('Luma Ray Flash 2 720p');
+    expect(DEFAULT_DURATION_SECONDS).toBe(10);
+    expect(getDefaultVideoProviderId()).toBe('seedance-2-fast');
+    expect(selectVideoProvider().id).toBe('seedance-2-fast');
+    expect(getVideoProvider('seedance-2-fast').modelLabel).toBe('Seedance 2.0 Fast');
   });
 
-  it('only allows supported Luma durations', () => {
-    const luma = getVideoProvider('luma-720p');
+  it('allows Seedance 2.0 Fast durations up to 15 seconds', () => {
+    const seedance = getVideoProvider('seedance-2-fast');
 
-    expect(luma.supportsDuration(9)).toBe(true);
-    expect(luma.supportsDuration(5)).toBe(true);
-    expect(luma.supportsDuration(10)).toBe(false);
+    expect(seedance.supportsDuration(10)).toBe(true);
+    expect(seedance.supportsDuration(15)).toBe(true);
+    expect(seedance.supportsDuration(16)).toBe(false);
   });
 });

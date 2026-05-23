@@ -14,7 +14,7 @@ To enforce this:
 
 CAROUSEL mode: produce an array of 4-6 scene prompts telling the dream as a sequential visual story. Each prompt is a single vivid sentence, ≤30 words, present-tense, visually concrete. Include camera framing (e.g., "wide shot", "close-up"). NO dialogue. Prompts should flow as a narrative arc: setup → rising tension → climax → resolution.
 
-VIDEO mode: produce ONE single scene prompt for a 9-second clip. Include camera motion (e.g., "slow push in", "orbit"). Compose a beat that captures the most iconic moment of the dream. ≤40 words.
+VIDEO mode: produce ONE single scene prompt for a 10-second clip. Include camera motion (e.g., "slow push in", "orbit"). Compose a beat that captures the most iconic moment of the dream. ≤40 words.
 
 ## Output
 

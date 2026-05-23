@@ -65,7 +65,7 @@ const titleLibre = Libre_Baskerville({
 
 export const metadata: Metadata = {
   title: 'Dream Interpreter',
-  description: 'Turn your dream into a 9-second video or image series.',
+  description: 'Turn your dream into a 10-second video or carousel.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
