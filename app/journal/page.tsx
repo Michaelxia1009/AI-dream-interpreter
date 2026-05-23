@@ -77,6 +77,10 @@ function formatDate(ms: number): string {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(ms));
 }
 
+function formatLabel(format: 'video' | 'carousel'): string {
+  return format === 'carousel' ? 'image series' : 'video';
+}
+
 function barHeight(day: DayBin): string {
   if (day.count === 0) return '10%';
   return `${Math.min(100, 28 + day.count * 18)}%`;
@@ -107,17 +111,17 @@ function DreamCard({ dream }: { dream: ProfileDream }) {
           ))}
         </div>
         <div className="mt-4 border-t border-border/30 pt-3 text-xs text-muted-foreground">
-          {dream.styleName} · {dream.format}
+          {dream.styleName} · {formatLabel(dream.format)}
         </div>
       </div>
     </GlassPanel>
   );
 
-  return dream.isPublic ? (
-    <Link href={`/d/${dream.id}`} className="block h-full">
+  return (
+    <Link href={`/dreams/${dream.id}`} className="block h-full">
       {content}
     </Link>
-  ) : content;
+  );
 }
 
 export default function JournalPage() {
@@ -195,7 +199,7 @@ export default function JournalPage() {
       return [
         dream.blurb,
         dream.styleName,
-        dream.format,
+        formatLabel(dream.format),
         dream.dreamType,
         dream.symbols.join(' '),
       ].join(' ').toLowerCase().includes(q);
@@ -344,28 +348,26 @@ export default function JournalPage() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {patterns.recent.map(dream => (
-                <GlassPanel key={dream.id} as="article" size="sm" className="overflow-hidden p-0">
-                  {dream.thumbnailUrl && (
-                    // Generated Blob URLs are final display assets.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={dream.thumbnailUrl} alt="" className="h-32 w-full object-cover" />
-                  )}
-                  <div className="p-4">
-                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                      {formatDate(dream.createdAt)} · {dream.format}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
-                    {dream.symbols.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {dream.symbols.slice(0, 3).map(symbol => (
-                          <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
-                            {symbol}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </GlassPanel>
+                <Link key={dream.id} href={`/dreams/${dream.id}`} className="block h-full">
+                  <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
+                    <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} className="h-32" />
+                    <div className="p-4">
+                      <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                        {formatDate(dream.createdAt)} · {formatLabel(dream.format)}
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
+                      {dream.symbols.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {dream.symbols.slice(0, 3).map(symbol => (
+                            <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
+                              {symbol}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </GlassPanel>
+                </Link>
               ))}
             </div>
           </section>

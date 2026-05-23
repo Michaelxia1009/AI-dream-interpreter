@@ -38,6 +38,7 @@ export interface RecentCard {
   styleName: string;
   format: 'video' | 'carousel';
   thumbnailUrl: string | null;
+  videoUrl: string | null;
   dreamType: 'normal' | 'nightmare' | 'recurring' | 'prophetic';
   symbols: string[];
   weirdness: number;
@@ -74,6 +75,11 @@ function avg(nums: number[]): number {
 
 function thumbnailFor(d: DreamRecord): string | null {
   if (d.generation.kind === 'carousel') return d.generation.imageUrls[0] ?? null;
+  return null;
+}
+
+function videoUrlFor(d: DreamRecord): string | null {
+  if (d.generation.kind === 'video') return d.generation.videoUrl;
   return null;
 }
 
@@ -144,6 +150,7 @@ export function aggregatePatterns(
       styleName: d.styleName,
       format: d.format,
       thumbnailUrl: thumbnailFor(d),
+      videoUrl: videoUrlFor(d),
       dreamType: d.dreamType ?? 'normal',
       symbols: d.symbols ?? [],
       weirdness: d.metrics.weirdness.score,

@@ -9,7 +9,7 @@ interface DreamArchiveCoverProps {
 }
 
 function videoPreviewUrl(videoUrl: string): string {
-  return videoUrl.includes('#') ? videoUrl : `${videoUrl}#t=0.001`;
+  return videoUrl.includes('#') ? videoUrl : `${videoUrl}#t=1.25`;
 }
 
 export function DreamArchiveCover({
@@ -20,7 +20,7 @@ export function DreamArchiveCover({
   const holdFirstFrame = useCallback((video: HTMLVideoElement) => {
     try {
       if (video.readyState >= HTMLMediaElement.HAVE_METADATA && video.currentTime === 0) {
-        video.currentTime = 0.001;
+        video.currentTime = Math.min(1.25, Math.max(0.001, video.duration * 0.2));
       }
     } catch {
       // Some browsers reject tiny seeks until more data is available; the

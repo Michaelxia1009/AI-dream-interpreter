@@ -4,8 +4,7 @@ import { headers } from 'next/headers';
 import { Sparkles } from 'lucide-react';
 import { getDream } from '@/lib/dreams/repo';
 import { ReportCard } from '@/components/ReportCard';
-import { VideoPlayer } from '@/components/VideoPlayer';
-import { Carousel } from '@/components/Carousel';
+import { DreamGenerationViewer } from '@/components/DreamGenerationViewer';
 import { ShareButton } from '@/components/ShareButton';
 import type { ScoreResult } from '@/lib/state';
 import { PageShell, GlassPanel, Button } from '@/components/ui';
@@ -85,15 +84,9 @@ export default async function PublicDreamPage({ params }: Params) {
       {/* Media frame */}
       <div className="relative mt-4">
         <div className="media-halo overflow-hidden rounded-3xl">
-          {dream.generation.kind === 'video' ? (
-            <div className="aspect-[9/16] w-full sm:aspect-video">
-              <VideoPlayer src={dream.generation.videoUrl} />
-            </div>
-          ) : (
-            <div className="aspect-[9/16] w-full sm:aspect-video">
-              <Carousel urls={dream.generation.imageUrls} />
-            </div>
-          )}
+          <div className="aspect-[9/16] w-full sm:aspect-video">
+            <DreamGenerationViewer generation={dream.generation} />
+          </div>
         </div>
         {/* Watermark */}
         <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-background/60 px-2.5 py-1 text-[10px] font-medium tracking-[0.15em] text-foreground/80 backdrop-blur">

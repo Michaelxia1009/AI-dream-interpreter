@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CalendarDays, Loader2, Lock, Mail, Palette, Sparkles, Trophy, UserRound } from 'lucide-react';
+import { CalendarDays, ChevronRight, Loader2, Lock, Mail, Palette, Sparkles, Trophy, UserRound } from 'lucide-react';
 import { getFingerprint } from '@/lib/fingerprint';
 import { StreakBadge } from '@/components/StreakBadge';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -73,6 +73,10 @@ interface ProfilePayload {
 function formatDate(ms: number | null): string {
   if (!ms) return 'Not yet';
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(ms));
+}
+
+function formatLabel(format: 'video' | 'carousel'): string {
+  return format === 'carousel' ? 'image series' : 'video';
 }
 
 function formatReset(ms: number): string {
@@ -267,29 +271,33 @@ export default function ProfilePage() {
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {profile.dreams.map(dream => (
-                <GlassPanel key={dream.id} as="article" size="sm" className="overflow-hidden p-0">
-                  <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
-                  <div className="p-4">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-                        {formatDate(dream.createdAt)} · {dream.format}
-                      </p>
-                      {!dream.isPublic && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {dream.symbols.slice(0, 4).map(symbol => (
-                        <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
-                          {symbol}
+                <Link key={dream.id} href={`/dreams/${dream.id}`} className="block h-full">
+                  <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
+                    <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
+                    <div className="p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                          {formatDate(dream.createdAt)} · {formatLabel(dream.format)}
+                        </p>
+                        {!dream.isPublic && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed">{dream.blurb}</p>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {dream.symbols.slice(0, 4).map(symbol => (
+                          <span key={symbol} className="rounded-full bg-secondary px-2 py-1 text-[11px] text-muted-foreground">
+                            {symbol}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-4 flex items-center justify-between border-t border-border/30 pt-3 text-[11px] text-muted-foreground">
+                        <span>Weird {dream.metrics.weirdness.score}/10 · Vivid {dream.metrics.vividness.score}/10</span>
+                        <span className="inline-flex items-center gap-1 text-foreground/75 transition group-hover:text-foreground">
+                          View <ChevronRight className="h-3.5 w-3.5" />
                         </span>
-                      ))}
+                      </div>
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                      <span>Weird {dream.metrics.weirdness.score}/10</span>
-                      <span>Vivid {dream.metrics.vividness.score}/10</span>
-                    </div>
-                  </div>
-                </GlassPanel>
+                  </GlassPanel>
+                </Link>
               ))}
             </div>
           )}
