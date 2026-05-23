@@ -46,7 +46,7 @@ export default function FormatPage() {
       <div className="mt-8 grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         <FormatCard
           icon="&#127916;"
-          title="10s Cinematic Video"
+          title="9s Cinematic Video"
           description="A short cinematic scene, narrated in a voice matched to your style."
           onSelect={() => pick('video')}
         />
