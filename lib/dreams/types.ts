@@ -63,6 +63,14 @@ export interface DreamRecord {
    * with records persisted before this field shipped.
    */
   symbols?: string[];
+  /**
+   * Full dream text + interview answers, concatenated by capture/page.tsx
+   * before being passed to the generation routes. Persisted so the user
+   * can launch interpret on past dreams from /journal and /profile. Owner-
+   * only access via the /api/dream/[id]/enriched route. Optional for
+   * back-compat with records persisted before this field shipped.
+   */
+  enrichedDream?: string;
 }
 
 export type LeaderboardMetric = 'weirdness' | 'vivid' | 'emotional';

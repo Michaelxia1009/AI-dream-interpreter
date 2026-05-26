@@ -185,6 +185,7 @@ export async function POST(req: NextRequest) {
           blurb: parsed.data.score.blurb.slice(0, 80),
           dreamType: dreamTypeFromEnrichedDream(parsed.data.enrichedDream),
           symbols: sanitizeSymbolsForPersist(parsed.data.score.symbols),
+          enrichedDream: parsed.data.enrichedDream,
         };
         await persistDream(record);
         // Index for /patterns regardless of public/private — Patterns is private to the dreamer.

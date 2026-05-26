@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { CalendarDays, ChevronRight, Loader2, Lock, Plus, Search, Sparkles } from 'lucide-react';
 import { getFingerprint } from '@/lib/fingerprint';
 import { StreakBadge } from '@/components/StreakBadge';
@@ -83,6 +84,12 @@ function barHeight(day: DayBin): string {
 }
 
 function DreamCard({ dream }: { dream: ProfileDream }) {
+  const router = useRouter();
+  const onInterpret = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/interpret?id=${dream.id}`);
+  };
   const content = (
     <GlassPanel as="article" size="sm" className="group h-full overflow-hidden p-0 transition duration-300 hover:-translate-y-0.5 hover:border-ring/50">
       <DreamArchiveCover thumbnailUrl={dream.thumbnailUrl} videoUrl={dream.videoUrl} />
@@ -106,8 +113,16 @@ function DreamCard({ dream }: { dream: ProfileDream }) {
             </span>
           ))}
         </div>
-        <div className="mt-4 border-t border-border/30 pt-3 text-xs text-muted-foreground">
-          {dream.styleName} · {dream.format}
+        <div className="mt-4 flex items-center justify-between border-t border-border/30 pt-3 text-xs text-muted-foreground">
+          <span>{dream.styleName} · {dream.format}</span>
+          <button
+            type="button"
+            onClick={onInterpret}
+            className="relative z-10 inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card/40 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition hover:border-ring/50 hover:text-foreground"
+          >
+            <Sparkles className="h-3 w-3" />
+            Interpret
+          </button>
         </div>
       </div>
     </GlassPanel>

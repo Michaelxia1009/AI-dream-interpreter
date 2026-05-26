@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { CalendarDays, Loader2, Lock, Mail, Palette, Sparkles, Trophy, UserRound } from 'lucide-react';
 import { getFingerprint } from '@/lib/fingerprint';
 import { StreakBadge } from '@/components/StreakBadge';
@@ -95,6 +96,7 @@ function UsageCard({ label, used, cap }: { label: string; used: number; cap: num
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [fingerprint, setFingerprint] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfilePayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -287,6 +289,16 @@ export default function ProfilePage() {
                     <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
                       <span>Weird {dream.metrics.weirdness.score}/10</span>
                       <span>Vivid {dream.metrics.vividness.score}/10</span>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/interpret?id=${dream.id}`)}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card/40 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition hover:border-ring/50 hover:text-foreground"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        Interpret
+                      </button>
                     </div>
                   </div>
                 </GlassPanel>
